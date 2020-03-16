@@ -34,28 +34,28 @@ try:
     urlP = "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv"
     urlV = "https://macaddress.io/database/macaddress.io-db.csv"
     #===============================================================================================
-#    print("Downloading Transport Layer Ports data....", end='')
-#    urllib.request.urlretrieve(urlP, "Ports_url.csv")
-#    print("done")
-#    print("Inserting data to table Ports....", end='')
-#    reader = csv.reader(open('Ports_url.csv','r'), delimiter=',')
-    #if url does not exist comment 5 lines above this and uncomment lines below
+    print("Downloading Transport Layer Ports data....", end='')
+    urllib.request.urlretrieve(urlP, "Ports_url.csv")
+    print("done")
     print("Inserting data to table Ports....", end='')
-    reader = csv.reader(open('Ports.csv','r'), delimiter=',')
+    reader = csv.reader(open('Ports_url.csv','r'), delimiter=',')
+    #if url does not exist comment 5 lines above this and uncomment lines below
+#    print("Inserting data to table Ports....", end='')
+#    reader = csv.reader(open('Ports.csv','r'), delimiter=',')
     for row in reader:
          to_db = [row[0], row[1], row[2], row[3]]
          c.execute("INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);", to_db)
     SQLiteConnection.commit()
     print("done")
     #===============================================================================================
-#    print("Downloading MAC address assigned to vendors data....", end='')
-#    urllib.request.urlretrieve(urlV, "VendorsMAC_url.csv")
-#    print("done")
-#    print("Inserting data to table VendorsMAC....", end='')
-#    reader = csv.reader(open('VendorsMAC_url.csv','r'), delimiter=',')
-    #if url does not exist comment 5 lines above this and uncomment lines below
+    print("Downloading MAC address assigned to vendors data....", end='')
+    urllib.request.urlretrieve(urlV, "VendorsMAC_url.csv")
+    print("done")
     print("Inserting data to table VendorsMAC....", end='')
-    reader = csv.reader(open('VendorsMAC.csv','r'), delimiter=',')    
+    reader = csv.reader(open('VendorsMAC_url.csv','r'), delimiter=',')
+    #if url does not exist comment 5 lines above this and uncomment lines below
+#    print("Inserting data to table VendorsMAC....", end='')
+#    reader = csv.reader(open('VendorsMAC.csv','r'), delimiter=',')    
     for row in reader:
         to_db = [row[0], row[1], row[2], row[4], row[5]]
         c.execute("INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);", to_db)
