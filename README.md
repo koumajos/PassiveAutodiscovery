@@ -4,3 +4,10 @@ The output of the program must be obtained information and graph of client depen
 
 ## Database Inplementation
 ![Database proposal](https://github.com/koumajos/DeppendencyMapping/blob/master/navrh_databaze.png)
+
+## CreateScript
+
+## Collector
+
+## Analyzer
+
