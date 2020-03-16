@@ -236,10 +236,9 @@ def collector(rec, SQLiteConnection):
 #=================================================================================================================================
 # Main loop
 try:    #connect to a database
-    print("Connecting to a database....")
-    if os.path.exists('Database.db'):
-        print("", end='')
-    else:
+    print("Connecting to a database....", end='')
+    if not os.path.exists('Database.db'):
+        print("")
         print("can't connect to Database.db")
         sys.exit()
     SQLiteConnection = sqlite3.connect('Database.db')
