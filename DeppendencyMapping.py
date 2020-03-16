@@ -146,7 +146,10 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection):
             oldip = ipaddress.ip_address(row[1])        
             if newip == oldip:   #if ip match, end it 
                 return           
-            elif newip.version == oldip.version:    #if not and have same version (one MAC can have both of IPv4 and IPv6 addresses)    
+            elif newip.version == oldip.version:    #if not and have same version (one MAC can have both of IPv4 and IPv6 addresses)
+                if newip.is_link_local or oldip.is_link_local or ipadr.is_multicast:
+                    tmp = 1
+                    continue    
                 #TODO TEST THIS!!!                
                 tmp = 2                
                 cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='%s'" % IP)
