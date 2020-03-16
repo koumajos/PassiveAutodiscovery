@@ -1,0 +1,190 @@
+PortNumber,DeviceType,Shortcut,Description
+661,Apple Home IoT,HAP,"HAP protocol (HomeKit Accessory Protocol) s Apple’s proprietary protocol that enables third-party accessories in the home (e.g., lights, thermostats and door locks) and Apple products to communicate with each other"
+49,Authentication Server,TACACS,Tacacs protocol (Terminal Access Controller Access-Control System) use to authenticate
+1812,Authentication Server,RADIUS,Radius protocol (Remote Authentication Dial In User Service) use for authentication and accounting packets (new-version)
+88,Authentication Server,KERBEROS,Kerberos protocol use to authenticate
+113,Authentication Server,AUTH,Auth protocol use to authenticate
+749,Authentication Server,KERBEROS,Kerberos administration protocol use to administrate kerberos authentication server
+750,Authentication Server,KERBEROS,Kerberos version iv protocol to requests
+754,Authentication Server,KERBEROS,Kerberos slave propagation
+543,Authentication Server,KERBEROS,Kerberos authenticated rlogin
+544,Authentication Server,KERBEROS,Kerberos authenticated remote sheůů
+2105,Authentication Server,KERBEROS,Kerberos authentification 7 encrypted rlogin
+4444,Authentication Server,KERBEROS,Kerberos 5 to 4 ticket translator
+910,Authentication Server,KERBEROS,Kink protocol (Kerberized Internet Negotiation of Keys) used for  Kerberos protocol to allow trusted third parties to handle authentication of peers and management of security policies in a centralized fashion
+1645,Authentication Server,RADIUS,Radius protocol (Remote Authentication Dial In User Service) use for authentication and accounting packets
+1646,Authentication Server,RADIUS,Radius protocol (Remote Authentication Dial In User Service) use for authentication and accounting packets
+7082,Authentication Server,RADIUS,Radius protocol (Remote Authentication Dial In User Service) use to authenticate
+1813,Authentication Server,RADIUS,Radius protocol (Remote Authentication Dial In User Service) use for authentication and accounting packets (new-version)
+464,Authentication Server,KERBEROS,Kerberos protocol use to change password
+6881,BitTorrent Peer,BitTorrent,"BitTorrent use P2P communication to exchange files, ports 6881-6889"
+6882,BitTorrent Peer,BitTorrent,"BitTorrent use P2P communication to exchange files, ports 6881-6889"
+6883,BitTorrent Peer,BitTorrent,"BitTorrent use P2P communication to exchange files, ports 6881-6889"
+6884,BitTorrent Peer,BitTorrent,"BitTorrent use P2P communication to exchange files, ports 6881-6889"
+6885,BitTorrent Peer,BitTorrent,"BitTorrent use P2P communication to exchange files, ports 6881-6889"
+6886,BitTorrent Peer,BitTorrent,"BitTorrent use P2P communication to exchange files, ports 6881-6889"
+6887,BitTorrent Peer,BitTorrent,"BitTorrent use P2P communication to exchange files, ports 6881-6889"
+6888,BitTorrent Peer,BitTorrent,"BitTorrent use P2P communication to exchange files, ports 6881-6889"
+6889,BitTorrent Peer,BitTorrent,"BitTorrent use P2P communication to exchange files, ports 6881-6889"
+164,CMIP Agent,CMIP,CMIP Manager (Common Management Information Protocol) asking CMIP Agent (smip-agent protocol - 164)
+163,CMIP Manager,CMIP,CMIP agent (Common Management Information Protocol) asking CMIP Manager (smip-man protocol - 163)
+706,Conference Server,SILC,SILC protocol (Secure Internet Live Conferencing) provides secure synchronous conferencing services (very much like IRC) over the Internet
+630,Database Server,RDA,RDA protocol (Remote Database Access) use for access to remote database server
+67,DHCP Server,DHCP,DHCP protocol (Dynamic Host Configuration Protocol-67) using DHCP server for communication with client (END DEVICE)
+547,DHCP Server,DHCPv6-server,DHCPv6-server protocol using DHCP server for communication with client (END DEVICE)
+647,DHCP Server,DHCP-FAILOVER,"DHCP-FAILOVER protocol is a new feature that enables two Microsoft DHCP servers to share service availability information with each other, providing DHCP high availability. DHCP failover works by replicating IP address leases and settings in one or more DHCP scopes from a primary DHCP server to a failover partner server"
+847,DHCP Server,DHCP-FAILOVER,"DHCP-FAILOVER protocol is a new feature that enables two Microsoft DHCP servers to share service availability information with each other, providing DHCP high availability. DHCP failover works by replicating IP address leases and settings in one or more DHCP scopes from a primary DHCP server to a failover partner server"
+389,Dictionary Server,LDAP,LDAP protocol (Lightweight Directory Access Protocol) is use to access Dictionary Server (servers for long time safe data)
+636,Dictionary Server,LDAPS,LDAPS protocol (LDAP over TLS/SSL) use to secure access dictionary server
+674,Dictionary Server,ACAP,"ACAP protocol (Application Configuration Access Protocol) use for synchronization general configuration and preference data, similar to LDAP but not popular"
+53,DNS Server,DNS,DNS protocol (Domain Name System) used to translate IP address to domain name (main function)
+68,DHCP Client,DHCP,DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+546,DHCP Client,DHCPv6-client,DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+666,End Device,DOOM,Port 666 is using for multiplayer DOOM games
+20,File Server,FTP,FTP protocol (File Transfer Protocol) use for file transfer (data)
+21,File Server,FTP,FTP protocol (File Transfer Protocol) use for file transfer (command)
+69,File Server,TFTP,TFTP protocol (Trivial File Transfer Protocol) use for file transfer
+115,File Server,SFTP,SFTP protocol (Secure File Transfer Protocol) use for file transfer
+152,File Server,BFTP,BFTP (Background File Transfer Protocol) protocol use for file transfer
+556,File Server,RFS,RFS protocol (Remote File Sharing) is using by Unix device to share files over the network
+564,File Server,9PFS,9PFX protocol (Plan 9 Filesystem Protocol) used for file transfer
+591,File Server,HTTP-ALT,"FileMaker use port number 591 (http-alt) like alternate to http port 80, if port 80 is in use by another application"
+662,File Server,PFTP,PFTP protocol use for data transfer
+989,File Server,FTPS,FTPS protocol (File Transfer Protocol) use for file transfer (data) over TLS/SSl
+990,File Server,FTPS,FTPS protocol (File Transfer Protocol) use for file transfer (command) over TLS/SSl
+3820,File Server,SCP,SCP protocol (Secuse Copy) use for file transfer
+1761,File Server,CFT,"CFT portocol (Cross File Transfer) use for file transfer, specificly in Europe in bank and financial institutes"
+2181,File Server,EForward,"EForward protocol use for file transfer, originaly P2P protocol but changed to server/client"
+102,File Server,FTAM,FTAM protocol (File Transfer Access and Management) use to file transfer
+4800,File Server,FTAM,FTAM protocol (File Transfer Access and Management) use to file transfer
+30000,File Server,HULFT,HULTF protocol (Host Unix Linkage File Transfer) use for file transfer
+5402,File Server,MFTP,MFTP protocol (Multicast File Transfer Protocol) use for file transfer
+3305,File Server,OFTP,OFTP protocol (Odette File Transfer Protocol) use for file transfer
+6619,File Server,OFTP2,OFTP2 protocol (Odette File Transfer Protocol) use for file transfer
+487,File Server,SAFT,SAFT protocol (Simple Asynchronous File Transfer) use for file transfer
+540,File Server,UUCP,UUCP protocol (Unix-to-Unix Copy) use for file transfer
+548,File Server,AFP,"AFP protocol (Apple Filing Protocol) use for AppleShare, Personal File Sharing, Apple File Service"
+42,Host Name Server,HNS,
+280,HTTP Manager,HTTP,HTTP Manager is HTTP variant of SNMP and CMIP Manager
+194,Chat Server,IRC,IRC (Internet Relay Chat) protocol can be use for communication over network but IRC protocol was added to 6667 (6660-6667 and 7000) becouse can be run without root priviledges
+6665,Chat Server,ICRU,"IRC (Internet Relay Chat) for Users protocol is using for communication over network (skype,...)"
+6666,Chat Server,ICRU,"IRC (Internet Relay Chat) for Users protocol is using for communication over network (skype,...)"
+6667,Chat Server,ICRU,"IRC (Internet Relay Chat) for Users protocol is using for communication over network (skype,...)"
+6668,Chat Server,ICRU,"IRC (Internet Relay Chat) for Users protocol is using for communication over network (skype,...)"
+6669,Chat Server,ICRU,"IRC (Internet Relay Chat) for Users protocol is using for communication over network (skype,...)"
+1863,Chat Server,MSNP,MSNP protocol is used by MNS Messenger for chat communication with Server
+5190,Chat Server,AOL,AOL protocol s used by ICQ for chat communication with server AOL/ICQ
+5222,Chat Server,XMPP,XMPP protocol is used by Facebook Chat 
+9000,Chat Server,cslistener,Cisco Webex communication with their multimedia server on this port
+531,Chat Server,IRC,Internet Relay Chat
+603,ID Entity,IDXP,IDXP protocol (Intrusion Detection Exchange Protocol) for exchanging data between intrusion detection entities
+514,Log Server,SYSLOG,SYSLOG protocol use for log server (PS: Can be also File Server by OFTP protocol on same port 514)
+601,Log Server,SYSLOG-CONN,SYSLOG-CONN protocol is used in application for gives information about devises
+660,Mac OS X,MAC-SRV-ADMIN,"MAC-SRV-ADMIN protocol is Server administration tools for Mac OS X Server v10.4 or earlier, including AppleShare IP"
+687,Mac OS X,asipregistry,"asipregistry protocol is Server administration tools for Mac OS X Server v10.6 or earlier, including AppleShare IP"
+1701,Mac OS X,L2TP,L2TP protocol use for macOS Server VPN service
+1723,Mac OS X,PPTP,PPTP protocol use for macOS Server VPN service
+25,Mail server,SMTP,SMTP protocol (Simple Mail Transfer Protocol) use for mail services
+109,Mail Server,POP2,POP2 protocol (Post Office Protocol) use for mail services
+110,Mail Server,POP3,POP3 protocol (Post Office Protocol) use for mail services
+143,Mail Server,IMAP,IMAP protocol version 4 (Internet Message Access Protocol) use for mail services
+209,Mail Server,QMTP,QMTP protocol use for mail services
+220,Mail Server,IMAP3,IMAP3 protocol use for mail services
+366,Mail Server,SMTP,ODMR protocol is variant of SMTP protocol for mail servicies
+406,Mail Server,IMSP,IMSP protocol use for mail services
+465,Mail Server,SMTPS,SMTPS protocol (SMTP with TLS/SSL) use for mail services
+628,Mail Server,QMQP,QMQP protocol (Quick Mail Queueing Protocol) use for mail services
+656,Mail Server,SPMP,SPMP protocol (Shortest Path Mailing Protocol) use for mailing services
+993,Mail Server,IMAPS,IMAPS protocol version 4 (Internet Message Access Protocol) use for mail services ovet TLS/SSl
+995,Mail Server,POP3S,POP3S protocol (Post Office Protocol) use for mail services over TLS/SSL
+626,Mail Server,ASIA,ASIA protocol (AppleShare Imap Admin) use for IMAP administration (Mac OS X Server v10.2.8 or earlier)
+144,Mobile device,UMA,UMA protocol (Unlicensed Mobile Access) is using by mobile device (or device with SIM card) to access GSM and GPRS mobile services
+500,Mobile device,Wifi Calling,Wifi Calling use on mobile device
+4500,Mobile device,Wifi Calling,Wifi Calling use on mobile device
+587,MSA Agent,ESMTP,MSA (Mail Submission Agent) is computer program or software agent that receives email from mail user agent (MUA) and cooperates with mail transfer agent (MTA)
+137,NetBIOS,SMB,"SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows"
+138,NetBIOS,SMB,"SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows"
+139,NetBIOS,SMB,"SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows"
+445,NetBIOS,SMB,"SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows"
+830,Network device,NETCONF,NETCONF protocol use for manage/configure network device over SSH
+831,Network device,NETCONF,NETCONF protocol use for manage/configure network device over BEEP
+832,Network device,NETCONF,NETCONF protocol use for manage/configure network device for SOAP over HTTPS
+833,Network device,NETCONF,NETCONF protocol use for manage/configure network device for SOAP over BEEP
+119,News Server,NNTP,NNTP protocol (Network News Transfer Protocol) used for transporting Usenet news articles between news servers and for reading and posting articles bz end user client applications
+563,News Server,NNTPS,NNTPS protocol (Network News Transfer Protocol over TLS) used for transporting Usenet news articles between news servers and for reading and posting articles bz end user client applications
+433,News Server,NNSP,NNSP protocol (Network News Server Protocol) used for bulk transfer of articles from one server to another
+701,Optical Network Device,LMP,LMP protocol (Link Management Protocol) is designed to ease the configuration and management of optical network devices
+106,Password Server,3COM-TSMUX,Apple macOS use port 106 for macOS Server Password Server
+92,Printer,NPP,NPP protocol (Network Printing Protocol) use for printer services
+631,Printer,IPP,IPP protocol (Internet Printing Protocol) use for communication with printer or printer servers
+515,Printer,LPD,LPD protocol (Line Printer Deamon) use for communication with printer
+9100,Printer,AppSocket,AppSocket use for communication with printer or printer servers
+657,RMC Deamon,RMC,"RMC (Resource Monitoring and Control) subsystem is a generalized framework for managing, monitoring, and manipulating resources"
+179,Router,BGP,Router using BGP protocol for exchange routing information
+520,Router,RIP,RIP protocol use for exchange routing information
+521,Router,RIPng,RIPng protocol use for exchange routing information
+646,Router,LDP,LDP protocol (Label Distribution Protocol) use by routers to exchange label mapping information
+711,Router,TDP,TDP protocol (Tag Distribution Protocol) use by cisco routers to exchange label mapping information
+169,Router,SEND,SEND protocol (Secure Neighbor Discovery) use to find other network devices (routers) in IPv6 network
+38,Router,RAP,RAP protocol (Router Access Protocol) used for distributing routing information at all levels of the Internet
+584,Router,DLEP,DLEP protocol (Dynamic Link Exchange Protocol) use for exchange routing information over
+89,Router,OSPF,"OSPF does not use a TCP/IP transport protocol (UDP, TCP), but is encapsulated directly in IP datagrams with protocol number 89"
+161,SNMP Agent,SNMP,SNMP Manager request the SNMP Agent using protocol SNMP on port 161 (snmp - Simple Network Management Protocol)
+199,SNMP Agent,SMUX,SNMP Agent listening on SMUX port (SNMP multiplex)
+705,SNMP AgentX,AGENTX,AgentX protocol allows management of Simple Network Management Protocol objects defined by different processes via a single master agent (AgentX)
+162,SNMP Manager,SNMP,SNMP Agent set trap on the SNMP Manager using protocol SNMP on port 162 (snmptrap - Simple Network Management Protocol)
+860,Storage Device,iSCSI,iSCSI protocol (Internet Small Computer Systems Interface) use to access to storage device on remote servers
+873,Storage Device,RSYNC,RSYNC protocol for efficiently transferring and synchronizing files between a computer and an external hard drive
+10000,Storage Device,NDMP,NDMP protocol (Network Data Management Protocol) use to exchange data between NAS and backup device
+554,Streaming Server,RTSP,"RTSP protokol (Real Time Streaming Protocol) is use by streaming platform (server) to stream video (Youtube,..) to client (web browser, Skype, Spotify,...), also for IP cameras"
+1935,Streaming Server,RTMP,RTMP protocol (Real Time Messaging Protocol) use by Flash Player to connect to streaming server  Adobe Media Server
+1220,Streaming Server,QT Server Admin,QT Server Admin protocol is for Administration of QuickTime Streaming Server
+7070,Streaming Server,RTSP,"RTSP protocol (Real Time Streaming Protocol) is use for streaming (QuickTime Streaming Server), also use for IP cameras"
+123,Time Server,NTP,NTP (Network Time Protocol) protocol use for time set over network
+525,Time Server,TIMED,TIMED protocol use for time set over network
+319,Time Server,PTP,PTP protocol use for time set over network
+604,TUNNEL entity,TUNNEL,TUNNEL protocol is using for create tunnel from one private network to another througt the internet
+512,UNIX,EXEC,Authentication for remote process execution (TCP) and Asynchrous mail client (biff) and service (comsat) (UDP)
+513,UNIX,login,Remote Login (rlogin)
+517,UNIX,TALK,Talk remote calling service and client
+518,UNIX,NTALK,Network talk (ntalk) remote calling service and client
+519,UNIX,UTIME,UNIX time (utime) protocol
+526,UNIX,TEMPO,Tempo
+576,VoIP telephone,IPCD,IPCD protocol (Internet Protocol Device Control) for voice over Internet Protocol (VoIP) telephony
+583,VoIP telephone,PHILIPS-VC,PHILIPS-VC protocol (Philips Video-Conferencing) use for video conference over network
+5060,VoIP telephone,SIP,SIP protocol (Session Initiation Protocol) use for telephony communication over network
+5061,VoIP telephone,SIP-TLS,SIP-TLS protocol (Session Initiation Protocol over TLS) use for telephony communication over network
+1720,VoIP telephone,H.323,H.323 protocol use fot telephony communication over network (audio/visual)
+2727,VoIP telephone,MGCP,MGCP protocol (Media Gataway Control Protocol) use for gateway of VoIP privatenetwork to publick VoIP network
+2427,VoIP telephone,MGCP,MGCP protocol (Media Gataway Control Protocol) use for gateway of VoIP privatenetwork to publick VoIP network
+2944,VoIP telephone,H.248,H.248 protocol use for gateway of VoIP privatenetwork to publick VoIP network
+2945,VoIP telephone,H.248,H.248 protocol use for gateway of VoIP privatenetwork to publick VoIP network
+4569,VoIP telephone,IAX,IAX protocol (Inter-Asterisk eXchange) use for transfer VoIP telephony call from one VoIP server to another
+8080,WEB SERVER,HTTP,HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data (Alternate port)
+443,WEB Server,HTTPS,HTTPS protocol using for web servers (http over tls/ssl)
+80,WEB SERVER,HTTP,HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+8443,WEB Server,HTTPS,HTTPS protocol using for web servers (http over tls/ssl)  (alternate port)
+9389,Windows,ADWS,ADWS protocols (Active Directory Web Services) and Active Directory Management Gateway Service for WIndows Server
+3269,Windows,Global Catalog,Global catalog for Windows Server
+42424,Windows,ASP.NET Session State,ASP.NET Session State for Windows Web Server
+3343,Windows,Cluster Services,Cluster Services for Windows Server
+2535,Windows,MADCAP,"MADCAP protocol (Multicast Address Dynamic Client Allocation Protocol) is designed to allow for automatic dynamic assignment of multicast addresses, by Microsoft"
+5722,Windows,RPC,RPC protocol (Remote Procedure Call) on port 5722 is used by microsoft Windows Servers (Microsoft DFS Replication Service)
+6600,Windows,Hyper-V Live Migration,Live Migration on Hyper-V in Windows Servers
+2172,Windows,Configuration Storage (replication),Configuration Storage (replication) on Windows Server
+2171,Windows,Configuration Storage (domain),Configuration Storage (domain) on Windows Server
+1745,Windows,Firewall Client Control Channel,Firewall Client Control Channel on Windows Server
+2173,Windows,Configuration Storage (workgroup),Configuration Storage (workgroup) on Windows Server
+3847,Windows,Firewall Control Channel,Firewall Control Channel on Windows Server
+2175,Windows,Web Management,Web Management on Windows Server
+2174,Windows,Intra Array,Intra Array on Windows Server
+1801,Windows,MSMQ,MSMQ (Message Queuing system service) on Windows Server
+2101,Windows,MSMQ-DCs,MSMQ-DCs (Message Queuing system service) on Windows Server
+2107,Windows,MSMQ-Mgmt,MSMQ-Mgmt (Message Queuing system service) on Windows Server
+3527,Windows,MSMQ-Ping,MSMQ-Ping (Message Queuing system service) on Windows Server
+4011,Windows,BINL,BINL (Boot Information Negotiation Layer)
+2103,Windows,MSMQ-RPC,MSMQ-RPC (Message Queuing system service) on Windows Server
+3389,Windows,Terminal Services,NetMeeting Remote Desktop Sharing use on Windows OS for remote desktop from another personal computer over a corporate intranet
+2105,Windows,MSMQ-RPC,MSMQ-RPC (Message Queuing system service) on Windows Server
+654,Wireless device,AODV,AODV protocol (Ad hoc On-Demand Distance Vector Routing) use in wireless ad hoc network to exchange routing information between devices in decentralized wireless networks
+712,Wireless device,TBRPF,TBRPF protocol is link-state routing protocol for wireles ad-hoc networks
