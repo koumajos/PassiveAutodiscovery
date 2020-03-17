@@ -9,19 +9,26 @@ The output of the program must be obtained information and graph of client depen
 Ideal Operating system is CentOS 7 or 8
 * Install on Centos 8:
   * install some stuffs
+  
         yum install git
+
   * clone NEMEA repository
+
         git clone --recursive https://github.com/CESNET/nemea
+
   * install some depenencies
+
         yum install -y bc autoconf automake gcc gcc-c++ libtool libxml2-devel make pkg-config libpcap-devel libidn-devel bison flex
 
-  * nenainstaluje se přes yum - libpcap-devel a libidn-devel
+ * nenainstaluje se přes yum - libpcap-devel a libidn-devel
     => nutnost nainstalovat jinak, například:
 
   * libpcap-devel:
+
         https://centos.pkgs.org/8/centos-powertools-x86_64/libpcap-devel-1.9.0-3.el8.x86_64.rpm.html
 
   * libidn-devel:
+ 
         https://centos.pkgs.org/8/centos-powertools-x86_64/libidn-devel-1.34-5.el8.x86_64.rpm.html
 
   * commands:
