@@ -3,18 +3,67 @@ import sys
 import os
 import ipaddress
 import sqlite3
-
+import json
+#=======================================================================================================================================
+#=======================================================================================================================================
+#=======================================================================================================================================
+#Create graph of local to local dependencies
+def GraphLocalDependencies(cursor, SQLiteConnection):
+    None
+#=======================================================================================================================================
+#Create graph of global to local dependencies
+def GraphGlobalDependencies(cursor, SQLiteConnection):
+    None
+#=======================================================================================================================================
+#Analyze single device   
+def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):    
+    print("######################################################################") 
+    print("DeviceID: ", DeviceID)
+    print("  IP: ", IP)
+    #==================================================================
+    createJson = {  "IP": "", 
+                    "MAC": "", 
+                    "Vendor": "", 
+                    "Labels": None, 
+                    "DHCP": None, 
+                    "LocalDependencies": None, 
+                    "LocalProcent": None, 
+                    "GlobalDependencies": None, 
+                    "GlobalProcent": None
+                  }
+    #==================================================================
+    cursor.execute("SELECT * FROM MAC WHERE IP='{ip}' AND LastUse='{lu}'".format(ip=IP, lu=""))
+    row = cursor.fetchone()
+    if row:
+        print("  MAC: ", row[2], end="")
+        mac = map(''.join, zip(*[iter(row[2])]*8))
+        cursor.execute("SELECT * FROM VendorsMAC WHERE VendorMAC='{m}'".format(m=list(mac)[0].upper()))
+        row = cursor.fetchone()
+        print(" | Vendor: ", row[3], ", ", row[4])
+    else:
+        print("  MAC: ---")
     
-def AnalyzeLocalDevice(LocalDevice, cursor, SQLiteConnection):
-    print("Device: ", LocalDevice[0])
+#    print("")
 #=======================================================================================================================================
 #Main function of Analyzer
 def DoAnalyze(SQLiteConnection):
+    #==================================================================
+    creteJSON = {   "Name": "DeppendencyMapping", 
+                    "DateAnalyze": "", 
+                    "NumberDevice": 0
+                    "Routers": None
+                }    
+    #==================================================================
     cursor = SQLiteConnection.cursor()
+    DeviceID = 1
+    #==================================================================
     cursor.execute("SELECT * FROM LocalDevice")
     LocalDevices = cursor.fetchall()
     for LocalDevice in LocalDevices:
-        AnalyzeLocalDevice(LocalDevice, cursor, SQLiteConnection)
+        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection)
+        DeviceID = DeviceID + 1
+    GraphLocalDependencies(cursor, SQLiteConnection)
+    GraphGlobalDependencies(cursor, SQLiteConnection)
 #=======================================================================================================================================
 # Main loop
 try:    #connect to a database
