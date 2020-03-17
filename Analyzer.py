@@ -3,6 +3,7 @@ import sys
 import os
 import ipaddress
 import sqlite3
+import time
 import json
 #=======================================================================================================================================
 #=======================================================================================================================================
@@ -15,23 +16,8 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
 def GraphGlobalDependencies(cursor, SQLiteConnection):
     None
 #=======================================================================================================================================
-#Analyze single device   
-def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):    
-    print("######################################################################") 
-    print("DeviceID: ", DeviceID)
-    print("  IP: ", IP)
-    #==================================================================
-    createJson = {  "IP": "", 
-                    "MAC": "", 
-                    "Vendor": "", 
-                    "Labels": None, 
-                    "DHCP": None, 
-                    "LocalDependencies": None, 
-                    "LocalProcent": None, 
-                    "GlobalDependencies": None, 
-                    "GlobalProcent": None
-                  }
-    #==================================================================
+#MAC address and vendor adding
+def MAC(DeviceID, IP, cursor, SQLiteConnection):
     cursor.execute("SELECT * FROM MAC WHERE IP='{ip}' AND LastUse='{lu}'".format(ip=IP, lu=""))
     row = cursor.fetchone()
     cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP) )
@@ -49,7 +35,9 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):
         cursor.execute("SELECT * FROM VendorsMAC WHERE VendorMAC='{m}'".format(m=list(mac)[0].upper()))
         row = cursor.fetchone()
         print(" | Vendor: ", row[3], ",", row[4])
-    #==================================================================
+#=======================================================================================================================================
+#Labels adding   
+def LABELS(DeviceID, IP, cursor, SQLiteConnection):
     print("Labels:")
     cursor.execute("SELECT * FROM LocalServices WHERE IP='{ip}'".format(ip=IP) )
     Labels = cursor.fetchall()
@@ -71,34 +59,146 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):
         tmp = 1
         print(" [ Router ]")    
     if tmp == 0:
-        print("  ---")
-    #==================================================================
+        print("  ---")    
+#=======================================================================================================================================
+#DHCP records adding   
+def DHCP(DeviceID, IP, cursor, SQLiteConnection):
     print("DHCP:")
-    cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='{ip}'".format(ip=IP) )
+    cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='{ip}' ORDER BY Time DESC".format(ip=IP) )
     DHCPs = cursor.fetchall()    
     if DHCPs:
         for DHCP in DHCPs:
-            print("  ", DHCP)
+            print("  Server: ", DHCP[2], " Time:", time.ctime(float(DHCP[3])) )
     else:
         print("  ---")    
-    #==================================================================    
+#=======================================================================================================================================
+#LocalDependencies records adding  
+def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
     print("Local Dependencies:")    
-    cursor.execute("SELECT * FROM Dependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}'".format(ipo=IP, ipt=IP) )
+    cursor.execute("SELECT * FROM Dependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumBytes DESC".format(ipo=IP, ipt=IP) )
     Dependencies = cursor.fetchall()    
     if Dependencies:    
-        for Dependency in Dependencies:            
-            print("  ",Dependency)
+        for Dependency in Dependencies:
+            SrcIP = ipaddress.ip_address(Dependency[1])
+            cursor.execute("SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
+            ServiceS = cursor.fetchone()                
+            cursor.execute("SELECT * FROM Services WHERE PortNumber='{portD}'".format(portD=Dependency[4]) )
+            ServiceD = cursor.fetchone()    
+            if ServiceS:
+                if SrcIP == DeviceIP:
+                    print("  -> ", Dependency[2], end='')
+                    if ServiceS[1] == "DHCP Client":
+                        print("  is [ DHCP Server ]  -  Number of packets: ", Dependency[5])
+                        continue
+                    else:
+                        print(" need", end='')
+                else:               
+                    print("  -> ", Dependency[1], " is", end='')
+                print(" [", ServiceS[1], "]  -  Number of packets: ", Dependency[5])            
+            elif ServiceD:
+                if SrcIP == DeviceIP:
+                    print("  -> ", Dependency[2], " is", end='')
+                else:               
+                    print("  -> ", Dependency[1], " need", end='')
+                print(" [", ServiceD[1], "]  -  Number of packets: ", Dependency[5])                        
+            else:
+                if SrcIP == DeviceIP:
+                    print("  -> ", Dependency[2], " is", end='')
+                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=Dependency[4]) )
+                    PortD = cursor.fetchone()                    
+                    if PortD:
+                        print("  -  ", PortD[1], "  -  Number of packets: ", Dependency[5])
+                    else:
+                        print("  -  ", Dependency[4], "  -  Number of packets: ", Dependency[5])
+                else:               
+                    print("  -> ", Dependency[1], " need", end='')
+                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
+                    PortS = cursor.fetchone()    
+                    if PortS:
+                        print("  -  ", PortS[1], "  -  Number of packets: ", Dependency[5])
+                    else:
+                        print("  -  ", Dependency[3], "  -  Number of packets: ", Dependency[5])
+            #print("  ",Dependency)
     else:
         print("  ---")    
-    #==================================================================
+#=======================================================================================================================================
+#GlobalDependencies records adding  
+def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
     print("Global Dependencies:")    
-    cursor.execute("SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}'".format(ipo=IP, ipt=IP) )
+    cursor.execute("SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumBytes DESC".format(ipo=IP, ipt=IP) )
     GlobalDependencies = cursor.fetchall()
     if GlobalDependencies:    
         for GlobalDependency in GlobalDependencies:
-            print("  ", GlobalDependency)
+            SrcIP = ipaddress.ip_address(GlobalDependency[1])
+            cursor.execute("SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=GlobalDependency[3]) )
+            ServiceS = cursor.fetchone()                
+            cursor.execute("SELECT * FROM Services WHERE PortNumber='{portD}'".format(portD=GlobalDependency[4]) )
+            ServiceD = cursor.fetchone()    
+            if ServiceS:
+                if SrcIP == DeviceIP:
+                    print("  -> ", GlobalDependency[2], end='')
+                    if ServiceS[1] == "DHCP Client":
+                        print("  is [ DHCP Server ]  -  Number of packets: ", GlobalDependency[5])
+                        continue
+                    else:
+                        print(" need", end='')
+                else:               
+                    print("  -> ", GlobalDependency[1], " is", end='')
+                print(" [", ServiceS[1], "]  -  Number of packets: ", GlobalDependency[5])            
+            elif ServiceD:
+                if SrcIP == DeviceIP:
+                    print("  -> ", GlobalDependency[2], " is", end='')
+                else:               
+                    print("  -> ", GlobalDependency[1], " need", end='')
+                print(" [", ServiceD[1], "]  -  Number of packets: ", GlobalDependency[5])                        
+            else:
+                if SrcIP == DeviceIP:
+                    print("  -> ", GlobalDependency[2], " is", end='')
+                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=GlobalDependency[4]) )
+                    PortD = cursor.fetchone()                    
+                    if PortD:
+                        print("  -  ", PortD[1], "  -  Number of packets: ", GlobalDependency[5])
+                    else:
+                        print("  -  ", GlobalDependency[4], "  -  Number of packets: ", GlobalDependency[5])
+                else:               
+                    print("  -> ", GlobalDependency[1], " need", end='')
+                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=GlobalDependency[3]) )
+                    PortS = cursor.fetchone()    
+                    if PortS:
+                        print("  -  ", PortS[1], "  -  Number of packets: ", GlobalDependency[5])
+                    else:
+                        print("  -  ", GlobalDependency[3], "  -  Number of packets: ", GlobalDependency[5])
+            #print("  ", GlobalDependency)
     else:
         print("  ---")
+#=======================================================================================================================================
+#Analyze single device   
+def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):    
+    print("######################################################################") 
+    print("DeviceID: ", DeviceID)
+    print("  IP: ", IP)
+    DeviceIP = ipaddress.ip_address(IP)
+    #==================================================================
+    createJson = {  "IP": "", 
+                    "MAC": "", 
+                    "Vendor": "", 
+                    "Labels": None, 
+                    "DHCP": None, 
+                    "LocalDependencies": None, 
+                    "LocalProcent": None, 
+                    "GlobalDependencies": None, 
+                    "GlobalProcent": None
+                  }
+    #==================================================================
+    MAC(DeviceID, IP, cursor, SQLiteConnection)
+    #==================================================================
+    LABELS(DeviceID, IP, cursor, SQLiteConnection)
+    #==================================================================
+    DHCP(DeviceID, IP, cursor, SQLiteConnection)
+    #==================================================================    
+    LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection)
+    #==================================================================
+    GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection)    
     #==================================================================
     
 #    print("")
