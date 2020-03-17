@@ -34,14 +34,72 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):
     #==================================================================
     cursor.execute("SELECT * FROM MAC WHERE IP='{ip}' AND LastUse='{lu}'".format(ip=IP, lu=""))
     row = cursor.fetchone()
+    cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP) )
+    Router = cursor.fetchone()
+    mac = ""    
     if row:
         print("  MAC: ", row[2], end="")
         mac = map(''.join, zip(*[iter(row[2])]*8))
-        cursor.execute("SELECT * FROM VendorsMAC WHERE VendorMAC='{m}'".format(m=list(mac)[0].upper()))
-        row = cursor.fetchone()
-        print(" | Vendor: ", row[3], ", ", row[4])
+    elif Router:
+        print("  MAC: ", Router[1], end="")
+        mac = map(''.join, zip(*[iter(Router[1])]*8))    
     else:
         print("  MAC: ---")
+    if mac != "":
+        cursor.execute("SELECT * FROM VendorsMAC WHERE VendorMAC='{m}'".format(m=list(mac)[0].upper()))
+        row = cursor.fetchone()
+        print(" | Vendor: ", row[3], ",", row[4])
+    #==================================================================
+    print("Labels:")
+    cursor.execute("SELECT * FROM LocalServices WHERE IP='{ip}'".format(ip=IP) )
+    Labels = cursor.fetchall()
+    tmp = 0    
+    if Labels:
+        tmp = 1        
+        for Label in Labels:
+            cursor.execute("SELECT * FROM Services WHERE PortNumber='{port}'".format(port=Label[0]) )
+            Service = cursor.fetchone()            
+            print(" [", Service[1], "]  - ", Service[3])
+    cursor.execute("SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(ipo=IP, t="WEB SERVER") )
+    WebServer = cursor.fetchone()
+    if WebServer:
+        tmp = 1
+        print(" [ End Device ]  - PC, Mobile Phone, Server, ... (everything with web browser)")
+    cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP) )
+    Router = cursor.fetchone()
+    if Router:
+        tmp = 1
+        print(" [ Router ]")    
+    if tmp == 0:
+        print("  ---")
+    #==================================================================
+    print("DHCP:")
+    cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='{ip}'".format(ip=IP) )
+    DHCPs = cursor.fetchall()    
+    if DHCPs:
+        for DHCP in DHCPs:
+            print("  ", DHCP)
+    else:
+        print("  ---")    
+    #==================================================================    
+    print("Local Dependencies:")    
+    cursor.execute("SELECT * FROM Dependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}'".format(ipo=IP, ipt=IP) )
+    Dependencies = cursor.fetchall()    
+    if Dependencies:    
+        for Dependency in Dependencies:            
+            print("  ",Dependency)
+    else:
+        print("  ---")    
+    #==================================================================
+    print("Global Dependencies:")    
+    cursor.execute("SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}'".format(ipo=IP, ipt=IP) )
+    GlobalDependencies = cursor.fetchall()
+    if GlobalDependencies:    
+        for GlobalDependency in GlobalDependencies:
+            print("  ", GlobalDependency)
+    else:
+        print("  ---")
+    #==================================================================
     
 #    print("")
 #=======================================================================================================================================
@@ -50,7 +108,7 @@ def DoAnalyze(SQLiteConnection):
     #==================================================================
     creteJSON = {   "Name": "DeppendencyMapping", 
                     "DateAnalyze": "", 
-                    "NumberDevice": 0
+                    "NumberDevice": 0,
                     "Routers": None
                 }    
     #==================================================================
