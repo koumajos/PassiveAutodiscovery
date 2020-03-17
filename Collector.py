@@ -183,6 +183,8 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection):
     cursor.execute("SELECT * FROM LocalDevice WHERE LocalDevice.IP='%s'" % IP)
     row = cursor.fetchone()
     if row:
+        cursor.execute("UPDATE LocalDevice SET LastCom={LC} WHERE IP='{ip}'".format(LC=TIME, ip=IP) )
+        SQLiteConnection.commit()
         return
     else:
         print("New local device: ", IP)
