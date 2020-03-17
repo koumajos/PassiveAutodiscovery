@@ -38,7 +38,7 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection):
 #=======================================================================================================================================
 #Labels adding   
 def LABELS(DeviceID, IP, cursor, SQLiteConnection):
-    print("Labels:")
+    print("  Labels:")
     cursor.execute("SELECT * FROM LocalServices WHERE IP='{ip}'".format(ip=IP) )
     Labels = cursor.fetchall()
     tmp = 0    
@@ -47,38 +47,99 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection):
         for Label in Labels:
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{port}'".format(port=Label[0]) )
             Service = cursor.fetchone()            
-            print(" [", Service[1], "]  - ", Service[3])
+            print("   [", Service[1], "]  - ", Service[3])
     cursor.execute("SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(ipo=IP, t="WEB SERVER") )
     WebServer = cursor.fetchone()
     if WebServer:
         tmp = 1
-        print(" [ End Device ]  - PC, Mobile Phone, Server, ... (everything with web browser)")
+        print("   [ End Device ]  - PC, Mobile Phone, Server, ... (everything with web browser)")
     cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP) )
     Router = cursor.fetchone()
     if Router:
         tmp = 1
-        print(" [ Router ]")    
+        print("   [ Router ]")    
     if tmp == 0:
-        print("  ---")    
+        print("    ---")    
 #=======================================================================================================================================
 #DHCP records adding   
 def DHCP(DeviceID, IP, cursor, SQLiteConnection):
-    print("DHCP:")
+    print("  DHCP:")
     cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='{ip}' ORDER BY Time DESC".format(ip=IP) )
     DHCPs = cursor.fetchall()    
     if DHCPs:
         for DHCP in DHCPs:
-            print("  Server: ", DHCP[2], " Time:", time.ctime(float(DHCP[3])) )
+            print("    Server: ", DHCP[2], " Time:", time.ctime(float(DHCP[3])) )
     else:
-        print("  ---")    
+        print("    ---")
+#====================================================================================================================================== 
+#Stats
+def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
+    cursor.execute("SELECT * FROM Services WHERE PortNumber={po}".format(po=Dependency[3]) )
+    servicestat = cursor.fetchone()    
+    if servicestat:
+        if servicestat[2] in LocalStatistic:
+            LocalStatistic[servicestat[2]] = LocalStatistic[servicestat[2]] + Dependency[5]
+        else:
+            LocalStatistic[servicestat[2]] = Dependency[5]
+    else:               
+        cursor.execute("SELECT * FROM Ports WHERE PortNumber='{po}'".format(po=Dependency[3]) )
+        stats = cursor.fetchall()    
+        if stats:        
+            for stat in stats:
+                if stat[1] == '':
+                    break                    
+                if stat[1] in LocalStatistic:
+                    LocalStatistic[stat[1]] = LocalStatistic[stat[1]] + Dependency[5]
+                else:
+                    LocalStatistic[stat[1]] = Dependency[5]    
+                break
+    #==========================================
+    cursor.execute("SELECT * FROM Services WHERE PortNumber={pt}".format(pt=Dependency[4]) )
+    servicestat = cursor.fetchone()    
+    if servicestat:
+        if servicestat[2] in LocalStatistic:
+            LocalStatistic[servicestat[2]] = LocalStatistic[servicestat[2]] + Dependency[5]
+        else:
+            LocalStatistic[servicestat[2]] = Dependency[5]        
+    else:               
+        cursor.execute("SELECT * FROM Ports WHERE PortNumber='{pt}'".format(pt=Dependency[4]) )
+        stats = cursor.fetchall()    
+        if stats:        
+            for stat in stats:
+                if stat[1] == '':
+                    break                    
+                if stat[1] in LocalStatistic:
+                    LocalStatistic[stat[1]] = LocalStatistic[stat[1]] + Dependency[5]
+                else:
+                    LocalStatistic[stat[1]] = Dependency[5]
+                break    
 #=======================================================================================================================================
 #LocalDependencies records adding  
-def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
-    print("Local Dependencies:")    
+def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, cursor, SQLiteConnection):
+    print("  Local Dependencies:")    
     cursor.execute("SELECT * FROM Dependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumBytes DESC".format(ipo=IP, ipt=IP) )
     Dependencies = cursor.fetchall()    
     if Dependencies:    
         for Dependency in Dependencies:
+            Stats(LocalStatistic, Dependency, cursor, SQLiteConnection)
+            #==========================================
+            cursor.execute("SELECT * FROM Services WHERE PortNumber={pt}".format(pt=Dependency[4]) )
+            servicestat = cursor.fetchone()    
+            if servicestat:
+                if servicestat[2] in LocalStatistic:
+                    LocalStatistic[servicestat[2]] = LocalStatistic[servicestat[2]] + 1
+                else:
+                    LocalStatistic[servicestat[2]] = 1        
+            else:               
+                cursor.execute("SELECT * FROM Ports WHERE PortNumber='{pt}'".format(pt=Dependency[4]) )
+                stats = cursor.fetchall()    
+                for stat in stats:
+                    if stat[1] in LocalStatistic:
+                        LocalStatistic[stat[1]] = LocalStatistic[stat[1]] + 1
+                    else:
+                        LocalStatistic[stat[1]] = 1    
+                    break
+            #==========================================
             SrcIP = ipaddress.ip_address(Dependency[1])
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
             ServiceS = cursor.fetchone()                
@@ -86,24 +147,24 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
             ServiceD = cursor.fetchone()    
             if ServiceS:
                 if SrcIP == DeviceIP:
-                    print("  -> ", Dependency[2], end='')
+                    print("    -> ", Dependency[2].ljust(20, ' '), end='')
                     if ServiceS[1] == "DHCP Client":
                         print("  is [ DHCP Server ]  -  Number of packets: ", Dependency[5])
                         continue
                     else:
                         print(" need", end='')
                 else:               
-                    print("  -> ", Dependency[1], " is", end='')
+                    print("    -> ", Dependency[1].ljust(20, ' '), " is", end='')
                 print(" [", ServiceS[1], "]  -  Number of packets: ", Dependency[5])            
             elif ServiceD:
                 if SrcIP == DeviceIP:
-                    print("  -> ", Dependency[2], " is", end='')
+                    print("    -> ", Dependency[2].ljust(20, ' '), " is", end='')
                 else:               
-                    print("  -> ", Dependency[1], " need", end='')
+                    print("    -> ", Dependency[1].ljust(20, ' '), " need", end='')
                 print(" [", ServiceD[1], "]  -  Number of packets: ", Dependency[5])                        
             else:
                 if SrcIP == DeviceIP:
-                    print("  -> ", Dependency[2], " is", end='')
+                    print("    -> ", Dependency[2].ljust(20, ' '), " is", end='')
                     cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=Dependency[4]) )
                     PortD = cursor.fetchone()                    
                     if PortD:
@@ -111,7 +172,7 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
                     else:
                         print("  -  ", Dependency[4], "  -  Number of packets: ", Dependency[5])
                 else:               
-                    print("  -> ", Dependency[1], " need", end='')
+                    print("    -> ", Dependency[1].ljust(20, ' '), " need", end='')
                     cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
                     PortS = cursor.fetchone()    
                     if PortS:
@@ -120,15 +181,17 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
                         print("  -  ", Dependency[3], "  -  Number of packets: ", Dependency[5])
             #print("  ",Dependency)
     else:
-        print("  ---")    
+        print("    ---")    
 #=======================================================================================================================================
 #GlobalDependencies records adding  
-def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
-    print("Global Dependencies:")    
+def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteConnection):
+    print("  Global Dependencies:")    
     cursor.execute("SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumBytes DESC".format(ipo=IP, ipt=IP) )
     GlobalDependencies = cursor.fetchall()
     if GlobalDependencies:    
         for GlobalDependency in GlobalDependencies:
+            Stats(GlobalStatistic, GlobalDependency, cursor, SQLiteConnection)
+            #==========================================
             SrcIP = ipaddress.ip_address(GlobalDependency[1])
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=GlobalDependency[3]) )
             ServiceS = cursor.fetchone()                
@@ -136,24 +199,24 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
             ServiceD = cursor.fetchone()    
             if ServiceS:
                 if SrcIP == DeviceIP:
-                    print("  -> ", GlobalDependency[2], end='')
+                    print("    -> ", GlobalDependency[2].ljust(20, ' '), end='')
                     if ServiceS[1] == "DHCP Client":
                         print("  is [ DHCP Server ]  -  Number of packets: ", GlobalDependency[5])
                         continue
                     else:
                         print(" need", end='')
                 else:               
-                    print("  -> ", GlobalDependency[1], " is", end='')
+                    print("    -> ", GlobalDependency[1].ljust(20, ' '), " is", end='')
                 print(" [", ServiceS[1], "]  -  Number of packets: ", GlobalDependency[5])            
             elif ServiceD:
                 if SrcIP == DeviceIP:
-                    print("  -> ", GlobalDependency[2], " is", end='')
+                    print("    -> ", GlobalDependency[2].ljust(20, ' '), " is", end='')
                 else:               
-                    print("  -> ", GlobalDependency[1], " need", end='')
+                    print("    -> ", GlobalDependency[1].ljust(20, ' '), " need", end='')
                 print(" [", ServiceD[1], "]  -  Number of packets: ", GlobalDependency[5])                        
             else:
                 if SrcIP == DeviceIP:
-                    print("  -> ", GlobalDependency[2], " is", end='')
+                    print("    -> ", GlobalDependency[2].ljust(20, ' '), " is", end='')
                     cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=GlobalDependency[4]) )
                     PortD = cursor.fetchone()                    
                     if PortD:
@@ -161,7 +224,7 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
                     else:
                         print("  -  ", GlobalDependency[4], "  -  Number of packets: ", GlobalDependency[5])
                 else:               
-                    print("  -> ", GlobalDependency[1], " need", end='')
+                    print("    -> ", GlobalDependency[1].ljust(20, ' '), " need", end='')
                     cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=GlobalDependency[3]) )
                     PortS = cursor.fetchone()    
                     if PortS:
@@ -170,7 +233,20 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection):
                         print("  -  ", GlobalDependency[3], "  -  Number of packets: ", GlobalDependency[5])
             #print("  ", GlobalDependency)
     else:
-        print("  ---")
+        print("    ---")
+#=======================================================================================================================================
+#Analyze single device   
+def StatProcent(Statistic):    
+    tmp = 0    
+    for i, j in Statistic.items():
+        tmp = tmp + j
+    #==========================
+    if Statistic == {}:
+        return
+    Statistic = {r: Statistic[r] for r in sorted(Statistic, key=Statistic.get, reverse=True)}
+    print("  Statistical of Local Dependencies:")
+    for i, j in Statistic.items():
+        print("   ", i.ljust(20, ' '), "   %0.2f" % float(j/tmp*100) , "%")
 #=======================================================================================================================================
 #Analyze single device   
 def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):    
@@ -196,9 +272,13 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):
     #==================================================================
     DHCP(DeviceID, IP, cursor, SQLiteConnection)
     #==================================================================    
-    LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection)
+    LocalStatistic = {}    
+    LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, cursor, SQLiteConnection)
+    StatProcent(LocalStatistic)
     #==================================================================
-    GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, cursor, SQLiteConnection)    
+    GlobalStatistic = {}    
+    GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteConnection)    
+    StatProcent(GlobalStatistic)    
     #==================================================================
     
 #    print("")
