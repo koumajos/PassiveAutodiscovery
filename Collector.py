@@ -199,6 +199,10 @@ def collector(rec, SQLiteConnection):
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
     DstIP = ipaddress.ip_address(rec.DST_IP)
     cursor = SQLiteConnection.cursor()
+    if SrcIP.is_multicast or DstIP.is_multicast:
+        return
+    if rec.DST_MAC == "ff:ff:ff:ff:ff:ff" or rec.SRC_MAC == "ff:ff:ff:ff:ff:ff":
+        return    
     if SrcIP.is_private:        #Source Device is in local network
         NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, SQLiteConnection)
         MAC(rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, SQLiteConnection)                
