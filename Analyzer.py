@@ -5,16 +5,109 @@ import ipaddress
 import sqlite3
 import time
 import json
+import math
+#=======================
+from termgraph import termgraph
+import tempfile
+#=======================
+import pandas
+import numpy
+import networkx
+import matplotlib.pyplot as plt
 #=======================================================================================================================================
+#    print("  Graph of local dependencies:")    
+#    cursor.execute("SELECT * FROM Dependencies")
+#    rows = cursor.fetchall()
+#    data = { }
+    #=================================
+#    G = networkx.Graph()        
+    #=================================
+#    for row in rows:
+#        if row[1] in data:
+#            None
+#        else: 
+#            data[row[1]] = row[1]
+#            G.add_node(row[1])
+#        if row[2] in data:
+#            None
+#        else:
+#            data[row[2]] = row[2]
+#            G.add_node(row[2])
+#        edge = (row[1], row[2])
+#        G.add_edge(*edge)
+#    print(G.nodes())
+#    print(G.edges())
+#    networkx.draw(G, with_labesl=True)
+#    plt.savefig("Graph_Local.png")
+#    plt.show()
 #=======================================================================================================================================
+#plot percent graph
+def plot(data):
+    with tempfile.NamedTemporaryFile(mode='a+') as f:
+        # Save data in temporary file
+        for row in data:
+            f.write('\t'.join(map(str, row)) + '\n')
+        # Move cursor in order to make sure that script will
+        # start reading file from the beggining.
+        f.seek(0)
+        # Overwrite args in case if there were some other
+        # arguments passed to the main script
+        #
+        # Additional arguments can be passed in the same way.
+        original_argv = sys.argv
+        sys.argv = [sys.argv[0], f.name]
+        termgraph.main()
+        # Revert back changes to the original arguemnts
+        sys.argv = original_argv
+#=======================================================================================================================================
+#Write json to json file
+def write_json(data, filename): 
+    with open(filename,'w') as f: 
+        json.dump(data, f, indent=4) 
 #=======================================================================================================================================
 #Create graph of local to local dependencies
 def GraphLocalDependencies(cursor, SQLiteConnection):
-    None
+    print("  Graph of local dependencies:")    
+    cursor.execute("SELECT * FROM Dependencies")
+    rows = cursor.fetchall()
+    #=================================
+    plt.figure(1, figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
+    G = networkx.Graph()        
+    for row in rows:
+        G.add_node(row[1])
+        G.add_node(row[2])
+        G.add_weighted_edges_from([(row[1], row[2], row[4])])
+#    print(G.nodes())
+#    print(G.edges())
+    networkx.draw(G, with_labels=True)
+    plt.show()    
+#    plt.savefig("Graph_Local.png")
+#    plt.show()   
 #=======================================================================================================================================
 #Create graph of global to local dependencies
 def GraphGlobalDependencies(cursor, SQLiteConnection):
-    None
+    print("  Graph of global dependencies:")    
+    cursor.execute("SELECT * FROM Global")
+    rows = cursor.fetchall()
+    #=================================
+    plt.figure(2, figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
+    H = networkx.Graph()        
+    for row in rows:
+        if not H.has_node(row[1]):
+            H.add_node(row[1])
+        if not H.has_node(row[2]):        
+            H.add_node(row[2])
+        if not H.has_edge(row[1], row[2]):        
+            H.add_weighted_edges_from([(row[1], row[2], row[4])])
+#    print(H.nodes())
+#    print(H.edges())
+    pos = networkx.spring_layout(H,k=5/math.sqrt(H.order()),iterations=20)
+    networkx.draw(H, with_labels=True)
+    #ax = plt.gca()
+    #ax.collections[0].set_edgecolor("#555555") 
+    plt.show()       
+#   plt.savefig("Graph_Global.png")
+#    plt.show()
 #=======================================================================================================================================
 #MAC address and vendor adding
 def MAC(DeviceID, IP, cursor, SQLiteConnection):
@@ -74,6 +167,13 @@ def DHCP(DeviceID, IP, cursor, SQLiteConnection):
 #====================================================================================================================================== 
 #Stats
 def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
+    print(LocalStatistic)
+    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{po}'".format(po=Dependency[3]) )
+    stats = cursor.fetchall()    
+    for stat in stats:
+        if stat[1] == '':            
+            return    
+    #=========================================================================================    
     cursor.execute("SELECT * FROM Services WHERE PortNumber={po}".format(po=Dependency[3]) )
     servicestat = cursor.fetchone()    
     if servicestat:
@@ -86,8 +186,6 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
         stats = cursor.fetchall()    
         if stats:        
             for stat in stats:
-                if stat[1] == '':
-                    break                    
                 if stat[1] in LocalStatistic:
                     LocalStatistic[stat[1]] = LocalStatistic[stat[1]] + Dependency[5]
                 else:
@@ -106,8 +204,6 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
         stats = cursor.fetchall()    
         if stats:        
             for stat in stats:
-                if stat[1] == '':
-                    break                    
                 if stat[1] in LocalStatistic:
                     LocalStatistic[stat[1]] = LocalStatistic[stat[1]] + Dependency[5]
                 else:
@@ -122,23 +218,6 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, cursor, SQLiteConn
     if Dependencies:    
         for Dependency in Dependencies:
             Stats(LocalStatistic, Dependency, cursor, SQLiteConnection)
-            #==========================================
-            cursor.execute("SELECT * FROM Services WHERE PortNumber={pt}".format(pt=Dependency[4]) )
-            servicestat = cursor.fetchone()    
-            if servicestat:
-                if servicestat[2] in LocalStatistic:
-                    LocalStatistic[servicestat[2]] = LocalStatistic[servicestat[2]] + 1
-                else:
-                    LocalStatistic[servicestat[2]] = 1        
-            else:               
-                cursor.execute("SELECT * FROM Ports WHERE PortNumber='{pt}'".format(pt=Dependency[4]) )
-                stats = cursor.fetchall()    
-                for stat in stats:
-                    if stat[1] in LocalStatistic:
-                        LocalStatistic[stat[1]] = LocalStatistic[stat[1]] + 1
-                    else:
-                        LocalStatistic[stat[1]] = 1    
-                    break
             #==========================================
             SrcIP = ipaddress.ip_address(Dependency[1])
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
@@ -237,16 +316,18 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteCo
 #=======================================================================================================================================
 #Analyze single device   
 def StatProcent(Statistic):    
+    if Statistic == {}:
+        return
     tmp = 0    
     for i, j in Statistic.items():
         tmp = tmp + j
     #==========================
-    if Statistic == {}:
-        return
     Statistic = {r: Statistic[r] for r in sorted(Statistic, key=Statistic.get, reverse=True)}
-    print("  Statistical of Local Dependencies:")
+    print("  Statistical of Local Dependencies:  (in %)")
     for i, j in Statistic.items():
-        print("   ", i.ljust(20, ' '), "   %0.2f" % float(j/tmp*100) , "%")
+        Statistic[i] = float(j/tmp*100)
+    #    print("    ", i, "     ", Statistic[i], "%")
+    plot(Statistic.items())
 #=======================================================================================================================================
 #Analyze single device   
 def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):    
