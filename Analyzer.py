@@ -15,32 +15,6 @@ import numpy
 import networkx
 import matplotlib.pyplot as plt
 #=======================================================================================================================================
-#    print("  Graph of local dependencies:")    
-#    cursor.execute("SELECT * FROM Dependencies")
-#    rows = cursor.fetchall()
-#    data = { }
-    #=================================
-#    G = networkx.Graph()        
-    #=================================
-#    for row in rows:
-#        if row[1] in data:
-#            None
-#        else: 
-#            data[row[1]] = row[1]
-#            G.add_node(row[1])
-#        if row[2] in data:
-#            None
-#        else:
-#            data[row[2]] = row[2]
-#            G.add_node(row[2])
-#        edge = (row[1], row[2])
-#        G.add_edge(*edge)
-#    print(G.nodes())
-#    print(G.edges())
-#    networkx.draw(G, with_labesl=True)
-#    plt.savefig("Graph_Local.png")
-#    plt.show()
-#=======================================================================================================================================
 #plot percent graph
 def plot(data):
     with tempfile.NamedTemporaryFile(mode='a+') as f:
@@ -71,7 +45,7 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
     cursor.execute("SELECT * FROM Dependencies")
     rows = cursor.fetchall()
     #=================================
-    plt.figure(1, figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
+    plt.figure("Map of Local Dependencies", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
     G = networkx.Graph()        
     for row in rows:
         G.add_node(row[1])
@@ -90,7 +64,7 @@ def GraphGlobalDependencies(cursor, SQLiteConnection):
     cursor.execute("SELECT * FROM Global")
     rows = cursor.fetchall()
     #=================================
-    plt.figure(2, figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
+    plt.figure("Map of Global Dependencies", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
     H = networkx.Graph()        
     for row in rows:
         if not H.has_node(row[1]):
@@ -167,7 +141,6 @@ def DHCP(DeviceID, IP, cursor, SQLiteConnection):
 #====================================================================================================================================== 
 #Stats
 def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
-    print(LocalStatistic)
     cursor.execute("SELECT * FROM Ports WHERE PortNumber='{po}'".format(po=Dependency[3]) )
     stats = cursor.fetchall()    
     for stat in stats:
@@ -329,11 +302,32 @@ def StatProcent(Statistic):
     #    print("    ", i, "     ", Statistic[i], "%")
     plot(Statistic.items())
 #=======================================================================================================================================
+#IP_print
+def IPAddress(IP, cursor):   
+    print("  IP: ", IP, end='')
+    cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP) )
+    Router = cursor.fetchone()
+    if not Router:
+        cursor.execute("SELECT * FROM MAC WHERE IP='{ip}' AND LastUse='{lu}'".format(ip=IP, lu='') )
+        IPs = cursor.fetchone()
+        for ip in IPS:
+            if not ip == IP:
+                print(" <", ip, "> ", end='')
+        print("")  
+    else:
+        cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1]) )
+        Routers = cursor.fetchall()
+        for ip in Routers:
+            ipd = ipaddress.ip_address(ip[2])        
+            if ipd.is_private and ip[2] != IP:
+                print(" <", ip[2], "> ", end='')
+        print("")
+#=======================================================================================================================================
 #Analyze single device   
 def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):    
     print("######################################################################") 
     print("DeviceID: ", DeviceID)
-    print("  IP: ", IP)
+    IPAddress(IP, cursor)    
     DeviceIP = ipaddress.ip_address(IP)
     #==================================================================
     createJson = {  "IP": "", 
