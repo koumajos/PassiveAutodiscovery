@@ -6,6 +6,7 @@ import sqlite3
 import time
 import json
 import math
+import socket
 #=======================
 from termgraph import termgraph
 import tempfile
@@ -259,13 +260,39 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteCo
                         print(" need", end='')
                 else:               
                     print("    -> ", GlobalDependency[1].ljust(20, ' '), " is", end='')
-                print(" [", ServiceS[1], "]  -  Number of packets: ", GlobalDependency[5])            
+                if ServiceS[1] == "WEB Server" and SrcIP == DeviceIP:
+                    try:               
+                        sck = socket.gethostbyaddr(GlobalDependency[2])
+                        print(" [", ServiceS[1], "] (Domain:", sck[0] , ") -  Number of packets: ", GlobalDependency[5])            
+                    except:
+                        print(" [", ServiceS[1], "]  -  Number of packets: ", GlobalDependency[5])                                                    
+                elif ServiceS[1] == "WEB Server":
+                    try:               
+                        sck = socket.gethostbyaddr(GlobalDependency[1])
+                        print(" [", ServiceS[1], "] (Domain:", sck[0] , ") -  Number of packets: ", GlobalDependency[5])            
+                    except:
+                        print(" [", ServiceS[1], "]  -  Number of packets: ", GlobalDependency[5])                                                    
+                else:
+                    print(" [", ServiceS[1], "]  -  Number of packets: ", GlobalDependency[5])            
             elif ServiceD:
                 if SrcIP == DeviceIP:
                     print("    -> ", GlobalDependency[2].ljust(20, ' '), " is", end='')
                 else:               
                     print("    -> ", GlobalDependency[1].ljust(20, ' '), " need", end='')
-                print(" [", ServiceD[1], "]  -  Number of packets: ", GlobalDependency[5])                        
+                if ServiceD[1] == "WEB Server" and SrcIP == DeviceIP:
+                    try:                    
+                        sck = socket.gethostbyaddr(GlobalDependency[2])
+                        print(" [", ServiceD[1], "] (Domain:", sck[0] , ") -  Number of packets: ", GlobalDependency[5])
+                    except:
+                        print(" [", ServiceD[1], "]  -  Number of packets: ", GlobalDependency[5])           
+                elif ServiceD[1] == "WEB Server":
+                    try:                    
+                        sck = socket.gethostbyaddr(GlobalDependency[1])
+                        print(" [", ServiceD[1], "] (Domain:", sck[0] , ") -  Number of packets: ", GlobalDependency[5])
+                    except:
+                        print(" [", ServiceD[1], "]  -  Number of packets: ", GlobalDependency[5])           
+                else:
+                    print(" [", ServiceD[1], "]  -  Number of packets: ", GlobalDependency[5])                        
             else:
                 if SrcIP == DeviceIP:
                     print("    -> ", GlobalDependency[2].ljust(20, ' '), " is", end='')
@@ -325,10 +352,6 @@ def IPAddress(IP, cursor):
 #=======================================================================================================================================
 #Analyze single device   
 def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):    
-    print("######################################################################") 
-    print("DeviceID: ", DeviceID)
-    IPAddress(IP, cursor)    
-    DeviceIP = ipaddress.ip_address(IP)
     #==================================================================
     createJson = {  "IP": "", 
                     "MAC": "", 
@@ -340,6 +363,14 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):
                     "GlobalDependencies": None, 
                     "GlobalProcent": None
                   }
+    #==================================================================
+    print("######################################################################") 
+    print("DeviceID: ", DeviceID)
+    #==================================================================
+    IPAddress(IP, cursor)
+    #==================================================================
+    print("  Last communication: ", TIME)    
+    DeviceIP = ipaddress.ip_address(IP)
     #==================================================================
     MAC(DeviceID, IP, cursor, SQLiteConnection)
     #==================================================================
@@ -354,9 +385,6 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):
     GlobalStatistic = {}    
     GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteConnection)    
     StatProcent(GlobalStatistic)    
-    #==================================================================
-    
-#    print("")
 #=======================================================================================================================================
 #Main function of Analyzer
 def DoAnalyze(SQLiteConnection):
