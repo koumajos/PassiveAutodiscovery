@@ -195,7 +195,7 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection):
             print("Error with inserting into table LocalDevice")
 #=================================================================================================================================
 #collector collect information from ipflows and push them into database
-def collector(rec, SQLiteConnection):
+def collector(rec, SQLiteConnection, NetworkLocalAddresses):
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
     DstIP = ipaddress.ip_address(rec.DST_IP)
     cursor = SQLiteConnection.cursor()
@@ -203,10 +203,27 @@ def collector(rec, SQLiteConnection):
         return
     if rec.DST_MAC == "ff:ff:ff:ff:ff:ff" or rec.SRC_MAC == "ff:ff:ff:ff:ff:ff":
         return    
-    if SrcIP.is_private:        #Source Device is in local network
+    if rec.SRC_IP == "255.255.255.255" or rec.DST_IP == "255.255.255.255":
+        return
+    if rec.SRC_IP == "0.0.0.0" or rec.DST_IP == "0.0.0.0":
+        return
+    src = False    
+    dst = False    
+    for nip in NetworkLocalAddresses:
+        NIP = ipaddress.ip_network(nip)
+        if SrcIP in NIP:
+            src = True
+            break
+        elif DstIP in NIP:
+            dst = True
+            break
+        else:
+            continue        
+    print("src: ", src, "  dst: ", dst)
+    if SrcIP.is_private or src:        #Source Device is in local network
         NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, SQLiteConnection)
         MAC(rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, SQLiteConnection)                
-        if DstIP.is_private:    #Destination Device is in local network
+        if DstIP.is_private or dst:    #Destination Device is in local network
             NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection)        
             MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection)                
             #=====================================================================================
@@ -220,7 +237,7 @@ def collector(rec, SQLiteConnection):
             Services(rec.DST_IP, rec.DST_PORT, "GlobalServices", cursor, SQLiteConnection)
             Routers(rec.DST_IP, rec.DST_MAC, cursor, SQLiteConnection)
     else:    #Source Device is in global network
-        if DstIP.is_private:
+        if DstIP.is_private or dst:
             NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection)        
             #=====================================================================================        
             NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection)

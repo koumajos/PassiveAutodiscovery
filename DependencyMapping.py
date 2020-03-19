@@ -4,6 +4,8 @@ import pytrap
 import sys
 import os
 import sqlite3
+import ipaddress
+import re
 #python modules:
 import Collector
 #=================================================================================================================================
@@ -16,6 +18,18 @@ trap.setRequiredFmt(0, pytrap.FMT_UNIREC, inputspec)
 rec = pytrap.UnirecTemplate(inputspec)
 #=================================================================================================================================
 # Main loop
+print("You can input network addresses... (end input by: end )")
+NetworkLocalAddresses = []
+while True:
+    tmp = input()
+    if tmp == "end":
+        break
+    try:
+        ip = ipaddress.ip_network(tmp)
+        NetworkLocalAddresses.append(tmp)
+        print("Add new netwrok ip address: ", tmp)    
+    except:
+        print("Bad network address entered!")
 try:    #connect to a database
     print("Connecting to a database....", end='')
     if not os.path.exists('Database.db'):
@@ -37,7 +51,7 @@ while True:     #main loop for load ip-flows from interfaces
         break
     rec.setData(data)
     #===============================
-    Collector.collector(rec, SQLiteConnection)
+    Collector.collector(rec, SQLiteConnection, NetworkLocalAddresses)
     #===============================
 # Free allocated TRAP IFCs
 trap.finalize()
