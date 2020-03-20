@@ -266,10 +266,7 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, cursor, SQLiteConn
             #========================================================
             print("    -> ", IPs.ljust(20, ' '), " ", Verbs, "  -  [", Services, "]  -  Number of packets: ", Packets)            
             #========================================================
-            createJSON["LocalDependenciesIPs"].append(IPs)
-            createJSON["LocalDependenciesVerbs"].append(Verbs)
-            createJSON["LocalDependenciesServices"].append(Services)
-            createJSON["LocalDependenciesPackets"].append(Packets)
+            createJSON["LocalDependencies"].append({"IP": "%s" % IPs, "Verb": "%s" % Verbs, "Service": "%s" % Services, "Packets": "%s" % Packets})
     else:
         print("    ---")    
 #=======================================================================================================================================
@@ -287,93 +284,87 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteCo
             ServiceS = cursor.fetchone()                
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{portD}'".format(portD=GlobalDependency[4]) )
             ServiceD = cursor.fetchone()    
-            createJSON["GlobalDependenciesPackets"].append(GlobalDependency[5])
-            createJSON["GlobalDependenciesVerbs"].append("provides")
+            #========================================================
+            IPs = ""
+            Verbs = "provides"
+            Services = ""            
+            Packets = GlobalDependency[5]
+            Domain = ""            
+            #========================================================
             if ServiceS:
                 if SrcIP == DeviceIP:
-                    createJSON["GlobalDependenciesIPs"].append(GlobalDependency[2])
-                    print("    -> ", GlobalDependency[2].ljust(20, ' '), end='')
+                    IPs = GlobalDependency[2]                    
                     if ServiceS[1] == "DHCP Client":
-                        createJSON["GlobalDependenciesServices"].append("DHCP Server")
-                        print("  provides [ DHCP Server ]  -  Number of packets: ", GlobalDependency[5])
-                        continue
+                        Services = "DHCP Server"            
                     else:
-                        createJSON["GlobalDependenciesVerbs"].append("requires")
-                        print(" requires", end='')
+                        Verbs = "requires"
                 else:               
-                    createJSON["GlobalDependenciesIPs"].append(GlobalDependency[1])
-                    print("    -> ", GlobalDependency[1].ljust(20, ' '), " provides", end='')
+                    IPs = GlobalDependency[1]
                 if ServiceS[1] == "WEB Server" and SrcIP == DeviceIP:
-                    createJSON["GlobalDependenciesServices"].append(ServiceS[1])
+                    Services = ServiceS[1]            
                     try:               
                         sck = socket.gethostbyaddr(GlobalDependency[2])
-                        print(" [", ServiceS[1], "] (Domain:", sck[0] , ") -  Number of packets: ", GlobalDependency[5])            
+                        Domain = "(Domain:" + sck[0] + ")"
                     except:
-                        print(" [", ServiceS[1], "]  -  Number of packets: ", GlobalDependency[5])                                                    
+                        None
                 elif ServiceS[1] == "WEB Server":
-                    createJSON["GlobalDependenciesServices"].append(ServiceS[1])
+                    Services = ServiceS[1]            
                     try:               
                         sck = socket.gethostbyaddr(GlobalDependency[1])
-                        print(" [", ServiceS[1], "] (Domain:", sck[0] , ") -  Number of packets: ", GlobalDependency[5])            
+                        Domain = "(Domain:" + sck[0] + ")"
                     except:
-                        print(" [", ServiceS[1], "]  -  Number of packets: ", GlobalDependency[5])                                                    
+                        None
                 else:
-                    createJSON["GlobalDependenciesServices"].append(ServiceS[1])
-                    print(" [", ServiceS[1], "]  -  Number of packets: ", GlobalDependency[5])            
+                    Services = ServiceS[1]            
             elif ServiceD:
                 if SrcIP == DeviceIP:
-                    createJSON["GlobalDependenciesIPs"].append(GlobalDependency[2])
-                    print("    -> ", GlobalDependency[2].ljust(20, ' '), " provides", end='')
+                    IPs = GlobalDependency[2]
                 else:               
-                    createJSON["GlobalDependenciesIPs"].append(GlobalDependency[1])
-                    createJSON["GlobalDependenciesVerbs"].append("requires")
-                    print("    -> ", GlobalDependency[1].ljust(20, ' '), " requires", end='')
+                    IPs = GlobalDependency[1]
+                    Verbs = "requires"
                 if ServiceD[1] == "WEB Server" and SrcIP == DeviceIP:
-                    createJSON["GlobalDependenciesServices"].append(ServiceD[1])
+                    Services = ServiceD[1]            
                     try:                    
                         sck = socket.gethostbyaddr(GlobalDependency[2])
-                        print(" [", ServiceD[1], "] (Domain:", sck[0] , ") -  Number of packets: ", GlobalDependency[5])
+                        Domain = "(Domain:" + sck[0] + ")"
                     except:
-                        print(" [", ServiceD[1], "]  -  Number of packets: ", GlobalDependency[5])           
+                        None           
                 elif ServiceD[1] == "WEB Server":
-                    createJSON["GlobalDependenciesServices"].append(ServiceD[1])
+                    Services = ServiceD[1]            
                     try:                    
                         sck = socket.gethostbyaddr(GlobalDependency[1])
-                        print(" [", ServiceD[1], "] (Domain:", sck[0] , ") -  Number of packets: ", GlobalDependency[5])
+                        Domain = "(Domain:" + sck[0] + ")"
                     except:
-                        print(" [", ServiceD[1], "]  -  Number of packets: ", GlobalDependency[5])           
+                        None           
                 else:
-                    print(" [", ServiceD[1], "]  -  Number of packets: ", GlobalDependency[5])                        
+                    Services = ServiceD[1]
             else:
                 if SrcIP == DeviceIP:
-                    createJSON["GlobalDependenciesIPs"].append(GlobalDependency[2])
-                    print("    -> ", GlobalDependency[2].ljust(20, ' '), " provides", end='')
+                    IPs = GlobalDependency[2]       
                     cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=GlobalDependency[4]) )
                     PortD = cursor.fetchone()                    
                     if PortD:
-                        createJSON["GlobalDependenciesServices"].append(PortD[1])
-                        print("  -  ", PortD[1], "  -  Number of packets: ", GlobalDependency[5])
+                        Services = PortD[1]                       
                     else:
-                        createJSON["GlobalDependenciesServices"].append(GlobalDependency[4])
-                        print("  -  ", GlobalDependency[4], "  -  Number of packets: ", GlobalDependency[5])
+                        Services = GlobalDependency[4]
                 else:               
-                    createJSON["GlobalDependenciesIPs"].append(GlobalDependency[1])
-                    createJSON["GlobalDependenciesVerbs"].append("requires")
-                    print("    -> ", GlobalDependency[1].ljust(20, ' '), " requires", end='')
+                    IPs = GlobalDependency[1]       
+                    Verbs = "requires"
                     cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=GlobalDependency[3]) )
                     PortS = cursor.fetchone()    
                     if PortS:
-                        createJSON["GlobalDependenciesServices"].append(PortS[1])
-                        print("  -  ", PortS[1], "  -  Number of packets: ", GlobalDependency[5])
+                        Services = PortS[1]
                     else:
-                        createJSON["GlobalDependenciesServices"].append(GlobalDependency[3])
-                        print("  -  ", GlobalDependency[3], "  -  Number of packets: ", GlobalDependency[5])
-            #print("  ", GlobalDependency)
+                        Services = GlobalDependency[3]
+            #========================================================
+            print("    -> ", IPs.ljust(20, ' '), " ", Verbs, "  -  [", Services, "] ", Domain," -  Number of packets: ", Packets)            
+            #========================================================
+            createJSON["GlobalDependencies"].append({"IP": "%s" % IPs, "Verb": "%s" % Verbs, "Service": "%s" % Services, "Packets": "%s" % Packets})
     else:
         print("    ---")
 #=======================================================================================================================================
 #Analyze single device   
-def StatProcent(Statistic, createJSON, tmp):    
+def StatProcent(Statistic, createJSON, TMP):    
     if Statistic == {}:
         return
     tmp = 0    
@@ -381,18 +372,16 @@ def StatProcent(Statistic, createJSON, tmp):
         tmp = tmp + j
     #==========================
     Statistic = {r: Statistic[r] for r in sorted(Statistic, key=Statistic.get, reverse=True)}
-    if tmp == True:    
+    if TMP == True:    
         print("  Statistical of Local Dependencies:  (in %)")
     else:
         print("  Statistical of Global Dependencies:  (in %)")        
     for i, j in Statistic.items():
         Statistic[i] = float(j/tmp*100)
-        if tmp == True:
-            createJSON["LocalServices"].append(i)
-            createJSON["LocalProcents"].append(Statistic[i]) 
+        if TMP == True:
+            createJSON["LocalStatistic"].append({"Service": "%s" % i, "Procents": "%s" % Statistic[i]})
         else:
-            createJSON["GlobalServices"].append(i)
-            createJSON["GlobalProcents"].append(Statistic[i])
+            createJSON["GlobalStatistic"].append({"Service": "%s" % i, "Procents": "%s" % Statistic[i]})
     #    print("    ", i, "     ", Statistic[i], "%")
     plot(Statistic.items())
 #=======================================================================================================================================
@@ -432,18 +421,10 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):
                     "LabelsDescription": [], 
                     "DHCPServ": [], 
                     "DHCPTime": [], 
-                    "LocalDependenciesIPs": [], 
-                    "LocalDependenciesVerbs": [], 
-                    "LocalDependenciesServices": [], 
-                    "LocalDependenciesPackets": [], 
-                    "LocalServices": [], 
-                    "LocalProcents": [], 
-                    "GlobalDependenciesIPs": [], 
-                    "GlobalDependenciesVerbs": [], 
-                    "GlobalDependenciesServices": [], 
-                    "GlobalDependenciesPackets": [], 
-                    "GlobalServices": [], 
-                    "GlobalProcents": []
+                    "LocalDependencies": [],                    
+                    "LocalStatistic": [], 
+                    "GlobalDependencies": [],                    
+                    "GlobalStatistic": [], 
                   }
     write_json(createJSON, str(DeviceID))
     read_json(createJSON, str(DeviceID))    
