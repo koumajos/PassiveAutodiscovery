@@ -58,12 +58,9 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
         G.add_node(row[1])
         G.add_node(row[2])
         G.add_weighted_edges_from([(row[1], row[2], row[4])])
-#    print(G.nodes())
-#    print(G.edges())
     networkx.draw(G, with_labels=True)
+    plt.savefig("Graph_Local.png")
     plt.show()    
-#    plt.savefig("Graph_Local.png")
-#    plt.show()   
 #=======================================================================================================================================
 #Create graph of global to local dependencies
 def GraphGlobalDependencies(cursor, SQLiteConnection):
@@ -86,6 +83,7 @@ def GraphGlobalDependencies(cursor, SQLiteConnection):
                 H.add_weighted_edges_from([(GlobalDependency[1], GlobalDependency[2], GlobalDependency[4])])
         pos = networkx.spring_layout(H,k=5/math.sqrt(H.order()),iterations=20)
         networkx.draw(H, with_labels=True)
+        plt.savefig("Graph_Global_%s.png" % device[0])
         plt.show()
 #=======================================================================================================================================
 #MAC address and vendor adding
