@@ -143,25 +143,28 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection):
                 tmp = 2                
                 cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='%s'" % IP)
                 DHCProws = cursor.fetchall()
-                lastrow = DHCProws[0]                
-                for DHCProw in DHCProws:
-                    if DHCProw[3] > lastrow[3]:    #if DHCP com. for IP was after MAC use and  
-                        lastrow = DHCProw         
+                if DHCProws:
+                    lastrow = DHCProws[0]                
+                    for DHCProw in DHCProws:
+                        if DHCProw[3] > lastrow[3]:    #if DHCP com. for IP was after MAC use and  
+                            lastrow = DHCProw         
+                        else:
+                            None
+                    if TIME > DHCProw[3] and row[3] < DHCProw[3]:
+                        cursor.execute("UPDATE MAC SET LastUse='%s' WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (TIME, row[1], row[2], row[3]) )
+                        SQLiteConnection.commit()                    
+                        MACAdd(IP, MAC, TIME, cursor, SQLiteConnection)
+                        return
+                    elif TIME > DHCProw[3] and row[3] > DHCProw[3]:
+                        Routers(IP, MAC, cursor, SQLiteConnection)
+                        Routers(row[1], MAC, cursor, SQLiteConnection)
+                        cursor.execute("DELETE FROM MAC WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (row[1], row[2], row[3]) )
+                        SQLiteConnection.commit()
+                        return                    
                     else:
-                        None
-                if TIME > DHCProw[3] and row[3] < DHCProw[3]:
-                    cursor.execute("UPDATE MAC SET LastUse='%s' WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (TIME, row[1], row[2], row[3]) )
-                    SQLiteConnection.commit()                    
-                    MACAdd(IP, MAC, TIME, cursor, SQLiteConnection)
-                    return
-                elif TIME > DHCProw[3] and row[3] > DHCProw[3]:
-                    Routers(IP, MAC, cursor, SQLiteConnection)
-                    Routers(row[1], MAC, cursor, SQLiteConnection)
-                    cursor.execute("DELETE FROM MAC WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (row[1], row[2], row[3]) )
-                    SQLiteConnection.commit()
-                    return                    
+                        continue
                 else:
-                    continue
+                    tmp = 1
             else:           
                 if tmp == 2:
                     continue
@@ -197,7 +200,7 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection):
 #collector collect information from ipflows and push them into database
 def collector(rec, SQLiteConnection, NetworkLocalAddresses):
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
-    DstIP = ipaddress.ip_address(rec.DST_IP)
+    DstIP = ipaddress.ip_address(rec.DST_IP)    
     cursor = SQLiteConnection.cursor()
     if SrcIP.is_multicast or DstIP.is_multicast:
         return
@@ -219,7 +222,6 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses):
             break
         else:
             continue        
-    print("src: ", src, "  dst: ", dst)
     if SrcIP.is_private or src:        #Source Device is in local network
         NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, SQLiteConnection)
         MAC(rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, SQLiteConnection)                
