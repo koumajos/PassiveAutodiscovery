@@ -67,28 +67,26 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
 #=======================================================================================================================================
 #Create graph of global to local dependencies
 def GraphGlobalDependencies(cursor, SQLiteConnection):
-    print("  Graph of global dependencies:")    
-    cursor.execute("SELECT * FROM Global")
-    rows = cursor.fetchall()
-    #=================================
-    plt.figure("Map of Global Dependencies", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
-    H = networkx.Graph()        
-    for row in rows:
-        if not H.has_node(row[1]):
-            H.add_node(row[1])
-        if not H.has_node(row[2]):        
-            H.add_node(row[2])
-        if not H.has_edge(row[1], row[2]):        
-            H.add_weighted_edges_from([(row[1], row[2], row[4])])
-#    print(H.nodes())
-#    print(H.edges())
-    pos = networkx.spring_layout(H,k=5/math.sqrt(H.order()),iterations=20)
-    networkx.draw(H, with_labels=True)
-    #ax = plt.gca()
-    #ax.collections[0].set_edgecolor("#555555") 
-    plt.show()       
-#   plt.savefig("Graph_Global.png")
-#    plt.show()
+    cursor.execute("SELECT * FROM LocalDevice")
+    LocalDevices = cursor.fetchall()
+    for device in LocalDevices:
+        cursor.execute("SELECT * FROM Global WHERE IP_origin='{ip}'".format(ip=device[0]))
+        GlobalDependencies = cursor.fetchall()
+        if not GlobalDependencies:
+            return        
+        print("Global Dependencies for device %s" % device[0])        
+        plt.figure("Map of Global Dependencies for device: %s" % device[0], figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')
+        H = networkx.Graph()
+        for GlobalDependency in GlobalDependencies:
+            if not H.has_node(GlobalDependency[1]):
+                H.add_node(GlobalDependency[1])
+            if not H.has_node(GlobalDependency[2]):        
+                H.add_node(GlobalDependency[2])
+            if not H.has_edge(GlobalDependency[1], GlobalDependency[2]):        
+                H.add_weighted_edges_from([(GlobalDependency[1], GlobalDependency[2], GlobalDependency[4])])
+        pos = networkx.spring_layout(H,k=5/math.sqrt(H.order()),iterations=20)
+        networkx.draw(H, with_labels=True)
+        plt.show()
 #=======================================================================================================================================
 #MAC address and vendor adding
 def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
@@ -410,7 +408,7 @@ def IPAddress(IP, cursor, createJSON):
         print("")
 #=======================================================================================================================================
 #Analyze single device   
-def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):    
+def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON):    
     #==================================================================
     createJSON = {  "DeviceID":0,
                     "IP": [], 
@@ -426,8 +424,6 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):
                     "GlobalDependencies": [],                    
                     "GlobalStatistic": [], 
                   }
-    write_json(createJSON, str(DeviceID))
-    read_json(createJSON, str(DeviceID))    
     #==================================================================
     print("######################################################################") 
     print("DeviceID: ", DeviceID)
@@ -452,17 +448,18 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection):
     GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteConnection, createJSON)    
     StatProcent(GlobalStatistic, createJSON, False)    
     #==================================================================
-    write_json(createJSON, str(DeviceID))    
+    JSON["Devices"].append(createJSON)
 #=======================================================================================================================================
 #Main function of Analyzer
 def DoAnalyze(SQLiteConnection):
     #==================================================================
-    createJSON = {   "Name": "DeppendencyMapping", 
+    JSON = {   "Name": "DeppendencyMapping", 
                     "DateAnalyze": "", 
-                    "NumberDevice": 0
+                    "NumberDevice": 0,
+                    "Devices": []
                 }    
-    write_json(createJSON, "DependencyMapping")
-    read_json(createJSON, "DependencyMapping")
+    write_json(JSON, "DependencyMapping")
+    read_json(JSON, "DependencyMapping")
     #==================================================================
     cursor = SQLiteConnection.cursor()
     DeviceID = 1
@@ -470,14 +467,16 @@ def DoAnalyze(SQLiteConnection):
     cursor.execute("SELECT * FROM LocalDevice")
     LocalDevices = cursor.fetchall()
     for LocalDevice in LocalDevices:
-        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection)
+        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON)
         DeviceID = DeviceID + 1
+    #==================================================================
     x = datetime.datetime.now()
-    createJSON["DateAnalyze"] = str(x)
-    createJSON["NumberDevice"] = DeviceID - 1
-    write_json(createJSON, "DependencyMapping")
-#    GraphLocalDependencies(cursor, SQLiteConnection)
-#    GraphGlobalDependencies(cursor, SQLiteConnection)
+    JSON["DateAnalyze"] = str(x)
+    JSON["NumberDevice"] = DeviceID - 1
+    write_json(JSON, "DependencyMapping")
+    #==================================================================
+    GraphLocalDependencies(cursor, SQLiteConnection)
+    GraphGlobalDependencies(cursor, SQLiteConnection)
 #=======================================================================================================================================
 # Main loop
 try:    #connect to a database
