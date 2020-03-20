@@ -105,9 +105,12 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
     if mac != "":
         cursor.execute("SELECT * FROM VendorsMAC WHERE VendorMAC='{m}'".format(m=list(mac)[0].upper()))
         row = cursor.fetchone()
-        createJSON["Vendor"] = row[3]
-        createJSON["Country"] = row[4]
-        print(" | Vendor: ", row[3], ",", row[4])
+        if row:        
+            createJSON["Vendor"] = row[3]
+            createJSON["Country"] = row[4]
+            print(" | Vendor: ", row[3], ",", row[4])
+        else:
+            None
 #=======================================================================================================================================
 #Labels adding   
 def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON):
@@ -389,8 +392,8 @@ def IPAddress(IP, cursor, createJSON):
     Router = cursor.fetchone()
     if not Router:
         cursor.execute("SELECT * FROM MAC WHERE IP='{ip}' AND LastUse='{lu}'".format(ip=IP, lu='') )
-        IPs = cursor.fetchone()
-        for ip in IPS:
+        IPs = cursor.fetchall()
+        for ip in IPs:
             if not ip[2] == IP:
                 print(" <", ip[2], "> ", end='')
                 createJSON["IP"].append(ip[2])
