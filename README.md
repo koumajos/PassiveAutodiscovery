@@ -46,22 +46,41 @@ Ideal Operating system is CentOS 7 or 8
   * nemea-framework:
         
         cd  nemea/nemea-framework
+        
         ./bootstrap.sh
+
         ./configure
+
         make
+
         sudo make install
+
         yum install python3-devel
+
         cd pytrap
+
         mkdir -p /usr/local/lib64/python3.6/site-packages/
+
         sudo python3 setup.py install
+
         cd pycommon
+
         mkdir -p /usr/local/lib/python3.6/site-packages/
+
         sudo python3 setup.py install
 
 ## Database Inplementation
+
 ![Database proposal](https://github.com/koumajos/DeppendencyMapping/blob/master/navrh_databaze.png)
 
 ## CreateScript
+Python libraries: 
+* sqlite3
+* csv
+* os
+* sys
+* urllib
+* urllib.request
 
 ## Collector
 
