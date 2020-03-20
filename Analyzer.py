@@ -48,7 +48,7 @@ def write_json(data, filename):
 #=======================================================================================================================================
 #Create graph of local to local dependencies
 def GraphLocalDependencies(cursor, SQLiteConnection):
-    print("  Graph of local dependencies:")    
+    print("  Graph of local dependencies is safed in file:\tGraph_Local.png")    
     cursor.execute("SELECT * FROM Dependencies")
     rows = cursor.fetchall()
     #=================================
@@ -71,7 +71,7 @@ def GraphGlobalDependencies(cursor, SQLiteConnection):
         GlobalDependencies = cursor.fetchall()
         if not GlobalDependencies:
             return        
-        print("Global Dependencies for device %s" % device[0])        
+        print("    Global Dependencies for device %s is safed in file:\t%s.png" % (device[0],device[0]))        
         plt.figure("Map of Global Dependencies for device: %s" % device[0], figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')
         H = networkx.Graph()
         for GlobalDependency in GlobalDependencies:
@@ -201,13 +201,22 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
                 break    
 #=======================================================================================================================================
 #LocalDependencies records adding  
-def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, cursor, SQLiteConnection, createJSON):
+def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
     print("  Local Dependencies:")    
     cursor.execute("SELECT * FROM Dependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumBytes DESC".format(ipo=IP, ipt=IP) )
     Dependencies = cursor.fetchall()    
     if Dependencies:    
         for Dependency in Dependencies:
             Stats(LocalStatistic, Dependency, cursor, SQLiteConnection)
+            #==========================================
+            if Dependency[1] in IPStatistic:
+                IPStatistic[Dependency[1]] = IPStatistic[Dependency[1]] + Dependency[5]
+            else:
+                IPStatistic[Dependency[1]] = Dependency[5]            
+            if Dependency[2] in IPStatistic:
+                IPStatistic[Dependency[2]] = IPStatistic[Dependency[2]] + Dependency[5]
+            else:
+                IPStatistic[Dependency[2]] = Dependency[5]            
             #==========================================
             SrcIP = ipaddress.ip_address(Dependency[1])
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
@@ -270,7 +279,7 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, cursor, SQLiteConn
         print("    ---")    
 #=======================================================================================================================================
 #GlobalDependencies records adding  
-def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteConnection, createJSON):
+def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
     print("  Global Dependencies:")    
     cursor.execute("SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumBytes DESC".format(ipo=IP, ipt=IP) )
     GlobalDependencies = cursor.fetchall()
@@ -279,6 +288,18 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteCo
             Stats(GlobalStatistic, GlobalDependency, cursor, SQLiteConnection)
             #==========================================
             SrcIP = ipaddress.ip_address(GlobalDependency[1])
+            #==========================================
+            if SrcIP.is_private:            
+                if GlobalDependency[1] in IPStatistic:
+                    IPStatistic[GlobalDependency[1]] = IPStatistic[GlobalDependency[1]] + GlobalDependency[5]
+                else:
+                    IPStatistic[GlobalDependency[1]] = GlobalDependency[5]            
+            else:
+                if GlobalDependency[2] in IPStatistic:
+                    IPStatistic[GlobalDependency[2]] = IPStatistic[GlobalDependency[2]] + GlobalDependency[5]
+                else:
+                    IPStatistic[GlobalDependency[2]] = GlobalDependency[5]                            
+            #==========================================
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=GlobalDependency[3]) )
             ServiceS = cursor.fetchone()                
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{portD}'".format(portD=GlobalDependency[4]) )
@@ -299,44 +320,46 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteCo
                         Verbs = "requires"
                 else:               
                     IPs = GlobalDependency[1]
-                if ServiceS[1] == "WEB Server" and SrcIP == DeviceIP:
-                    Services = ServiceS[1]            
-                    try:               
-                        sck = socket.gethostbyaddr(GlobalDependency[2])
-                        Domain = "(Domain:" + sck[0] + ")"
-                    except:
-                        None
-                elif ServiceS[1] == "WEB Server":
-                    Services = ServiceS[1]            
-                    try:               
-                        sck = socket.gethostbyaddr(GlobalDependency[1])
-                        Domain = "(Domain:" + sck[0] + ")"
-                    except:
-                        None
-                else:
-                    Services = ServiceS[1]            
+                #if ServiceS[1] == "WEB Server" and SrcIP == DeviceIP:
+                #    Services = ServiceS[1]            
+                #    try:               
+                #        sck = socket.gethostbyaddr(GlobalDependency[2])
+                #        Domain = "(Domain:" + sck[0] + ")"
+                #    except:
+                #        None
+                #elif ServiceS[1] == "WEB Server":
+                #    Services = ServiceS[1]            
+                #    try:               
+                #        sck = socket.gethostbyaddr(GlobalDependency[1])
+                #        Domain = "(Domain:" + sck[0] + ")"
+                #    except:
+                #        None
+                #else:
+                #    Services = ServiceS[1]
+                Services = ServiceS[1]
             elif ServiceD:
                 if SrcIP == DeviceIP:
                     IPs = GlobalDependency[2]
                 else:               
                     IPs = GlobalDependency[1]
                     Verbs = "requires"
-                if ServiceD[1] == "WEB Server" and SrcIP == DeviceIP:
-                    Services = ServiceD[1]            
-                    try:                    
-                        sck = socket.gethostbyaddr(GlobalDependency[2])
-                        Domain = "(Domain:" + sck[0] + ")"
-                    except:
-                        None           
-                elif ServiceD[1] == "WEB Server":
-                    Services = ServiceD[1]            
-                    try:                    
-                        sck = socket.gethostbyaddr(GlobalDependency[1])
-                        Domain = "(Domain:" + sck[0] + ")"
-                    except:
-                        None           
-                else:
-                    Services = ServiceD[1]
+                #if ServiceD[1] == "WEB Server" and SrcIP == DeviceIP:
+                #    Services = ServiceD[1]            
+                #    try:                    
+                #        sck = socket.gethostbyaddr(GlobalDependency[2])
+                #        Domain = "(Domain:" + sck[0] + ")"
+                #    except:
+                #        None           
+                #elif ServiceD[1] == "WEB Server":
+                #    Services = ServiceD[1]            
+                #    try:                    
+                #        sck = socket.gethostbyaddr(GlobalDependency[1])
+                #        Domain = "(Domain:" + sck[0] + ")"
+                #    except:
+                #        None           
+                #else:
+                #    Services = ServiceD[1]
+                Services = ServiceD[1]
             else:
                 if SrcIP == DeviceIP:
                     IPs = GlobalDependency[2]       
@@ -371,16 +394,22 @@ def StatProcent(Statistic, createJSON, TMP):
         tmp = tmp + j
     #==========================
     Statistic = {r: Statistic[r] for r in sorted(Statistic, key=Statistic.get, reverse=True)}
-    if TMP == True:    
+    if TMP == 0:    
         print("  Statistical of Local Dependencies:  (in %)")
+    elif TMP == 1:
+        print("  Statistical of Global Dependencies:  (in %)")
     else:
-        print("  Statistical of Global Dependencies:  (in %)")        
+        print("######################################################################")
+        print("Statistical of using network bandwidht:  (in %)")            
     for i, j in Statistic.items():
         Statistic[i] = float(j/tmp*100)
-        if TMP == True:
+        if TMP == 0:
             createJSON["LocalStatistic"].append({"Service": "%s" % i, "Procents": "%s" % Statistic[i]})
-        else:
+        elif TMP == 1:
             createJSON["GlobalStatistic"].append({"Service": "%s" % i, "Procents": "%s" % Statistic[i]})
+        else:
+            createJSON["IPStatistic"].append({"IP": "%s" % i, "Procents": "%s" % Statistic[i]})
+        
     #    print("    ", i, "     ", Statistic[i], "%")
     plot(Statistic.items())
 #=======================================================================================================================================
@@ -409,7 +438,7 @@ def IPAddress(IP, cursor, createJSON):
         print("")
 #=======================================================================================================================================
 #Analyze single device   
-def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON):    
+def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic):    
     #==================================================================
     createJSON = {  "DeviceID":0,
                     "IP": [], 
@@ -442,12 +471,12 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON):
     DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON)
     #==================================================================    
     LocalStatistic = {}    
-    LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, cursor, SQLiteConnection, createJSON)
-    StatProcent(LocalStatistic, createJSON, True)
+    LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON)
+    StatProcent(LocalStatistic, createJSON, 0)
     #==================================================================
     GlobalStatistic = {}    
-    GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, cursor, SQLiteConnection, createJSON)    
-    StatProcent(GlobalStatistic, createJSON, False)    
+    GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON)    
+    StatProcent(GlobalStatistic, createJSON, 1)    
     #==================================================================
     JSON["Devices"].append(createJSON)
 #=======================================================================================================================================
@@ -457,27 +486,34 @@ def DoAnalyze(SQLiteConnection):
     JSON = {   "Name": "DeppendencyMapping", 
                     "DateAnalyze": "", 
                     "NumberDevice": 0,
+                    "IPStatistic": [],
                     "Devices": []
                 }    
     write_json(JSON, "DependencyMapping")
     read_json(JSON, "DependencyMapping")
     #==================================================================
+    IPStatistic = {}    
+    #==================================================================    
     cursor = SQLiteConnection.cursor()
     DeviceID = 1
     #==================================================================
     cursor.execute("SELECT * FROM LocalDevice")
     LocalDevices = cursor.fetchall()
     for LocalDevice in LocalDevices:
-        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON)
+        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON, IPStatistic)
         DeviceID = DeviceID + 1
+    #==================================================================
+    GraphLocalDependencies(cursor, SQLiteConnection)
+    GraphGlobalDependencies(cursor, SQLiteConnection)
+    #==================================================================
+    StatProcent(IPStatistic, JSON, 2)    
     #==================================================================
     x = datetime.datetime.now()
     JSON["DateAnalyze"] = str(x)
     JSON["NumberDevice"] = DeviceID - 1
-    write_json(JSON, "DependencyMapping")
-    #==================================================================
-    GraphLocalDependencies(cursor, SQLiteConnection)
-    GraphGlobalDependencies(cursor, SQLiteConnection)
+    write_json(JSON, "DependencyMapping")    
+#=======================================================================================================================================
+#=======================================================================================================================================
 #=======================================================================================================================================
 # Main loop
 try:    #connect to a database
