@@ -48,7 +48,8 @@ def write_json(data, filename):
 #=======================================================================================================================================
 #Create graph of local to local dependencies
 def GraphLocalDependencies(cursor, SQLiteConnection):
-    print("  Graph of local dependencies is safed in file:\tGraph_Local.png")    
+    print("######################################################################") 
+    print("Graph of local dependencies is safed in file:\tGraph_Local.png")    
     cursor.execute("SELECT * FROM Dependencies")
     rows = cursor.fetchall()
     #=================================
@@ -64,6 +65,7 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
 #=======================================================================================================================================
 #Create graph of global to local dependencies
 def GraphGlobalDependencies(cursor, SQLiteConnection):
+    print("######################################################################") 
     cursor.execute("SELECT * FROM LocalDevice")
     LocalDevices = cursor.fetchall()
     for device in LocalDevices:
@@ -71,7 +73,7 @@ def GraphGlobalDependencies(cursor, SQLiteConnection):
         GlobalDependencies = cursor.fetchall()
         if not GlobalDependencies:
             return        
-        print("    Global Dependencies for device %s is safed in file:\t%s.png" % (device[0],device[0]))        
+        print("Global Dependencies for device %s is safed in file:\t%s.png" % (device[0],device[0]))        
         plt.figure("Map of Global Dependencies for device: %s" % device[0], figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')
         H = networkx.Graph()
         for GlobalDependency in GlobalDependencies:
@@ -423,9 +425,9 @@ def IPAddress(IP, cursor, createJSON):
         cursor.execute("SELECT * FROM MAC WHERE IP='{ip}' AND LastUse='{lu}'".format(ip=IP, lu='') )
         IPs = cursor.fetchall()
         for ip in IPs:
-            if not ip[2] == IP:
-                print(" <", ip[2], "> ", end='')
-                createJSON["IP"].append(ip[2])
+            if not ip[1] == IP:
+                print(" <", ip[1], "> ", end='')
+                createJSON["IP"].append(ip[1])
         print("")  
     else:
         cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1]) )

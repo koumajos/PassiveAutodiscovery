@@ -201,19 +201,23 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection):
 def collector(rec, SQLiteConnection, NetworkLocalAddresses):
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
     DstIP = ipaddress.ip_address(rec.DST_IP)    
+    ban1 = ipaddress.ip_address('0.0.0.0')
+    ban2 = ipaddress.ip_address('255.255.255.255')
     cursor = SQLiteConnection.cursor()
     if SrcIP.is_multicast or DstIP.is_multicast:
         return
     if rec.DST_MAC == "ff:ff:ff:ff:ff:ff" or rec.SRC_MAC == "ff:ff:ff:ff:ff:ff":
         return    
-    if rec.SRC_IP == "255.255.255.255" or rec.DST_IP == "255.255.255.255":
+    if rec.SRC_IP == ban1 or rec.DST_IP == ban1:
         return
-    if rec.SRC_IP == "0.0.0.0" or rec.DST_IP == "0.0.0.0":
+    if rec.SRC_IP == ban2 or rec.DST_IP == ban2:
         return
     src = False    
     dst = False    
     for nip in NetworkLocalAddresses:
         NIP = ipaddress.ip_network(nip)
+        if SrcIP == NIP.broadcast_address() or DstIP == NIP.broadcast_address():
+            return        
         if SrcIP in NIP:
             src = True
             break
