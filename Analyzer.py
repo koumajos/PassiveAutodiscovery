@@ -432,7 +432,7 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON):
     #==================================================================
     IPAddress(IP, cursor, createJSON)
     #==================================================================
-    print("  Last communication: ", TIME)    
+    print("  Last communication: ", time.ctime(float(TIME)))    
     DeviceIP = ipaddress.ip_address(IP)
     #==================================================================
     MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON)
