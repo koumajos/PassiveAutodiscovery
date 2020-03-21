@@ -216,8 +216,10 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses):
     dst = False    
     for nip in NetworkLocalAddresses:
         NIP = ipaddress.ip_network(nip)
-        if SrcIP == NIP.broadcast_address() or DstIP == NIP.broadcast_address():
-            return        
+        if NIP.version == 4:
+            NIPv4 = ipaddress.IPv4Network(nip)       
+            if SrcIP == NIPv4.broadcast_address or DstIP == NIPv4.broadcast_address:
+                return        
         if SrcIP in NIP:
             src = True
             break

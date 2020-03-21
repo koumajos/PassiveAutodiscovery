@@ -115,7 +115,7 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
             None
 #=======================================================================================================================================
 #Labels adding   
-def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON):
+def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON):
     print("  Labels:")
     cursor.execute("SELECT * FROM LocalServices WHERE IP='{ip}'".format(ip=IP) )
     Labels = cursor.fetchall()
@@ -125,6 +125,10 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON):
         for Label in Labels:
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{port}'".format(port=Label[0]) )
             Service = cursor.fetchone()
+            if Label[1] == "Router" and not IP in JSON["Routers"]:
+                JSON["Routers"].append(IP)
+            if not Service[1] in JSON["Services"]:
+                JSON["Services"].append(Service[1])
             createJSON["Labels"].append(Service[1])
             createJSON["LabelsDescription"].append(Service[3])
             print("   [", Service[1], "]  - ", Service[3])
@@ -141,6 +145,8 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON):
         tmp = 1
         createJSON["Labels"].append("Router")
         createJSON["LabelsDescription"].append("Routing network device")
+        if not IP in JSON["Routers"]:
+            JSON["Routers"].append(IP)
         print("   [ Router ]  - Routing network device")    
     if tmp == 0:
         print("    ---")    
@@ -468,7 +474,7 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
     #==================================================================
     MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON)
     #==================================================================
-    LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON)
+    LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON)
     #==================================================================
     DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON)
     #==================================================================    
@@ -488,6 +494,8 @@ def DoAnalyze(SQLiteConnection):
     JSON = {   "Name": "DeppendencyMapping", 
                     "DateAnalyze": "", 
                     "NumberDevice": 0,
+                    "Routers": [],                    
+                    "Services": [],                    
                     "IPStatistic": [],
                     "Devices": []
                 }    
