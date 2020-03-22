@@ -157,7 +157,9 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON):
             JSON["Routers"].append(IP)
         print("   [ Router ]  - Routing network device")    
     if tmp == 0:
-        print("    ---")    
+        print("   [ Unknown ]")
+        createJSON["Labels"].append("Unknown")
+        createJSON["LabelsDescription"].append("")    
 #=======================================================================================================================================
 #DHCP records adding   
 def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
