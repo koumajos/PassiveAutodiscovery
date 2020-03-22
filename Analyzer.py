@@ -57,12 +57,12 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
     G = networkx.Graph()        
     for row in rows:
         if row[1] == '255.255.255.255' or row[1] == '0.0.0.0' or row[2] == '255.255.255.255' or row[2] == '0.0.0.0': 
-            continue       
-        G.add_node(row[1])
-        G.add_node(row[2])
-        G.add_weighted_edges_from([(row[1], row[2], row[4])])
-    networkx.draw(G, with_labels=True)
-    plt.savefig("Graph_Local.png")
+            continue
+        G.add_edge(row[1], row[2])
+    pos = networkx.spring_layout(G)    
+    networkx.draw(G, pos, with_labels=True)
+    plt.axis('off')
+    plt.savefig("Graph_Local.png")    
     plt.show()    
 #=======================================================================================================================================
 #Create graph of global to local dependencies
@@ -79,14 +79,10 @@ def GraphGlobalDependencies(cursor, SQLiteConnection):
         plt.figure("Map of Global Dependencies for device: %s" % device[0], figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')
         H = networkx.Graph()
         for GlobalDependency in GlobalDependencies:
-            if not H.has_node(GlobalDependency[1]):
-                H.add_node(GlobalDependency[1])
-            if not H.has_node(GlobalDependency[2]):        
-                H.add_node(GlobalDependency[2])
-            if not H.has_edge(GlobalDependency[1], GlobalDependency[2]):        
-                H.add_weighted_edges_from([(GlobalDependency[1], GlobalDependency[2], GlobalDependency[4])])
-        pos = networkx.spring_layout(H,k=5/math.sqrt(H.order()),iterations=20)
-        networkx.draw(H, with_labels=True)
+            H.add_edge(GlobalDependency[1], GlobalDependency[2])
+        pos = networkx.spring_layout(H)    
+        networkx.draw(H, pos, with_labels=True)
+        plt.axis('off')
         plt.savefig("Graph_Global_%s.png" % device[0])
         plt.show()
 #=======================================================================================================================================
