@@ -129,6 +129,10 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON):
                 JSON["Routers"].append(IP)
             if not Service[1] in JSON["Services"]:
                 JSON["Services"].append(Service[1])
+            if Service[1] == "DHCP Client":
+                print("   [ End Device ]  - PC, Mobile Phone,... (everything that can take IP address from DHCP)")        
+                createJSON["Labels"].append("End Device")
+                createJSON["LabelsDescription"].append("PC, Mobile Phone,... (everything that can take IP address from DHCP)")
             createJSON["Labels"].append(Service[1])
             createJSON["LabelsDescription"].append(Service[3])
             print("   [", Service[1], "]  - ", Service[3])
@@ -136,6 +140,7 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON):
     WebServer = cursor.fetchone()
     if WebServer:
         tmp = 1
+        JSON["Services"].append("End Device")
         createJSON["Labels"].append("End Device")
         createJSON["LabelsDescription"].append("PC, Mobile Phone, Server, ... (everything with web browser)")
         print("   [ End Device ]  - PC, Mobile Phone, Server, ... (everything with web browser)")
@@ -143,6 +148,7 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON):
     Router = cursor.fetchone()
     if Router:
         tmp = 1
+        JSON["Services"].append("Router")
         createJSON["Labels"].append("Router")
         createJSON["LabelsDescription"].append("Routing network device")
         if not IP in JSON["Routers"]:
