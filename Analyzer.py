@@ -56,6 +56,8 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
     plt.figure("Map of Local Dependencies", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
     G = networkx.Graph()        
     for row in rows:
+        if row[1] == '255.255.255.255' or row[1] == '0.0.0.0' or row[2] == '255.255.255.255' or row[2] == '0.0.0.0': 
+            continue       
         G.add_node(row[1])
         G.add_node(row[2])
         G.add_weighted_edges_from([(row[1], row[2], row[4])])
