@@ -39,6 +39,7 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, BYTES, c
         NumPackets = rows1[5] + PACKETS
         NumBytes = rows1[6] + BYTES
         cursor.execute("UPDATE {tb} SET NumPackets={NP} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target='{pt}' OR Port_origin='{po}' OR Port_target='{pts}' OR Port_origin='{pos}')".format(tb=table, io=SRC_IP, it=DST_IP, pt=DST_PORT, po=DST_PORT, pts=SRC_PORT, pos=SRC_PORT, NP=NumPackets ) )
+        SQLiteConnection.commit()        
         cursor.execute("UPDATE {tb} SET NumBytes={NB} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target='{pt}' OR Port_origin='{po}' OR Port_target='{pts}' OR Port_origin='{pos}')".format(tb=table, io=SRC_IP, it=DST_IP, pt=DST_PORT, po=DST_PORT, pts=SRC_PORT, pos=SRC_PORT, NB=NumBytes ) )
         SQLiteConnection.commit()
     #=================================================================================================================================================================    
@@ -46,6 +47,7 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, BYTES, c
         NumPackets = rows2[5] + PACKETS
         NumBytes = rows2[6] + BYTES
         cursor.execute("UPDATE {tb} SET NumPackets={NP} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target='{pt}' OR Port_origin='{po}' OR Port_target='{pts}' OR Port_origin='{pos}')".format(tb=table, io=DST_IP, it=SRC_IP, pt=DST_PORT, po=DST_PORT, pts=SRC_PORT, pos=SRC_PORT, NP=NumPackets ) )
+        SQLiteConnection.commit()        
         cursor.execute("UPDATE {tb} SET NumBytes={NB} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target='{pt}' OR Port_origin='{po}' OR Port_target='{pts}' OR Port_origin='{pos}')".format(tb=table, io=DST_IP, it=SRC_IP, pt=DST_PORT, po=DST_PORT, pts=SRC_PORT, pos=SRC_PORT, NB=NumBytes ) )
         SQLiteConnection.commit()    
     #=================================================================================================================================================================    
@@ -199,6 +201,7 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection):
 #=================================================================================================================================
 #collector collect information from ipflows and push them into database
 def collector(rec, SQLiteConnection, NetworkLocalAddresses):
+    MACtemplate = True
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
     DstIP = ipaddress.ip_address(rec.DST_IP)    
     ban1 = ipaddress.ip_address('0.0.0.0')
@@ -206,8 +209,11 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses):
     cursor = SQLiteConnection.cursor()
     if SrcIP.is_multicast or DstIP.is_multicast:
         return
-    if rec.DST_MAC == "ff:ff:ff:ff:ff:ff" or rec.SRC_MAC == "ff:ff:ff:ff:ff:ff":
-        return    
+    try:    
+        if rec.DST_MAC == "ff:ff:ff:ff:ff:ff" or rec.SRC_MAC == "ff:ff:ff:ff:ff:ff":
+            return
+    except:
+        MACtemplate = False    
     if rec.SRC_IP == ban1 or rec.DST_IP == ban1:
         return
     if rec.SRC_IP == ban2 or rec.DST_IP == ban2:
@@ -230,10 +236,12 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses):
             continue        
     if SrcIP.is_private or src:        #Source Device is in local network
         NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, SQLiteConnection)
-        MAC(rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, SQLiteConnection)                
+        if MACtemplate == True:
+            MAC(rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, SQLiteConnection)                
         if DstIP.is_private or dst:    #Destination Device is in local network
             NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection)        
-            MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection)                
+            if MACtemplate == True:
+                MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection)                
             #=====================================================================================
             NewDependencies("Dependencies", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection)
             Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection)
@@ -243,7 +251,8 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses):
             NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection)
             Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection)
             Services(rec.DST_IP, rec.DST_PORT, "GlobalServices", cursor, SQLiteConnection)
-            Routers(rec.DST_IP, rec.DST_MAC, cursor, SQLiteConnection)
+            if MACtemplate == True:
+                Routers(rec.DST_IP, rec.DST_MAC, cursor, SQLiteConnection)
     else:    #Source Device is in global network
         if DstIP.is_private or dst:
             NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection)        
@@ -251,7 +260,8 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses):
             NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection)
             Services(rec.SRC_IP, rec.SRC_PORT, "GlobalServices", cursor, SQLiteConnection)
             Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection)
-            Routers(rec.SRC_IP, rec.SRC_MAC, cursor, SQLiteConnection)
+            if MACtemplate == True:
+                Routers(rec.SRC_IP, rec.SRC_MAC, cursor, SQLiteConnection)
         else:
             return 
 #=================================================================================================================================

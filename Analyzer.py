@@ -53,16 +53,32 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
     cursor.execute("SELECT * FROM Dependencies")
     rows = cursor.fetchall()
     #=================================
-    plt.figure("Map of Local Dependencies", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
+    plt.figure("Map of Local Dependencies IPv4", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
     G = networkx.Graph()        
     for row in rows:
         if row[1] == '255.255.255.255' or row[1] == '0.0.0.0' or row[2] == '255.255.255.255' or row[2] == '0.0.0.0': 
             continue
-        G.add_edge(row[1], row[2])
+        ipa = ipaddress.ip_address(row[1])
+        if ipa.version == 4:
+            G.add_edge(row[1], row[2])
     pos = networkx.spring_layout(G)    
     networkx.draw(G, pos, with_labels=True)
     plt.axis('off')
-    plt.savefig("Graph_Local.png")    
+    plt.savefig("Graph_Local_IPv4.png")    
+    plt.show()
+    #=================================
+    plt.figure("Map of Local Dependencies IPv6", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
+    H = networkx.Graph()        
+    for row in rows:
+        if row[1] == '255.255.255.255' or row[1] == '0.0.0.0' or row[2] == '255.255.255.255' or row[2] == '0.0.0.0': 
+            continue
+        ipa = ipaddress.ip_address(row[1])
+        if ipa.version == 6:
+            H.add_edge(row[1], row[2])
+    pos = networkx.spring_layout(H)    
+    networkx.draw(H, pos, with_labels=True)
+    plt.axis('off')
+    plt.savefig("Graph_Local_IPv6.png")    
     plt.show()    
 #=======================================================================================================================================
 #Create graph of global to local dependencies
@@ -181,37 +197,41 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
     cursor.execute("SELECT * FROM Services WHERE PortNumber={po}".format(po=Dependency[3]) )
     servicestat = cursor.fetchone()    
     if servicestat:
-        if servicestat[2] in LocalStatistic:
-            LocalStatistic[servicestat[2]] = LocalStatistic[servicestat[2]] + Dependency[5]
+        st = servicestat[2].replace(" ", "_")
+        if st in LocalStatistic:
+            LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
         else:
-            LocalStatistic[servicestat[2]] = Dependency[5]
+            LocalStatistic[st] = Dependency[5]
     else:               
         cursor.execute("SELECT * FROM Ports WHERE PortNumber='{po}'".format(po=Dependency[3]) )
         stats = cursor.fetchall()    
         if stats:        
             for stat in stats:
-                if stat[1] in LocalStatistic:
-                    LocalStatistic[stat[1]] = LocalStatistic[stat[1]] + Dependency[5]
+                st = stat[1].replace(" ", "_")
+                if st in LocalStatistic:
+                    LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
                 else:
-                    LocalStatistic[stat[1]] = Dependency[5]    
+                    LocalStatistic[st] = Dependency[5]    
                 break
     #==========================================
     cursor.execute("SELECT * FROM Services WHERE PortNumber={pt}".format(pt=Dependency[4]) )
     servicestat = cursor.fetchone()    
     if servicestat:
-        if servicestat[2] in LocalStatistic:
-            LocalStatistic[servicestat[2]] = LocalStatistic[servicestat[2]] + Dependency[5]
+        st = servicestat[2].replace(" ", "_")
+        if st in LocalStatistic:
+            LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
         else:
-            LocalStatistic[servicestat[2]] = Dependency[5]        
+            LocalStatistic[st] = Dependency[5]        
     else:               
         cursor.execute("SELECT * FROM Ports WHERE PortNumber='{pt}'".format(pt=Dependency[4]) )
         stats = cursor.fetchall()    
         if stats:        
             for stat in stats:
-                if stat[1] in LocalStatistic:
-                    LocalStatistic[stat[1]] = LocalStatistic[stat[1]] + Dependency[5]
+                st = stat[1].replace(" ", "_")
+                if st in LocalStatistic:
+                    LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
                 else:
-                    LocalStatistic[stat[1]] = Dependency[5]
+                    LocalStatistic[st] = Dependency[5]    
                 break    
 #=======================================================================================================================================
 #LocalDependencies records adding  
@@ -297,7 +317,8 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
     print("  Global Dependencies:")    
     cursor.execute("SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumBytes DESC".format(ipo=IP, ipt=IP) )
     GlobalDependencies = cursor.fetchall()
-    if GlobalDependencies:    
+    if GlobalDependencies:
+        promtp = 0    
         for GlobalDependency in GlobalDependencies:
             Stats(GlobalStatistic, GlobalDependency, cursor, SQLiteConnection)
             #==========================================
@@ -393,7 +414,9 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
                     else:
                         Services = GlobalDependency[3]
             #========================================================
-            print("    -> ", IPs.ljust(20, ' '), " ", Verbs, "  -  [", Services, "] ", Domain," -  Number of packets: ", Packets)            
+            if promtp < 15:            
+                print("    -> ", IPs.ljust(20, ' '), " ", Verbs, "  -  [", Services, "] ", Domain," -  Number of packets: ", Packets)            
+                promtp = promtp + 1            
             #========================================================
             createJSON["GlobalDependencies"].append({"IP": "%s" % IPs, "Verb": "%s" % Verbs, "Service": "%s" % Services, "Packets": "%s" % Packets})
     else:
