@@ -30,6 +30,82 @@ while True:
         print("Add new netwrok ip address: ", tmp)    
     except:
         print("Bad network address entered!")
+#==========================================================
+print("")
+print("Only mapping entered networks? [yes]: ", tmp)    
+tmp = input()
+if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+    Networks = True
+else:
+    Networks = False
+#==========================================================
+print("")
+print("Mapping only \"usualy\" transport layer port(no - will map all ports)? [yes]: ", tmp)    
+tmp = input()
+if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+    MappPorts = True
+else:
+    MappPorts = False
+#==========================================================
+print("")
+print("Mapping the dependencies to global subnets(no private and entered network)? [yes]: ", tmp)    
+tmp = input()
+if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+    GlobalMapping = True
+else:
+    GlobalMapping = False
+#==========================================================
+print("")
+print("Print if modul find new local device(print will slow program) [yes]: ", tmp)    
+tmp = input()
+if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+    PrintLocalDevice = True
+else:
+    PrintLocalDevice = False
+#==========================================================
+print("")
+print("Print if modul find new local services(print will slow program) [yes]: ", tmp)    
+tmp = input()
+if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+    PrintLocalServices = True
+else:
+    PrintLocalServices = False
+#==========================================================
+print("")
+print("Print if modul find new local dependency(print will slow program) [yes]: ", tmp)    
+tmp = input()
+if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+    PrintLocalDependency = True
+else:
+    PrintLocalDependency = False
+#==========================================================
+print("")
+print("Print if found MAC adress for device? [yes]: ", tmp)    
+tmp = input()
+if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+    PrintMAC = True
+else:
+    PrintMAC = False
+#==========================================================
+PrintGlobalService = False
+PrintGlobalDependency = False
+if GlobalMapping == True:
+    print("")
+    print("Print if modul find new global service(print will slow program): ", tmp)    
+    tmp = input()
+    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+        PrintGlobalService = True
+    else:
+        PrintGlobalService = False
+    #==========================================================
+    print("")
+    print("Print if modul find new global dependency(print will slow program): ", tmp)    
+    tmp = input()
+    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+        PrintGlobalDependency = True
+    else:
+        PrintGlobalDependency = False
+#==========================================================
 try:    #connect to a database
     print("Connecting to a database....", end='')
     if not os.path.exists('Database.db'):
@@ -51,7 +127,7 @@ while True:     #main loop for load ip-flows from interfaces
         break
     rec.setData(data)
     #===============================
-    Collector.collector(rec, SQLiteConnection, NetworkLocalAddresses)
+    Collector.collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapping, PrintLocalDevice, PrintLocalServices,PrintLocalDependency, PrintGlobalService,PrintGlobalDependency, MappPorts,PrintMAC)
     #===============================
 # Free allocated TRAP IFCs
 trap.finalize()

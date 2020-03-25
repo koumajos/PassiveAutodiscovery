@@ -48,10 +48,12 @@ def write_json(data, filename):
 #=======================================================================================================================================
 #Create graph of local to local dependencies
 def GraphLocalDependencies(cursor, SQLiteConnection):
-    print("######################################################################") 
-    print("Graph of local dependencies is safed in file:\tGraph_Local.png")    
     cursor.execute("SELECT * FROM Dependencies")
     rows = cursor.fetchall()
+    if not rows:
+        return
+    print("######################################################################") 
+    print("Graph of local dependencies is safed in file:\tGraph_Local.png")    
     #=================================
     plt.figure("Map of Local Dependencies IPv4", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
     G = networkx.Graph()        
@@ -150,7 +152,7 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON):
             createJSON["Labels"].append(Service[1])
             createJSON["LabelsDescription"].append(Service[3])
             print("   [", Service[1], "]  - ", Service[3])
-    cursor.execute("SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(ipo=IP, t="WEB SERVER") )
+    cursor.execute("SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(ipo=IP, t="WEB Server") )
     WebServer = cursor.fetchone()
     if WebServer:
         tmp = 1
@@ -188,12 +190,6 @@ def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
 #====================================================================================================================================== 
 #Stats
 def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
-    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{po}'".format(po=Dependency[3]) )
-    stats = cursor.fetchall()    
-    for stat in stats:
-        if stat[1] == '':            
-            return    
-    #=========================================================================================    
     cursor.execute("SELECT * FROM Services WHERE PortNumber={po}".format(po=Dependency[3]) )
     servicestat = cursor.fetchone()    
     if servicestat:
@@ -203,16 +199,19 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
         else:
             LocalStatistic[st] = Dependency[5]
     else:               
-        cursor.execute("SELECT * FROM Ports WHERE PortNumber='{po}'".format(po=Dependency[3]) )
-        stats = cursor.fetchall()    
-        if stats:        
-            for stat in stats:
-                st = stat[1].replace(" ", "_")
-                if st in LocalStatistic:
-                    LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
-                else:
-                    LocalStatistic[st] = Dependency[5]    
-                break
+        None    
+    #    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{po}'".format(po=Dependency[3]) )
+    #    stats = cursor.fetchall()    
+    #    if stats:
+    #        for stat in stats:
+    #            if stat[1] == '':
+    #                return
+    #            st = stat[1].replace(" ", "_")
+    #            if st in LocalStatistic:
+    #                LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
+    #            else:
+    #                LocalStatistic[st] = Dependency[5]    
+    #            break
     #==========================================
     cursor.execute("SELECT * FROM Services WHERE PortNumber={pt}".format(pt=Dependency[4]) )
     servicestat = cursor.fetchone()    
@@ -223,16 +222,19 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
         else:
             LocalStatistic[st] = Dependency[5]        
     else:               
-        cursor.execute("SELECT * FROM Ports WHERE PortNumber='{pt}'".format(pt=Dependency[4]) )
-        stats = cursor.fetchall()    
-        if stats:        
-            for stat in stats:
-                st = stat[1].replace(" ", "_")
-                if st in LocalStatistic:
-                    LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
-                else:
-                    LocalStatistic[st] = Dependency[5]    
-                break    
+        None    
+    #    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{pt}'".format(pt=Dependency[4]) )
+    #    stats = cursor.fetchall()    
+    #    if stats:        
+    #        for stat in stats:
+    #            if stat[1] == '':
+    #                return
+    #            st = stat[1].replace(" ", "_")
+    #            if st in LocalStatistic:
+    #                LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
+    #            else:
+    #                LocalStatistic[st] = Dependency[5]    
+    #            break    
 #=======================================================================================================================================
 #LocalDependencies records adding  
 def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
@@ -355,46 +357,48 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
                         Verbs = "requires"
                 else:               
                     IPs = GlobalDependency[1]
-                #if ServiceS[1] == "WEB Server" and SrcIP == DeviceIP:
-                #    Services = ServiceS[1]            
-                #    try:               
-                #        sck = socket.gethostbyaddr(GlobalDependency[2])
-                #        Domain = "(Domain:" + sck[0] + ")"
-                #    except:
-                #        None
-                #elif ServiceS[1] == "WEB Server":
-                #    Services = ServiceS[1]            
-                #    try:               
-                #        sck = socket.gethostbyaddr(GlobalDependency[1])
-                #        Domain = "(Domain:" + sck[0] + ")"
-                #    except:
-                #        None
-                #else:
-                #    Services = ServiceS[1]
-                Services = ServiceS[1]
+                if promtp < 15:
+                    Services = ServiceS[1]            
+                    if ServiceS[1] == "WEB Server" and SrcIP == DeviceIP:
+                        try:               
+                            sck = socket.gethostbyaddr(GlobalDependency[2])
+                            Domain = "(Domain:" + sck[0] + ")"
+                        except:
+                            None
+                    elif ServiceS[1] == "WEB Server":
+                        try:               
+                            sck = socket.gethostbyaddr(GlobalDependency[1])
+                            Domain = "(Domain:" + sck[0] + ")"
+                        except:
+                            None
+                    else:
+                        None
+                else:
+                    Services = ServiceS[1]
             elif ServiceD:
                 if SrcIP == DeviceIP:
                     IPs = GlobalDependency[2]
                 else:               
                     IPs = GlobalDependency[1]
                     Verbs = "requires"
-                #if ServiceD[1] == "WEB Server" and SrcIP == DeviceIP:
-                #    Services = ServiceD[1]            
-                #    try:                    
-                #        sck = socket.gethostbyaddr(GlobalDependency[2])
-                #        Domain = "(Domain:" + sck[0] + ")"
-                #    except:
-                #        None           
-                #elif ServiceD[1] == "WEB Server":
-                #    Services = ServiceD[1]            
-                #    try:                    
-                #        sck = socket.gethostbyaddr(GlobalDependency[1])
-                #        Domain = "(Domain:" + sck[0] + ")"
-                #    except:
-                #        None           
-                #else:
-                #    Services = ServiceD[1]
-                Services = ServiceD[1]
+                if promtp < 15:
+                    Services = ServiceD[1]
+                    if ServiceD[1] == "WEB Server" and SrcIP == DeviceIP:
+                        try:                    
+                            sck = socket.gethostbyaddr(GlobalDependency[2])
+                            Domain = "(Domain:" + sck[0] + ")"
+                        except:
+                            None           
+                    elif ServiceD[1] == "WEB Server":
+                        try:                    
+                            sck = socket.gethostbyaddr(GlobalDependency[1])
+                            Domain = "(Domain:" + sck[0] + ")"
+                        except:
+                            None           
+                    else:
+                        None
+                else:
+                    Services = ServiceD[1]
             else:
                 if SrcIP == DeviceIP:
                     IPs = GlobalDependency[2]       
@@ -446,8 +450,7 @@ def StatProcent(Statistic, createJSON, TMP):
             createJSON["GlobalStatistic"].append({"Service": "%s" % i, "Procents": "%s" % Statistic[i]})
         else:
             createJSON["IPStatistic"].append({"IP": "%s" % i, "Procents": "%s" % Statistic[i]})
-        
-    #    print("    ", i, "     ", Statistic[i], "%")
+    #    print("    (", i, ")     ", Statistic[i], "%")
     plot(Statistic.items())
 #=======================================================================================================================================
 #IP_print
