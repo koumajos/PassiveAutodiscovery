@@ -214,13 +214,12 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, PrintLocalDevice):
             print("Error with inserting into table LocalDevice")
 #=================================================================================================================================
 #deleting small packets dependencies from global
-def DeleteGlobalDependencies(SQLiteConnection):
+def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
     cursor = SQLiteConnection.cursor()
     try:
 #        cursor.execute("SELECT COUNT(*) FROM Global WHERE NumPackets < 6 AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)")
 #        row = cursor.fetchone()
 #        print("Delete: ", row[0], " records")
-        PacketNumber = 50
         cursor.execute("DELETE FROM Global WHERE NumPackets < {number} AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)".format(number=PacketNumber))
         SQLiteConnection.commit()
     except sqlite3.IntegrityError:

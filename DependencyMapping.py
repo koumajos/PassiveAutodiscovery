@@ -31,80 +31,96 @@ while True:
     except:
         print("Bad network address entered!")
 #==========================================================
-print("")
-print("Only mapping entered networks? [yes]: ", tmp)    
+print("Only mapping entered networks? [yes]: ")    
 tmp = input()
 if tmp == "yes" or tmp == "YES" or tmp == "Yes":
     Networks = True
 else:
     Networks = False
 #==========================================================
-print("")
-print("Mapping only \"usualy\" transport layer port(no - will map all ports)? [yes]: ", tmp)    
+print("Mapping only \"usualy\" transport layer port(no - will map all ports)? [yes]: ")    
 tmp = input()
 if tmp == "yes" or tmp == "YES" or tmp == "Yes":
     MappPorts = True
 else:
     MappPorts = False
 #==========================================================
-print("")
-print("Mapping the dependencies to global subnets(no private and entered network)? [yes]: ", tmp)    
+print("Mapping the dependencies to global subnets(no private and entered network)? [yes]: ")    
 tmp = input()
 if tmp == "yes" or tmp == "YES" or tmp == "Yes":
     GlobalMapping = True
 else:
     GlobalMapping = False
 #==========================================================
-print("")
-print("Print if modul find new local device(print will slow program) [yes]: ", tmp)    
+DeleteGlobal = False
+if GlobalMapping == True:
+    print("Delete periodicly dependencies that have small amount of packets(you will set the number) from global dependencies? [yes]: ")    
+    tmp = input()
+    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+        DeleteGlobal = True
+    else:
+        DeleteGlobal = False
+    if DeleteGlobal == True:
+        print("Set number of packets:")
+        tmp = input()        
+        PacketNumber = int(tmp)
+#==========================================================
+print("Would you like print some information while capturing data on netwrok? [yes]")
 tmp = input()
-if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-    PrintLocalDevice = True
+if tmp == "yes":
+    #==========================================================
+    print("Print if modul find new local device(print will slow program) [yes]: ")    
+    tmp = input()
+    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+        PrintLocalDevice = True
+    else:
+        PrintLocalDevice = False
+    #==========================================================
+    print("Print if modul find new local services(print will slow program) [yes]: ")    
+    tmp = input()
+    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+        PrintLocalServices = True
+    else:
+        PrintLocalServices = False
+    #==========================================================
+    print("Print if modul find new local dependency(print will slow program) [yes]: ")    
+    tmp = input()
+    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+        PrintLocalDependency = True
+    else:
+        PrintLocalDependency = False
+    #==========================================================
+    print("Print if found MAC adress for device? [yes]: ")    
+    tmp = input()
+    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+        PrintMAC = True
+    else:
+        PrintMAC = False
+    #==========================================================
+    PrintGlobalService = False
+    PrintGlobalDependency = False
+    if GlobalMapping == True:
+        print("Print if modul find new global service(print will slow program): ")   
+        tmp = input()
+        if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+            PrintGlobalService = True
+        else:
+            PrintGlobalService = False
+        #==========================================================
+        print("Print if modul find new global dependency(print will slow program): ")    
+        tmp = input()
+        if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+            PrintGlobalDependency = True
+        else:
+            PrintGlobalDependency = False
+    #==========================================================
 else:
     PrintLocalDevice = False
-#==========================================================
-print("")
-print("Print if modul find new local services(print will slow program) [yes]: ", tmp)    
-tmp = input()
-if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-    PrintLocalServices = True
-else:
     PrintLocalServices = False
-#==========================================================
-print("")
-print("Print if modul find new local dependency(print will slow program) [yes]: ", tmp)    
-tmp = input()
-if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-    PrintLocalDependency = True
-else:
     PrintLocalDependency = False
-#==========================================================
-print("")
-print("Print if found MAC adress for device? [yes]: ", tmp)    
-tmp = input()
-if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-    PrintMAC = True
-else:
     PrintMAC = False
-#==========================================================
-PrintGlobalService = False
-PrintGlobalDependency = False
-if GlobalMapping == True:
-    print("")
-    print("Print if modul find new global service(print will slow program): ", tmp)    
-    tmp = input()
-    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-        PrintGlobalService = True
-    else:
-        PrintGlobalService = False
-    #==========================================================
-    print("")
-    print("Print if modul find new global dependency(print will slow program): ", tmp)    
-    tmp = input()
-    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-        PrintGlobalDependency = True
-    else:
-        PrintGlobalDependency = False
+    PrintGlobalService = False
+    PrintGlobalDependency = False
 #==========================================================
 try:    #connect to a database
     print("Connecting to a database....", end='')
@@ -116,6 +132,7 @@ try:    #connect to a database
     print("done")
 except sqlite3.Error as error:
     print("Can't connect to a database:  ", error)
+tmp = 0
 while True:     #main loop for load ip-flows from interfaces
     try:
         data = trap.recv()
@@ -129,6 +146,11 @@ while True:     #main loop for load ip-flows from interfaces
     #===============================
     Collector.collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapping, PrintLocalDevice, PrintLocalServices,PrintLocalDependency, PrintGlobalService,PrintGlobalDependency, MappPorts,PrintMAC)
     #===============================
+    tmp = tmp + 1
+    if DeleteGlobal == True and tmp % 10000 == 0:
+        Collector.DeleteGlobalDependencies(SQLiteConnection, PacketNumber)
+if DeleteGlobal == True:
+    Collector.DeleteGlobalDependencies(SQLiteConnection, PacketNumber)
 # Free allocated TRAP IFCs
 trap.finalize()
 # Close database connection

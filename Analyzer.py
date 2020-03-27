@@ -112,28 +112,23 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
     Router = cursor.fetchone()
     mac = ""    
     if row:
-#        print("  MAC: ", row[2], end="")
         createJSON["MAC"] = row[2]
         mac = map(''.join, zip(*[iter(row[2])]*8))
     elif Router:
-#        print("  MAC: ", Router[1], end="")
         mac = map(''.join, zip(*[iter(Router[1])]*8))    
     else:
         None
-#        print("  MAC: ---")
     if mac != "":
         cursor.execute("SELECT * FROM VendorsMAC WHERE VendorMAC='{m}'".format(m=list(mac)[0].upper()))
         row = cursor.fetchone()
         if row:        
             createJSON["Vendor"] = row[3]
             createJSON["Country"] = row[4]
-#            print(" | Vendor: ", row[3], ",", row[4])
         else:
             None
 #=======================================================================================================================================
 #Labels adding   
 def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
-#    print("  Labels:")
     cursor.execute("SELECT * FROM LocalServices WHERE IP='{ip}'".format(ip=IP) )
     Labels = cursor.fetchall()
     tmp = 0    
@@ -156,10 +151,8 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
             if not Service[1] in JSON["Services"]:
                 JSON["Services"].append(Service[1])
             if Service[1] == "DHCP Client":
-#                print("   [ End Device ]  - PC, Mobile Phone,... (everything that can take IP address from DHCP)")        
                 createJSON["Labels"].append({"Label": "End Device", "Description": "PC, Mobile Phone,... (everything that can take IP address from DHCP)"})
             createJSON["Labels"].append({"Label": "%s" % Service[1], "Description": "%s" % Service[3]})
-#            print("   [", Service[1], "]  - ", Service[3])
     cursor.execute("SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(ipo=IP, t="WEB Server") )
     WebServer = cursor.fetchone()
     if WebServer:
@@ -167,7 +160,6 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
         if not "End Device" in JSON["Services"]:
             JSON["Services"].append("End Device")
         createJSON["Labels"].append({"Label": "End Device", "Description": "PC, Mobile Phone,... (everything that can take IP address from DHCP)"})
-#        print("   [ End Device ]  - PC, Mobile Phone, Server, ... (everything with web browser)")
     cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP) )
     Router = cursor.fetchone()
     if Router:
@@ -177,24 +169,18 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
         createJSON["Labels"].append({"Label": "Router", "Description": "Routing network device"})
         if not IP in JSON["Routers"]:
             JSON["Routers"].append(IP)
-#        print("   [ Router ]  - Routing network device")    
     if tmp == 0:
-#        print("   [ Unknown ]")
         if not "Unknown" in JSON["Services"]:
             JSON["Services"].append("Unknown")
         createJSON["Labels"].append({"Label": "Unknows", "Description": ""})
 #=======================================================================================================================================
 #DHCP records adding   
 def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
-#    print("  DHCP:")
     cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='{ip}' ORDER BY Time DESC".format(ip=IP) )
     DHCPs = cursor.fetchall()    
     if DHCPs:
         for DHCP in DHCPs:
             createJSON["DHCP"].append({"DHCPServ": "%s" % DHCP[2], "DHCPTime": "%s" % time.ctime(float(DHCP[3]))})
-#            print("    Server: ", DHCP[2], " Time:", time.ctime(float(DHCP[3])) )
-#    else:
-#        print("    ---")
 #====================================================================================================================================== 
 #Stats
 def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
@@ -218,21 +204,22 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
 #=======================================================================================================================================
 #LocalDependencies records adding  
 def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
-#    print("  Local Dependencies:")    
     cursor.execute("SELECT * FROM Dependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumBytes DESC".format(ipo=IP, ipt=IP) )
     Dependencies = cursor.fetchall()    
     if Dependencies:    
         for Dependency in Dependencies:
             Stats(LocalStatistic, Dependency, cursor, SQLiteConnection)
             #==========================================
-            if Dependency[1] in IPStatistic:
-                IPStatistic[Dependency[1]] = IPStatistic[Dependency[1]] + Dependency[5]
-            else:
-                IPStatistic[Dependency[1]] = Dependency[5]            
-            if Dependency[2] in IPStatistic:
-                IPStatistic[Dependency[2]] = IPStatistic[Dependency[2]] + Dependency[5]
-            else:
-                IPStatistic[Dependency[2]] = Dependency[5]            
+            if Dependency[1] == IP:            
+                if Dependency[1] in IPStatistic:
+                    IPStatistic[Dependency[1]] = IPStatistic[Dependency[1]] + Dependency[5]
+                else:
+                    IPStatistic[Dependency[1]] = Dependency[5]            
+            if Dependency[2] == IP:           
+                if Dependency[2] in IPStatistic:
+                    IPStatistic[Dependency[2]] = IPStatistic[Dependency[2]] + Dependency[5]
+                else:
+                    IPStatistic[Dependency[2]] = Dependency[5]            
             #==========================================
             SrcIP = ipaddress.ip_address(Dependency[1])
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
@@ -264,16 +251,34 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, curso
                     Verbs = "requires"
                 Services = ServiceD[1]
             else:
-                None
-            #========================================================
-#            print("    -> ", IPs.ljust(20, ' '), " ", Verbs, "  -  [", Services, "]  -  Number of packets: ", Packets)            
+                if SrcIP == DeviceIP:
+                    IPs = Dependency[2]                    
+                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=Dependency[4]) )
+                    PortD = cursor.fetchone()                    
+                    if PortD:
+                        if not PortD[1] == '': 
+                            Services = PortD[1]
+                        else:
+                            Services = PortD[2]
+                    else:
+                        Services = Dependency[4]
+                else:               
+                    IPs = Dependency[1]                    
+                    Verbs = "requires"
+                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
+                    PortS = cursor.fetchone()
+                    if PortS:
+                        if not PortS[1] == '': 
+                            Services = PortS[1]
+                        else:
+                            Services = PortS[2]
+                    else:
+                        Services = Dependency[3]
             #========================================================
             createJSON["LocalDependencies"].append({"IP": "%s" % IPs, "Verb": "%s" % Verbs, "Service": "%s" % Services, "Packets": "%s" % Packets})
-#        print("    ---")    
 #=======================================================================================================================================
 #GlobalDependencies records adding  
 def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
-#    print("  Global Dependencies:")    
     cursor.execute("SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumPackets DESC".format(ipo=IP, ipt=IP) )
     GlobalDependencies = cursor.fetchall()
     if GlobalDependencies:
@@ -283,7 +288,7 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
             #==========================================
             SrcIP = ipaddress.ip_address(GlobalDependency[1])
             #==========================================
-            if SrcIP.is_private:            
+            if GlobalDependency[1] == IP:            
                 if GlobalDependency[1] in IPStatistic:
                     IPStatistic[GlobalDependency[1]] = IPStatistic[GlobalDependency[1]] + GlobalDependency[5]
                 else:
@@ -357,15 +362,25 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
                 else:
                     Services = ServiceD[1]
             else:
-                None                
-            #========================================================
-#            if promtp < 15:            
-#                print("    -> ", IPs.ljust(20, ' '), " ", Verbs, "  -  [", Services, "] ", Domain," -  Number of packets: ", Packets)            
-#                promtp = promtp + 1            
+                if SrcIP == DeviceIP:
+                    IPs = GlobalDependency[2]       
+                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=GlobalDependency[4]) )
+                    PortD = cursor.fetchone()                    
+                    if PortD:
+                        Services = PortD[1]                       
+                    else:
+                        Services = GlobalDependency[4]
+                else:               
+                    IPs = GlobalDependency[1]       
+                    Verbs = "requires"
+                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=GlobalDependency[3]) )
+                    PortS = cursor.fetchone()    
+                    if PortS:
+                        Services = PortS[1]
+                    else:
+                        Services = GlobalDependency[3]                
             #========================================================
             createJSON["GlobalDependencies"].append({"IP": "%s" % IPs, "Verb": "%s" % Verbs, "Service": "%s" % Services, "Packets": "%s" % Packets})
-#    else:
-#        print("    ---")
 #=======================================================================================================================================
 #Analyze single device   
 def StatProcent(Statistic, createJSON, TMP):    
@@ -376,13 +391,6 @@ def StatProcent(Statistic, createJSON, TMP):
         tmp = tmp + j
     #==========================
     Statistic = {r: Statistic[r] for r in sorted(Statistic, key=Statistic.get, reverse=True)}
-#    if TMP == 0:    
-#        print("  Statistical of Local Dependencies:  (in %)")
-#    elif TMP == 1:
-#        print("  Statistical of Global Dependencies:  (in %)")
-#    else:
-#        print("######################################################################")
-#        print("Statistical of using network bandwidht:  (in %)")            
     for i, j in Statistic.items():
         Statistic[i] = float(j/tmp*100)
         if TMP == 0:
@@ -391,13 +399,11 @@ def StatProcent(Statistic, createJSON, TMP):
             createJSON["GlobalStatistic"].append({"Service": "%s" % i, "Procents": "%s" % Statistic[i]})
         else:
             createJSON["IPStatistic"].append({"IP": "%s" % i, "Procents": "%s" % Statistic[i]})
-    #    print("    (", i, ")     ", Statistic[i], "%")
     if TMP == 2:
         plot(Statistic.items())
 #=======================================================================================================================================
 #IP_print
 def IPAddress(IP, cursor, createJSON):   
-#    print("  IP: ", IP, end='')
     createJSON["IP"].append(IP)
     cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP) )
     Router = cursor.fetchone()
@@ -406,18 +412,14 @@ def IPAddress(IP, cursor, createJSON):
         IPs = cursor.fetchall()
         for ip in IPs:
             if not ip[1] == IP:
-#                print(" <", ip[1], "> ", end='')
                 createJSON["IP"].append(ip[1])
-#        print("")  
     else:
         cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1]) )
         Routers = cursor.fetchall()
         for ip in Routers:
             ipd = ipaddress.ip_address(ip[2])        
             if ipd.is_private and ip[2] != IP:
-#                print(" <", ip[2], "> ", end='')
                 createJSON["IP"].append(ip[2])
-#        print("")
 #=======================================================================================================================================
 #PrintDevice from JSON files   
 def PrintDeviceFromJSON(JSON):
@@ -508,13 +510,10 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
                     "GlobalStatistic": [], 
                   }
     #==================================================================
-#    print("######################################################################") 
-#    print("DeviceID: ", DeviceID)
     createJSON["DeviceID"] = DeviceID
     #==================================================================
     IPAddress(IP, cursor, createJSON)
     #==================================================================
-#    print("  Last communication: ", time.ctime(float(TIME)))    
     createJSON["LastCom"] = float(TIME)
     DeviceIP = ipaddress.ip_address(IP)
     #==================================================================
@@ -595,4 +594,3 @@ DoAnalyze(SQLiteConnection)
 # Close database connection
 if(SQLiteConnection):
     SQLiteConnection.close()
-
