@@ -33,13 +33,21 @@ def Services(IP, PORT, table, cursor, SQLiteConnection, PrintServices):
 #Dependencies resolved, push into database or update
 def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, BYTES, cursor, SQLiteConnection, MappPorts, PrintDependency):
     if MappPorts == True:
-        cursor.execute("SELECT * FROM Services WHERE PortNumber={pts} OR PortNumber={pos}".format(pts=SRC_PORT, pos=DST_PORT ) )
-        row = cursor.fetchone()
-        if not row:
+        try:
+            cursor.execute("SELECT * FROM Services WHERE PortNumber={pts} OR PortNumber={pos}".format(pts=SRC_PORT, pos=DST_PORT ) )
+            row = cursor.fetchone()
+            if not row:
+                return
+        except sqlite3.IntegrityError:
+            print("Error while SELECT")            
             return
     #=================================================================================================================================================================    
-    cursor.execute("SELECT * FROM {tb} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target={pt} OR Port_origin={po} OR Port_target={pts} OR Port_origin={pos})".format(tb=table, io=SRC_IP, it=DST_IP, pt=DST_PORT, po=DST_PORT, pts=SRC_PORT, pos=SRC_PORT ) )
-    rows1 = cursor.fetchone()
+    try:    
+        cursor.execute("SELECT * FROM {tb} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target={pt} OR Port_origin={po} OR Port_target={pts} OR Port_origin={pos})".format(tb=table, io=SRC_IP, it=DST_IP, pt=DST_PORT, po=DST_PORT, pts=SRC_PORT, pos=SRC_PORT ) )
+        rows1 = cursor.fetchone()
+    except sqlite3.IntegrityError:
+        print("Error in SELECT")
+        return
     #=================================================================================================================================================================    
     if rows1:   #if record rows1 is in database, then update PACKETS and BYTES
         NumPackets = rows1[5] + PACKETS
@@ -205,8 +213,21 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, PrintLocalDevice):
         except sqlite3.IntegrityError:
             print("Error with inserting into table LocalDevice")
 #=================================================================================================================================
+#deleting small packets dependencies from global
+def DeleteGlobalDependencies(SQLiteConnection):
+    cursor = SQLiteConnection.cursor()
+    try:
+#        cursor.execute("SELECT COUNT(*) FROM Global WHERE NumPackets < 6 AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)")
+#        row = cursor.fetchone()
+#        print("Delete: ", row[0], " records")
+        PacketNumber = 50
+        cursor.execute("DELETE FROM Global WHERE NumPackets < {number} AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)".format(number=PacketNumber))
+        SQLiteConnection.commit()
+    except sqlite3.IntegrityError:
+        print("Error in deleting rows from Global")
+#=================================================================================================================================
 #collector collect information from ipflows and push them into database
-def collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapping, PrintLocalDevice, PrintLocalServices, PrintLocalDependency, PrintGlobalService, PrintGlobalDependency, MappPorts, PrintMAC):
+def collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapping, PrintLocalDevice, PrintLocalServices, PrintLocalDependency, PrintGlobalServices, PrintGlobalDependency, MappPorts, PrintMAC):
     MACtemplate = True
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
     DstIP = ipaddress.ip_address(rec.DST_IP)    
@@ -257,7 +278,7 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapp
             else:    #Destination Device is in global network
                 Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
                 if GlobalMapping == True:
-                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts)
+                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintGlobalDependency)
                     Services(rec.DST_IP, rec.DST_PORT, "GlobalServices", cursor, SQLiteConnection, PrintGlobalServices)
                 if MACtemplate == True:
                     Routers(rec.DST_IP, rec.DST_MAC, cursor, SQLiteConnection)
@@ -283,14 +304,14 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapp
                 if MACtemplate == True:
                     MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, PrintMAC)                
                 #=====================================================================================
-                NewDependencies("Dependencies", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts)
+                NewDependencies("Dependencies", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintLocalDependency)
                 Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
                 Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)        
                 DHCP(rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.TIME_LAST, cursor, SQLiteConnection)                    
             else:    #Destination Device is in global network
                 Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
                 if GlobalMapping == True:
-                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts)
+                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintGlobalDependency)
                     Services(rec.DST_IP, rec.DST_PORT, "GlobalServices", cursor, SQLiteConnection, PrintGlobalServices)
                 if MACtemplate == True:
                     Routers(rec.DST_IP, rec.DST_MAC, cursor, SQLiteConnection)
@@ -300,7 +321,7 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapp
                 #=====================================================================================        
                 Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
                 if GlobalMapping == True:
-                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts)
+                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintGlobalDependency)
                     Services(rec.SRC_IP, rec.SRC_PORT, "GlobalServices", cursor, SQLiteConnection, PrintGlobalServices)
                 if MACtemplate == True:
                     MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, PrintMAC)                

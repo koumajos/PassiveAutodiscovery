@@ -131,14 +131,23 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
             None
 #=======================================================================================================================================
 #Labels adding   
-def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON):
+def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
     print("  Labels:")
     cursor.execute("SELECT * FROM LocalServices WHERE IP='{ip}'".format(ip=IP) )
     Labels = cursor.fetchall()
     tmp = 0    
     if Labels:
-        tmp = 1        
         for Label in Labels:
+            #==========TEST THIS====================================================================================================================
+            if GL == True:
+                cursor.execute("SELECT * FROM Global WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}')".format(port=Label[0], ip=IP) )
+                Global = cursor.fetchone()
+                cursor.execute("SELECT * FROM Dependencies WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}') ".format(port=Label[0], ip=IP) )
+                Local = cursor.fetchone()
+                if not Global and not Local:
+                    continue            
+            #==============================================================================================================================
+            tmp = 1        
             cursor.execute("SELECT * FROM Services WHERE PortNumber='{port}'".format(port=Label[0]) )
             Service = cursor.fetchone()
             if Label[1] == "Router" and not IP in JSON["Routers"]:
@@ -284,29 +293,30 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, curso
                     Verbs = "requires"
                 Services = ServiceD[1]
             else:
-                if SrcIP == DeviceIP:
-                    IPs = Dependency[2]                    
-                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=Dependency[4]) )
-                    PortD = cursor.fetchone()                    
-                    if PortD:
-                        if not PortD[1] == '': 
-                            Services = PortD[1]
-                        else:
-                            Services = PortD[2]
-                    else:
-                        Services = Dependency[4]
-                else:               
-                    IPs = Dependency[1]                    
-                    Verbs = "requires"
-                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
-                    PortS = cursor.fetchone()
-                    if PortS:
-                        if not PortS[1] == '': 
-                            Services = PortS[1]
-                        else:
-                            Services = PortS[2]
-                    else:
-                        Services = Dependency[3]
+                None
+               # if SrcIP == DeviceIP:
+               #     IPs = Dependency[2]                    
+               #     cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=Dependency[4]) )
+               #     PortD = cursor.fetchone()                    
+               #     if PortD:
+               #         if not PortD[1] == '': 
+               #             Services = PortD[1]
+               #         else:
+               #             Services = PortD[2]
+               #     else:
+               #         Services = Dependency[4]
+               # else:               
+               #     IPs = Dependency[1]                    
+               #     Verbs = "requires"
+               #     cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=Dependency[3]) )
+               #     PortS = cursor.fetchone()
+               #     if PortS:
+               #         if not PortS[1] == '': 
+               #             Services = PortS[1]
+               #         else:
+               #             Services = PortS[2]
+               #     else:
+               #         Services = Dependency[3]
             #========================================================
             print("    -> ", IPs.ljust(20, ' '), " ", Verbs, "  -  [", Services, "]  -  Number of packets: ", Packets)            
             #========================================================
@@ -400,23 +410,24 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
                 else:
                     Services = ServiceD[1]
             else:
-                if SrcIP == DeviceIP:
-                    IPs = GlobalDependency[2]       
-                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=GlobalDependency[4]) )
-                    PortD = cursor.fetchone()                    
-                    if PortD:
-                        Services = PortD[1]                       
-                    else:
-                        Services = GlobalDependency[4]
-                else:               
-                    IPs = GlobalDependency[1]       
-                    Verbs = "requires"
-                    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=GlobalDependency[3]) )
-                    PortS = cursor.fetchone()    
-                    if PortS:
-                        Services = PortS[1]
-                    else:
-                        Services = GlobalDependency[3]
+                None                
+                #if SrcIP == DeviceIP:
+                #    IPs = GlobalDependency[2]       
+                #    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portD}'".format(portD=GlobalDependency[4]) )
+                #    PortD = cursor.fetchone()                    
+                #    if PortD:
+                #        Services = PortD[1]                       
+                #    else:
+                #        Services = GlobalDependency[4]
+                #else:               
+                #    IPs = GlobalDependency[1]       
+                #    Verbs = "requires"
+                #    cursor.execute("SELECT * FROM Ports WHERE PortNumber='{portS}'".format(portS=GlobalDependency[3]) )
+                #    PortS = cursor.fetchone()    
+                #    if PortS:
+                #        Services = PortS[1]
+                #    else:
+                #        Services = GlobalDependency[3]
             #========================================================
             if promtp < 15:            
                 print("    -> ", IPs.ljust(20, ' '), " ", Verbs, "  -  [", Services, "] ", Domain," -  Number of packets: ", Packets)            
@@ -478,7 +489,7 @@ def IPAddress(IP, cursor, createJSON):
         print("")
 #=======================================================================================================================================
 #Analyze single device   
-def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic):    
+def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic, GL):    
     #==================================================================
     createJSON = {  "DeviceID":0,
                     "IP": [], 
@@ -506,7 +517,7 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
     #==================================================================
     MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON)
     #==================================================================
-    LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON)
+    LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL)
     #==================================================================
     DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON)
     #==================================================================    
@@ -535,18 +546,23 @@ def DoAnalyze(SQLiteConnection):
     read_json(JSON, "DependencyMapping")
     #==================================================================
     IPStatistic = {}    
-    #==================================================================    
     cursor = SQLiteConnection.cursor()
     DeviceID = 1
     #==================================================================
+    GL = True        
+    cursor.execute("SELECT COUNT(*) FROM Global")
+    GlobalC = cursor.fetchone()
+    if GlobalC[0] == 0:
+        GL = False
+    #==================================================================    
     cursor.execute("SELECT * FROM LocalDevice")
     LocalDevices = cursor.fetchall()
     for LocalDevice in LocalDevices:
-        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON, IPStatistic)
+        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON, IPStatistic, GL)
         DeviceID = DeviceID + 1
     #==================================================================
     GraphLocalDependencies(cursor, SQLiteConnection)
-    GraphGlobalDependencies(cursor, SQLiteConnection)
+    #GraphGlobalDependencies(cursor, SQLiteConnection)
     #==================================================================
     StatProcent(IPStatistic, JSON, 2)    
     #==================================================================
