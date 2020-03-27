@@ -536,7 +536,7 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
     JSON["Devices"].append(createJSON)
 #=======================================================================================================================================
 #Main function of Analyzer
-def DoAnalyze(SQLiteConnection):
+def DoAnalyze(SQLiteConnection, GraphLocal, GraphGlobal):
     #==================================================================
     JSON = {   "Name": "DeppendencyMapping", 
                     "DateAnalyze": "", 
@@ -565,8 +565,10 @@ def DoAnalyze(SQLiteConnection):
         AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON, IPStatistic, GL)
         DeviceID = DeviceID + 1
     #==================================================================
-    GraphLocalDependencies(cursor, SQLiteConnection)
-    #GraphGlobalDependencies(cursor, SQLiteConnection)
+    if GraphLocal == True:    
+        GraphLocalDependencies(cursor, SQLiteConnection)
+    if GraphGlobal == True:
+        GraphGlobalDependencies(cursor, SQLiteConnection)
     #==================================================================
     StatProcent(IPStatistic, JSON, 2)    
     #==================================================================
@@ -589,7 +591,21 @@ try:    #connect to a database
 except sqlite3.Error as error:
     print("Can't connect to a database:  ", error)
 #=====================================================
-DoAnalyze(SQLiteConnection)
+print("Print Graph of local dependencies? [yes]: ")    
+tmp = input()
+if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+    GraphLocal = True
+else:
+    GraphLocal = False
+#=====================================================
+print("Print Graph of global dependencies? [yes]: ")    
+tmp = input()
+if tmp == "yes" or tmp == "YES" or tmp == "Yes":
+    GraphGlobal = True
+else:
+    GraphGlobal = False
+#=====================================================
+DoAnalyze(SQLiteConnection, GraphLocal, GraphGlobal)
 #=====================================================
 # Close database connection
 if(SQLiteConnection):
