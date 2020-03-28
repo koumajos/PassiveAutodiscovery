@@ -1,0 +1,37 @@
+Connecting to a database....done
+######################################################################
+DeviceID:  1
+  IP:  147.229.13.152
+  Last communication:  Sun Mar 15 19:48:39 2020
+  MAC: ---
+  Labels:
+   [ File Server ]  -  FTPS protocol (File Transfer Protocol) use for file transfer (command) over TLS/SSl
+   [ Router ]  -  OSPF does not use a TCP/IP transport protocol (UDP, TCP), but is encapsulated directly in IP datagrams with protocol number 89
+   [ Database Server ]  -  Microsoft SQL Server
+   [ SNMP Agent ]  -  SNMP Manager request the SNMP Agent using protocol SNMP on port 161 (snmp - Simple Network Management Protocol)
+   [ Streaming Server ]  -  RTSP protokol (Real Time Streaming Protocol) is use by streaming platform (server) to stream video (Youtube,..) to client (web browser, Skype, Spotify,...), also for IP cameras
+   [ Windows ]  -  SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows
+   [ WEB Server ]  -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data (Alternate port)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  10.32.61.1             requires   -  [ 58367 ]  -  Number of packets:  10
+  Global Dependencies:
+    ->  104.190.1.245          requires   -  [ 53346 ]    -  Number of packets:  296
+    ->  72.22.235.115          requires   -  [ 43420 ]    -  Number of packets:  256
+    ->  66.55.139.115          requires   -  [ 63355 ]    -  Number of packets:  238
+    ->  104.194.10.54          requires   -  [ 55809 ]    -  Number of packets:  208
+    ->  184.177.101.150        provides   -  [ 58368 ]    -  Number of packets:  226
+    ->  216.67.100.98          requires   -  [ 64182 ]    -  Number of packets:  198
+    ->  76.72.71.174           requires   -  [ 51513 ]    -  Number of packets:  213
+    ->  66.206.14.138          provides   -  [ 65074 ]    -  Number of packets:  219
+    ->  104.187.70.78          requires   -  [ 63472 ]    -  Number of packets:  210
+    ->  208.180.97.73          requires   -  [ 49770 ]    -  Number of packets:  189
+    ->  111.65.228.13          provides   -  [ 53753 ]    -  Number of packets:  199
+    ->  74.92.235.9            requires   -  [ 64984 ]    -  Number of packets:  202
+    ->  50.238.3.131           requires   -  [ 63823 ]    -  Number of packets:  200
+    ->  24.243.73.248          requires   -  [ 62903 ]    -  Number of packets:  178
+    ->  192.169.245.102        requires   -  [ 60751 ]    -  Number of packets:  178
+  Statistical of Global Dependencies:  (in %)
+
+>> Error: There are missing values

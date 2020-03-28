@@ -1,0 +1,1889 @@
+Connecting to a database....done
+######################################################################
+Device ID:  2
+  IP: 147.32.232.8
+  Last communication:  Sun Mar 15 19:59:24 2020
+  MAC: ---
+  Labels:
+    [ Windows ] -  NetMeeting Remote Desktop Sharing use on Windows OS for remote desktop from another personal computer over a corporate intranet
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  195.54.167.251   requires  [ Windows ] - number of packets:  18081
+    ->  185.153.198.243   requires  [ Windows ] - number of packets:  5771
+    ->  212.92.106.176   requires  [ Windows ] - number of packets:  3843
+    ->  187.237.233.55   requires  [ Windows ] - number of packets:  2234
+    ->  185.202.2.28   requires  [ Windows ] - number of packets:  1019
+    ->  185.202.1.236   requires  [ Windows ] - number of packets:  581
+    ->  185.202.1.239   requires  [ Windows ] - number of packets:  560
+    ->  185.202.1.41   requires  [ Windows ] - number of packets:  547
+    ->  185.202.1.118   requires  [ Windows ] - number of packets:  543
+    ->  185.202.1.154   requires  [ Windows ] - number of packets:  535
+    ->  185.202.1.119   requires  [ Windows ] - number of packets:  519
+    ->  185.202.1.252   requires  [ Windows ] - number of packets:  502
+    ->  185.202.1.120   requires  [ Windows ] - number of packets:  493
+    ->  185.202.2.96   requires  [ Windows ] - number of packets:  483
+    ->  92.63.194.36   requires  [ Windows ] - number of packets:  472
+    ->  185.202.1.157   requires  [ Windows ] - number of packets:  457
+
+Terminal_Services: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  4
+  IP: 147.32.232.150
+  Last communication:  Sun Mar 15 19:59:24 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  178.238.38.82   provides  [ WEB Server ] - number of packets:  2715736
+    ->  82.142.127.102   provides  [ WEB Server ] - number of packets:  10288
+    ->  3.120.198.117   provides  [ WEB Server ] - number of packets:  4101
+    ->  140.82.113.25   provides  [ WEB Server ] - number of packets:  1900
+    ->  143.204.202.30   provides  [ WEB Server ] - number of packets:  1738
+    ->  140.82.114.26   provides  [ WEB Server ] - number of packets:  1424
+    ->  91.189.88.24   provides  [ WEB Server ] - number of packets:  1402
+    ->  140.82.113.26   provides  [ WEB Server ] - number of packets:  1386
+    ->  149.154.175.205   provides  [ WEB Server ] - number of packets:  1349
+    ->  162.125.19.131   provides  [ WEB Server ] - number of packets:  1117
+    ->  192.30.253.124   provides  [ WEB Server ] - number of packets:  955
+    ->  162.125.66.5   provides  [ WEB Server ] - number of packets:  862
+    ->  140.82.114.25   provides  [ WEB Server ] - number of packets:  849
+    ->  34.194.73.36   provides  [ WEB Server ] - number of packets:  767
+    ->  17.248.147.205   provides  [ WEB Server ] - number of packets:  756
+    ->  138.68.226.62   provides  [ WEB Server ] - number of packets:  678
+
+HTTPS  : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 99.54
+HTTP   : ▏ 0.44 
+OpenVPN: ▏ 0.02 
+
+######################################################################
+Device ID:  8
+  IP: 195.113.172.72
+  Last communication:  Sun Mar 15 19:59:21 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  108.161.130.206   provides  [ DNS Server ] - number of packets:  6133
+    ->  87.106.246.154   provides  [ DNS Server ] - number of packets:  1835
+    ->  216.244.66.199   requires  [ WEB Server ] - number of packets:  1824
+    ->  89.212.88.100   provides  [ DNS Server ] - number of packets:  1734
+    ->  95.216.16.51   requires  [ WEB Server ] - number of packets:  1553
+    ->  95.216.19.59   requires  [ WEB Server ] - number of packets:  1141
+    ->  185.87.186.55   provides  [ DNS Server ] - number of packets:  1119
+    ->  129.226.136.62   requires  [ WEB Server ] - number of packets:  1026
+    ->  46.229.168.148   requires  [ WEB Server ] - number of packets:  199
+    ->  216.117.2.180   provides  [ WEB Server ] - number of packets:  169
+
+DNS  : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 64.67
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 29.20
+HTTP : ▇▇▇▇ 6.13 
+
+######################################################################
+Device ID:  9
+  IP: 147.32.232.163
+  Last communication:  Sun Mar 15 19:59:26 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+    [ Streaming Server ] -  RTMP protocol (Real Time Messaging Protocol) use by Flash Player to connect to streaming server  Adobe Media Server
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  193.86.86.253   requires  [ Streaming Server ] - number of packets:  3232
+    ->  116.202.80.211   provides  [ WEB Server ] - number of packets:  283
+    ->  162.158.78.202   requires  [ WEB Server ] - number of packets:  137
+    ->  162.158.78.226   requires  [ WEB Server ] - number of packets:  118
+    ->  108.162.210.106   requires  [ WEB Server ] - number of packets:  64
+    ->  162.158.155.62   requires  [ WEB Server ] - number of packets:  58
+    ->  162.158.158.191   requires  [ WEB Server ] - number of packets:  57
+    ->  141.101.98.58   requires  [ WEB Server ] - number of packets:  56
+    ->  162.158.158.107   requires  [ WEB Server ] - number of packets:  55
+    ->  172.69.70.173   requires  [ WEB Server ] - number of packets:  55
+    ->  162.158.154.253   requires  [ WEB Server ] - number of packets:  54
+    ->  54.36.150.11   requires  [ WEB Server ] - number of packets:  52
+    ->  162.158.154.229   requires  [ WEB Server ] - number of packets:  52
+    ->  141.101.99.155   requires  [ WEB Server ] - number of packets:  51
+    ->  141.101.99.191   requires  [ WEB Server ] - number of packets:  51
+    ->  141.101.99.245   requires  [ WEB Server ] - number of packets:  51
+
+RTMP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 67.91
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 26.14
+FTP : ▇▇▇▇ 5.95 
+
+######################################################################
+Device ID:  13
+  IP: 195.113.172.3
+  Last communication:  Sun Mar 15 19:59:29 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  38.229.36.122   provides  [ DNS Server ] - number of packets:  960
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  14
+  IP: 195.113.172.41
+  Last communication:  Sun Mar 15 19:59:05 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  131.225.105.11   provides  [ WEB Server ] - number of packets:  6641
+    ->  185.50.225.30   provides  [ WEB Server ] - number of packets:  5115
+    ->  216.245.214.30   provides  [ WEB Server ] - number of packets:  672
+    ->  199.232.18.49   provides  [ WEB Server ] - number of packets:  373
+    ->  146.185.189.167   provides  [ WEB Server ] - number of packets:  357
+    ->  34.227.76.72   provides  [ WEB Server ] - number of packets:  142
+    ->  163.172.17.132   provides  [ WEB Server ] - number of packets:  101
+    ->  209.132.181.16   provides  [ WEB Server ] - number of packets:  77
+    ->  131.225.105.11   provides  [ File Server ] - number of packets:  56
+
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 91.83
+HTTPS: ▇▇▇▇ 7.76 
+FTP  : ▏ 0.41 
+
+######################################################################
+Device ID:  15
+  IP: 147.32.232.238
+  Last communication:  Sun Mar 15 19:59:28 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+    [ Mail Server ] -  IMAPS protocol version 4 (Internet Message Access Protocol) use for mail services ovet TLS/SSl
+    [ Mail Server ] -  SMTPS protocol (SMTP with TLS/SSL) use for mail services
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  90.176.46.10   requires  [ Mail Server ] - number of packets:  67047
+    ->  109.123.211.41   requires  [ Mail Server ] - number of packets:  18340
+    ->  31.30.171.238   requires  [ Mail Server ] - number of packets:  12061
+    ->  217.195.168.193   requires  [ Mail Server ] - number of packets:  8095
+    ->  94.74.254.13   requires  [ Mail Server ] - number of packets:  3764
+    ->  80.250.30.198   requires  [ Mail Server ] - number of packets:  3104
+    ->  212.79.96.253   requires  [ Mail Server ] - number of packets:  2824
+    ->  86.49.236.158   requires  [ Mail Server ] - number of packets:  2760
+    ->  178.255.168.52   requires  [ Mail Server ] - number of packets:  2511
+    ->  80.250.4.93   requires  [ WEB Server ] - number of packets:  1922
+    ->  94.230.150.11   requires  [ Mail Server ] - number of packets:  1907
+    ->  78.108.108.233   requires  [ Mail Server ] - number of packets:  1866
+    ->  185.186.251.104   requires  [ Mail Server ] - number of packets:  1833
+    ->  86.49.250.73   requires  [ Mail Server ] - number of packets:  1773
+    ->  89.102.199.89   requires  [ Mail Server ] - number of packets:  1748
+    ->  90.177.171.210   requires  [ Mail Server ] - number of packets:  1727
+
+IMAPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 89.88
+HTTPS: ▇▇▇▇ 8.96 
+SMTPS: ▏ 1.17 
+
+######################################################################
+Device ID:  16
+  IP: 195.113.172.99
+  Last communication:  Sun Mar 15 19:59:24 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  152.19.134.142   provides  [ WEB Server ] - number of packets:  55
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  20
+  IP: 147.229.13.218
+  Last communication:  Sun Mar 15 19:59:19 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  162.159.134.234   provides  [ WEB Server ] - number of packets:  2624
+    ->  3.120.198.117   provides  [ WEB Server ] - number of packets:  2361
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  21
+  IP: 195.113.172.15
+  Last communication:  Sun Mar 15 19:59:19 2020
+  MAC: ---
+  Labels:
+    [ Windows ] -  NetMeeting Remote Desktop Sharing use on Windows OS for remote desktop from another personal computer over a corporate intranet
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  141.98.9.74   requires  [ Windows ] - number of packets:  10864
+    ->  141.98.9.36   requires  [ Windows ] - number of packets:  10044
+    ->  31.207.47.44   requires  [ Windows ] - number of packets:  8641
+    ->  31.207.47.112   requires  [ Windows ] - number of packets:  8516
+    ->  185.209.0.61   requires  [ Windows ] - number of packets:  8185
+    ->  141.98.9.154   requires  [ Windows ] - number of packets:  6498
+    ->  31.207.47.113   requires  [ Windows ] - number of packets:  6349
+    ->  5.188.86.99   requires  [ Windows ] - number of packets:  5346
+    ->  141.98.9.71   requires  [ Windows ] - number of packets:  5008
+    ->  141.98.9.158   requires  [ Windows ] - number of packets:  4475
+    ->  212.92.111.25   requires  [ Windows ] - number of packets:  4001
+    ->  85.209.3.234   requires  [ Windows ] - number of packets:  1048
+    ->  34.208.130.43   requires  [ Windows ] - number of packets:  958
+    ->  52.5.155.120   requires  [ Windows ] - number of packets:  572
+    ->  35.167.186.74   requires  [ Windows ] - number of packets:  277
+    ->  208.72.24.10   requires  [ Windows ] - number of packets:  274
+
+Terminal_Services: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  25
+  IP: 147.32.232.232
+  Last communication:  Sun Mar 15 19:59:20 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  46.252.24.212   provides  [ DNS Server ] - number of packets:  1112
+    ->  138.201.52.246   provides  [ DNS Server ] - number of packets:  1007
+    ->  74.207.232.228   provides  [ DNS Server ] - number of packets:  684
+    ->  34.213.75.237   provides  [ DNS Server ] - number of packets:  394
+    ->  54.195.246.74   provides  [ DNS Server ] - number of packets:  325
+    ->  198.199.90.210   provides  [ DNS Server ] - number of packets:  308
+    ->  95.216.29.74   provides  [ DNS Server ] - number of packets:  292
+    ->  52.1.154.181   provides  [ DNS Server ] - number of packets:  250
+    ->  108.128.228.37   provides  [ DNS Server ] - number of packets:  215
+    ->  63.33.142.3   provides  [ DNS Server ] - number of packets:  210
+    ->  108.128.97.198   provides  [ DNS Server ] - number of packets:  177
+    ->  99.81.169.191   provides  [ DNS Server ] - number of packets:  171
+    ->  99.81.184.211   provides  [ DNS Server ] - number of packets:  164
+    ->  95.216.247.148   provides  [ DNS Server ] - number of packets:  141
+    ->  108.128.183.97   provides  [ DNS Server ] - number of packets:  135
+    ->  221.228.255.2   provides  [ DNS Server ] - number of packets:  120
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  26
+  IP: 195.113.172.74
+  Last communication:  Sun Mar 15 19:59:58 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  217.146.82.224   requires  [ WEB Server ] - number of packets:  77
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  27
+  IP: 147.32.232.217
+  Last communication:  Sun Mar 15 19:59:23 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+    [ Database Server ] -  MySQL database
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  54.68.45.3   requires  [ Database Server ] - number of packets:  21300
+    ->  43.247.90.178   requires  [ Database Server ] - number of packets:  2908
+    ->  103.229.214.87   requires  [ Database Server ] - number of packets:  2839
+    ->  67.68.53.155   requires  [ Database Server ] - number of packets:  2295
+    ->  54.222.210.194   requires  [ Database Server ] - number of packets:  1398
+    ->  52.71.84.157   requires  [ Database Server ] - number of packets:  1189
+    ->  123.193.20.90   requires  [ Database Server ] - number of packets:  1159
+    ->  35.3.90.216   requires  [ WEB Server ] - number of packets:  375
+    ->  130.155.156.118   requires  [ WEB Server ] - number of packets:  306
+    ->  176.132.192.170   requires  [ WEB Server ] - number of packets:  81
+    ->  37.9.113.168   requires  [ WEB Server ] - number of packets:  78
+    ->  37.228.254.153   requires  [ Database Server ] - number of packets:  67
+    ->  162.250.92.102   requires  [ Database Server ] - number of packets:  57
+
+MySQL: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 97.53
+HTTPS: ▇ 2.47 
+
+######################################################################
+Device ID:  35
+  IP: 147.229.13.93
+  Last communication:  Sun Mar 15 19:59:16 2020
+  MAC: ---
+  Labels:
+    [ Router ] -  HELLO is router communication protocol
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  162.159.135.234   provides  [ WEB Server ] - number of packets:  1442
+    ->  99.83.135.170   requires  [ Router ] - number of packets:  740
+    ->  52.201.142.14   provides  [ WEB Server ] - number of packets:  721
+    ->  3.210.179.11   provides  [ WEB Server ] - number of packets:  664
+    ->  52.55.198.220   provides  [ WEB Server ] - number of packets:  655
+    ->  52.87.94.70   provides  [ WEB Server ] - number of packets:  650
+    ->  52.202.253.107   provides  [ WEB Server ] - number of packets:  634
+    ->  34.199.77.19   provides  [ WEB Server ] - number of packets:  608
+    ->  3.224.75.242   provides  [ WEB Server ] - number of packets:  600
+    ->  34.197.189.129   provides  [ WEB Server ] - number of packets:  596
+    ->  100.24.246.89   provides  [ WEB Server ] - number of packets:  564
+    ->  34.205.88.205   provides  [ WEB Server ] - number of packets:  546
+    ->  3.209.173.81   provides  [ WEB Server ] - number of packets:  542
+    ->  52.2.169.2   provides  [ WEB Server ] - number of packets:  472
+    ->  34.199.40.84   provides  [ WEB Server ] - number of packets:  470
+    ->  54.210.105.17   provides  [ WEB Server ] - number of packets:  444
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 94.31
+HELLO: ▇▇▇ 5.69 
+
+######################################################################
+Device ID:  37
+  IP: 147.32.232.142
+  Last communication:  Sun Mar 15 19:59:23 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  88.100.155.208   requires  [ WEB Server ] - number of packets:  794
+    ->  109.80.242.60   requires  [ WEB Server ] - number of packets:  742
+    ->  77.95.197.74   requires  [ WEB Server ] - number of packets:  604
+    ->  89.102.88.7   requires  [ WEB Server ] - number of packets:  553
+    ->  85.71.150.123   requires  [ WEB Server ] - number of packets:  492
+    ->  37.48.36.102   requires  [ WEB Server ] - number of packets:  427
+    ->  193.165.236.66   requires  [ WEB Server ] - number of packets:  405
+    ->  86.49.250.52   requires  [ WEB Server ] - number of packets:  369
+    ->  93.91.150.23   requires  [ WEB Server ] - number of packets:  361
+    ->  89.102.22.31   requires  [ WEB Server ] - number of packets:  345
+    ->  88.100.232.112   requires  [ WEB Server ] - number of packets:  344
+    ->  185.131.62.253   requires  [ WEB Server ] - number of packets:  337
+    ->  89.102.240.199   requires  [ WEB Server ] - number of packets:  311
+    ->  90.64.23.91   requires  [ WEB Server ] - number of packets:  297
+    ->  46.135.20.37   requires  [ WEB Server ] - number of packets:  267
+    ->  90.176.90.119   requires  [ WEB Server ] - number of packets:  261
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  38
+  IP: 147.32.232.218
+  Last communication:  Sun Mar 15 19:59:25 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  141.170.156.34   requires  [ WEB Server ] - number of packets:  3111
+    ->  185.88.73.50   requires  [ WEB Server ] - number of packets:  2859
+    ->  46.13.96.25   requires  [ WEB Server ] - number of packets:  2314
+    ->  89.176.82.31   requires  [ WEB Server ] - number of packets:  2124
+    ->  109.108.118.126   requires  [ WEB Server ] - number of packets:  956
+    ->  37.46.80.230   requires  [ WEB Server ] - number of packets:  950
+    ->  82.202.89.22   requires  [ WEB Server ] - number of packets:  796
+    ->  88.102.160.113   requires  [ WEB Server ] - number of packets:  668
+    ->  86.26.56.125   requires  [ WEB Server ] - number of packets:  527
+    ->  193.165.110.94   requires  [ WEB Server ] - number of packets:  462
+    ->  84.42.225.92   requires  [ WEB Server ] - number of packets:  432
+    ->  46.135.25.207   requires  [ WEB Server ] - number of packets:  388
+    ->  46.229.168.130   requires  [ WEB Server ] - number of packets:  286
+    ->  46.135.43.79   requires  [ WEB Server ] - number of packets:  201
+    ->  54.68.93.120   requires  [ WEB Server ] - number of packets:  187
+    ->  46.229.168.162   requires  [ WEB Server ] - number of packets:  101
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  40
+  IP: 147.229.13.97
+  Last communication:  Sun Mar 15 19:59:21 2020
+  MAC: ---
+  Labels:
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  116.202.80.211   provides  [ File Server ] - number of packets:  328
+
+FTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  41
+  IP: 195.113.172.27
+  Last communication:  Sun Mar 15 19:59:11 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  202.102.90.226   requires  [ WEB Server ] - number of packets:  171
+    ->  202.102.90.226   requires  [ WEB Server ] - number of packets:  52
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 76.68
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 23.32
+
+######################################################################
+Device ID:  46
+  IP: 147.32.232.237
+  Last communication:  Sun Mar 15 19:59:23 2020
+  MAC: ---
+  Labels:
+    [ Mail server ] -  SMTP protocol (Simple Mail Transfer Protocol) use for mail services
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  69.94.131.26   requires  [ Mail server ] - number of packets:  429
+    ->  198.46.141.187   requires  [ Mail server ] - number of packets:  346
+    ->  103.194.117.104   requires  [ Mail server ] - number of packets:  340
+    ->  183.11.71.234   requires  [ Mail server ] - number of packets:  316
+    ->  69.94.139.153   requires  [ Mail server ] - number of packets:  211
+    ->  103.194.117.105   requires  [ Mail server ] - number of packets:  182
+    ->  69.94.139.240   requires  [ Mail server ] - number of packets:  172
+    ->  104.47.12.33   provides  [ Mail server ] - number of packets:  106
+    ->  185.7.97.104   requires  [ Mail server ] - number of packets:  99
+    ->  192.174.83.13   requires  [ Mail server ] - number of packets:  68
+    ->  192.174.83.12   requires  [ Mail server ] - number of packets:  63
+    ->  168.245.7.154   provides  [ VoIP telephone ] - number of packets:  58
+    ->  40.107.244.56   requires  [ Mail server ] - number of packets:  56
+    ->  167.89.7.130   requires  [ Mail server ] - number of packets:  54
+    ->  40.107.243.53   requires  [ Mail server ] - number of packets:  53
+    ->  40.107.243.79   requires  [ Mail server ] - number of packets:  52
+
+SMTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 97.90
+H.248: ▇ 2.10 
+
+######################################################################
+Device ID:  49
+  IP: 147.229.13.185
+  Last communication:  Sun Mar 15 19:59:23 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  91.235.52.39   provides  [ WEB Server ] - number of packets:  1550
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  50
+  IP: 147.229.13.195
+  Last communication:  Sun Mar 15 19:59:22 2020
+  MAC: ---
+  Labels:
+    [ Streaming Server ] -  RTSP protokol (Real Time Streaming Protocol) is use by streaming platform (server) to stream video (Youtube,..) to client (web browser, Skype, Spotify,...), also for IP cameras
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  51.254.46.209   requires  [ Streaming Server ] - number of packets:  2645
+    ->  51.255.69.130   requires  [ Streaming Server ] - number of packets:  2371
+    ->  164.132.162.20   requires  [ Streaming Server ] - number of packets:  1737
+
+RTSP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  55
+  IP: 147.32.232.77
+  Last communication:  Sun Mar 15 19:59:20 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  82.204.162.195   requires  [ WEB Server ] - number of packets:  10230
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  64
+  IP: 147.229.13.249
+  Last communication:  Sun Mar 15 19:59:24 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  77.86.229.90   provides  [ WEB Server ] - number of packets:  7610
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  71
+  IP: 147.32.232.180
+  Last communication:  Sun Mar 15 19:59:18 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  141.8.188.1   requires  [ WEB Server ] - number of packets:  1083
+    ->  46.229.168.162   requires  [ WEB Server ] - number of packets:  428
+    ->  62.210.80.37   requires  [ WEB Server ] - number of packets:  388
+    ->  46.229.168.137   requires  [ WEB Server ] - number of packets:  357
+    ->  46.229.168.154   requires  [ WEB Server ] - number of packets:  343
+    ->  46.229.168.146   requires  [ WEB Server ] - number of packets:  336
+    ->  46.229.168.135   requires  [ WEB Server ] - number of packets:  294
+    ->  5.253.19.7   requires  [ WEB Server ] - number of packets:  279
+    ->  46.229.168.152   requires  [ WEB Server ] - number of packets:  266
+    ->  46.229.168.136   requires  [ WEB Server ] - number of packets:  247
+    ->  196.25.195.114   requires  [ WEB Server ] - number of packets:  232
+    ->  46.229.168.129   requires  [ WEB Server ] - number of packets:  183
+    ->  46.229.168.140   requires  [ WEB Server ] - number of packets:  179
+    ->  46.229.168.139   requires  [ WEB Server ] - number of packets:  172
+    ->  46.229.168.147   requires  [ WEB Server ] - number of packets:  170
+    ->  178.154.171.13   requires  [ WEB Server ] - number of packets:  169
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  75
+  IP: 147.32.232.174
+  Last communication:  Sun Mar 15 19:59:26 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  151.53.205.183   requires  [ WEB Server ] - number of packets:  64
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  77
+  IP: 195.113.172.106
+  Last communication:  Sun Mar 15 19:58:57 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  152.19.134.198   provides  [ WEB Server ] - number of packets:  51
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  78
+  IP: 195.113.172.98
+  Last communication:  Sun Mar 15 19:59:25 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  46.229.168.146   requires  [ WEB Server ] - number of packets:  109
+    ->  114.119.164.165   requires  [ WEB Server ] - number of packets:  56
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  96
+  IP: 147.32.232.45
+  Last communication:  Sun Mar 15 19:59:14 2020
+  MAC: ---
+  Labels:
+    [ Windows ] -  SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows
+    [ SNMP Agent ] -  SNMP Manager request the SNMP Agent using protocol SNMP on port 161 (snmp - Simple Network Management Protocol)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  12.179.176.147   requires  [ Windows ] - number of packets:  9511
+    ->  185.99.69.124   requires  [ SNMP Agent ] - number of packets:  272
+    ->  86.49.250.73   requires  [ SNMP Agent ] - number of packets:  180
+
+SMB-NetBIOS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 95.46
+SNMP       : ▇▇ 4.54 
+
+######################################################################
+Device ID:  97
+  IP: 147.32.232.236
+  Last communication:  Sun Mar 15 19:59:19 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  202.137.129.3   provides  [ DNS Server ] - number of packets:  122
+    ->  211.137.130.29   provides  [ DNS Server ] - number of packets:  60
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  98
+  IP: 147.229.13.77
+  Last communication:  Sun Mar 15 19:59:25 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  82.149.252.245   provides  [ WEB Server ] - number of packets:  2664
+    ->  31.172.113.83   provides  [ WEB Server ] - number of packets:  2616
+    ->  82.149.252.246   provides  [ WEB Server ] - number of packets:  1146
+    ->  31.172.113.51   provides  [ WEB Server ] - number of packets:  843
+    ->  31.172.113.36   provides  [ WEB Server ] - number of packets:  592
+    ->  185.22.221.117   provides  [ WEB Server ] - number of packets:  580
+    ->  31.172.112.12   provides  [ WEB Server ] - number of packets:  436
+    ->  185.22.222.25   provides  [ WEB Server ] - number of packets:  298
+    ->  31.172.112.11   provides  [ WEB Server ] - number of packets:  216
+
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 53.25
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 46.75
+
+######################################################################
+Device ID:  106
+  IP: 147.229.13.104
+  Last communication:  Sun Mar 15 19:59:48 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  3.120.198.117   provides  [ WEB Server ] - number of packets:  2189
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  110
+  IP: 147.229.13.232
+  Last communication:  Sun Mar 15 19:59:28 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  194.55.13.9   provides  [ WEB Server ] - number of packets:  4096
+    ->  54.191.20.54   provides  [ WEB Server ] - number of packets:  66
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  113
+  IP: 147.32.232.156
+  Last communication:  Sun Mar 15 19:59:19 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  199.232.17.63   provides  [ WEB Server ] - number of packets:  40634
+    ->  162.125.66.8   provides  [ WEB Server ] - number of packets:  27478
+    ->  199.232.16.204   provides  [ WEB Server ] - number of packets:  1453
+    ->  37.252.246.105   provides  [ WEB Server ] - number of packets:  846
+    ->  151.101.0.223   provides  [ WEB Server ] - number of packets:  755
+    ->  188.172.198.144   provides  [ WEB Server ] - number of packets:  500
+    ->  52.97.186.146   provides  [ WEB Server ] - number of packets:  494
+    ->  208.91.0.89   provides  [ WEB Server ] - number of packets:  477
+    ->  40.127.240.158   provides  [ WEB Server ] - number of packets:  117
+    ->  52.114.132.20   provides  [ WEB Server ] - number of packets:  107
+    ->  2.18.69.66   provides  [ WEB Server ] - number of packets:  97
+    ->  184.51.9.61   provides  [ WEB Server ] - number of packets:  90
+    ->  52.216.207.53   provides  [ WEB Server ] - number of packets:  84
+    ->  52.216.134.213   provides  [ WEB Server ] - number of packets:  82
+    ->  52.142.119.134   provides  [ WEB Server ] - number of packets:  81
+    ->  52.216.86.45   provides  [ WEB Server ] - number of packets:  79
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 96.20
+HTTP : ▇ 3.80 
+
+######################################################################
+Device ID:  114
+  IP: 147.32.232.83
+  Last communication:  Sun Mar 15 19:59:26 2020
+  MAC: ---
+  Labels:
+    [ Mobile device ] -  Wifi Calling use on mobile device
+    [ Mobile device ] -  Wifi Calling use on mobile device
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  185.91.169.169   provides  [ Mobile device ] - number of packets:  3794
+    ->  52.239.177.228   provides  [ WEB Server ] - number of packets:  3005
+    ->  188.26.71.197   provides  [ Mobile device ] - number of packets:  1143
+    ->  84.232.178.134   provides  [ Mobile device ] - number of packets:  976
+    ->  78.97.97.82   requires  [ Mobile device ] - number of packets:  544
+    ->  185.47.220.166   requires  [ Mobile device ] - number of packets:  428
+    ->  80.95.247.18   requires  [ Mobile device ] - number of packets:  188
+    ->  40.85.78.63   provides  [ WEB Server ] - number of packets:  175
+    ->  104.20.11.222   provides  [ WEB Server ] - number of packets:  92
+    ->  40.115.3.210   provides  [ WEB Server ] - number of packets:  84
+
+Wifi_Calling: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 80.83
+HTTPS       : ▇▇▇▇▇▇▇▇▇▇▇ 19.17
+
+######################################################################
+Device ID:  115
+  IP: 147.229.13.96
+  Last communication:  Sun Mar 15 19:59:15 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  40.74.32.146   provides  [ WEB Server ] - number of packets:  131
+    ->  13.107.3.128   provides  [ WEB Server ] - number of packets:  57
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  118
+  IP: 147.229.13.150
+  Last communication:  Sun Mar 15 19:59:18 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  104.16.57.61   provides  [ WEB Server ] - number of packets:  135
+    ->  104.16.58.61   provides  [ WEB Server ] - number of packets:  77
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  119
+  IP: 147.229.13.71
+  Last communication:  Sun Mar 15 19:59:13 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  40.77.226.250   provides  [ WEB Server ] - number of packets:  2105
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  122
+  IP: 147.229.13.192
+  Last communication:  Sun Mar 15 19:59:14 2020
+  MAC: ---
+  Labels:
+    [ Streaming Server ] -  RTSP protokol (Real Time Streaming Protocol) is use by streaming platform (server) to stream video (Youtube,..) to client (web browser, Skype, Spotify,...), also for IP cameras
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  51.255.69.130   requires  [ Streaming Server ] - number of packets:  2107
+
+RTSP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  123
+  IP: 147.32.232.215
+  Last communication:  Sun Mar 15 19:59:22 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  147.75.101.119   provides  [ Storage Device ] - number of packets:  42907
+    ->  46.229.168.149   requires  [ WEB Server ] - number of packets:  798
+    ->  116.202.80.211   provides  [ WEB Server ] - number of packets:  343
+    ->  46.229.168.163   requires  [ WEB Server ] - number of packets:  198
+    ->  94.142.237.48   provides  [ Storage Device ] - number of packets:  194
+    ->  46.229.168.144   requires  [ WEB Server ] - number of packets:  137
+    ->  46.229.168.146   requires  [ WEB Server ] - number of packets:  124
+    ->  46.229.168.151   requires  [ WEB Server ] - number of packets:  115
+    ->  46.229.168.163   requires  [ WEB Server ] - number of packets:  104
+    ->  46.229.168.132   requires  [ WEB Server ] - number of packets:  91
+    ->  194.213.34.193   requires  [ WEB Server ] - number of packets:  74
+    ->  46.229.168.148   requires  [ WEB Server ] - number of packets:  59
+    ->  46.229.168.153   requires  [ WEB Server ] - number of packets:  58
+    ->  46.229.168.141   requires  [ WEB Server ] - number of packets:  50
+
+RSYNC: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 94.53
+HTTPS: ▇ 3.53 
+HTTP : ▏ 1.19 
+FTP  : ▏ 0.75 
+
+######################################################################
+Device ID:  139
+  IP: 147.229.13.171
+  Last communication:  Sun Mar 15 19:59:15 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  13.107.3.128   provides  [ WEB Server ] - number of packets:  111
+    ->  13.107.3.254   provides  [ WEB Server ] - number of packets:  98
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  147
+  IP: 147.229.13.222
+  Last communication:  Sun Mar 15 19:59:05 2020
+  MAC: ---
+  Labels:
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  13.107.3.128   provides  [ WEB Server ] - number of packets:  102
+    ->  116.202.80.211   provides  [ WEB Server ] - number of packets:  57
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 47.22
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 26.39
+FTP  : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 26.39
+
+######################################################################
+Device ID:  148
+  IP: 147.32.232.66
+  Last communication:  Sun Mar 15 19:59:08 2020
+  MAC: ---
+  Labels:
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  116.202.80.211   provides  [ File Server ] - number of packets:  478
+    ->  194.29.39.47   provides  [ WEB Server ] - number of packets:  82
+
+FTP  : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 92.10
+HTTPS: ▇▇▇▇ 7.90 
+
+######################################################################
+Device ID:  151
+  IP: 195.113.172.33
+  Last communication:  Sun Mar 15 19:59:20 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  62.163.74.150   requires  [ WEB Server ] - number of packets:  412
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  162
+  IP: 147.229.13.74
+  Last communication:  Sun Mar 15 19:59:17 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  104.111.239.44   provides  [ WEB Server ] - number of packets:  190
+    ->  40.91.116.226   provides  [ WEB Server ] - number of packets:  139
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  164
+  IP: 147.229.13.112
+  Last communication:  Sun Mar 15 19:59:21 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  46.28.109.120   provides  [ Mail Server ] - number of packets:  1001
+    ->  40.74.32.146   provides  [ WEB Server ] - number of packets:  513
+    ->  99.86.243.84   provides  [ WEB Server ] - number of packets:  138
+    ->  13.107.3.128   provides  [ WEB Server ] - number of packets:  101
+    ->  52.38.51.5   provides  [ WEB Server ] - number of packets:  53
+
+IMAP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 55.43
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 44.57
+
+######################################################################
+Device ID:  178
+  IP: 147.32.232.213
+  Last communication:  Sun Mar 15 19:59:17 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  158.255.26.163   requires  [ WEB Server ] - number of packets:  3965
+    ->  188.175.196.113   requires  [ WEB Server ] - number of packets:  2291
+    ->  85.71.150.123   requires  [ WEB Server ] - number of packets:  1349
+    ->  46.13.96.25   requires  [ WEB Server ] - number of packets:  866
+    ->  90.64.23.91   requires  [ WEB Server ] - number of packets:  760
+    ->  185.140.245.238   requires  [ WEB Server ] - number of packets:  751
+    ->  86.26.56.125   requires  [ WEB Server ] - number of packets:  413
+    ->  89.190.85.176   requires  [ WEB Server ] - number of packets:  365
+    ->  93.91.150.23   requires  [ WEB Server ] - number of packets:  356
+    ->  88.101.171.62   requires  [ WEB Server ] - number of packets:  319
+    ->  89.24.41.88   requires  [ WEB Server ] - number of packets:  317
+    ->  196.52.2.10   requires  [ WEB Server ] - number of packets:  315
+    ->  193.165.110.94   requires  [ WEB Server ] - number of packets:  309
+    ->  185.52.173.25   requires  [ WEB Server ] - number of packets:  299
+    ->  178.248.254.31   requires  [ WEB Server ] - number of packets:  227
+    ->  178.255.168.243   requires  [ WEB Server ] - number of packets:  222
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  185
+  IP: 147.32.232.212
+  Last communication:  Sun Mar 15 19:59:20 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  95.105.174.182   requires  [ WEB Server ] - number of packets:  7926
+    ->  89.177.136.7   requires  [ WEB Server ] - number of packets:  7141
+    ->  193.165.110.94   requires  [ WEB Server ] - number of packets:  1683
+    ->  178.255.168.11   requires  [ WEB Server ] - number of packets:  1525
+    ->  95.85.240.154   requires  [ WEB Server ] - number of packets:  1491
+    ->  80.250.4.93   requires  [ WEB Server ] - number of packets:  1235
+    ->  85.207.96.80   requires  [ WEB Server ] - number of packets:  1174
+    ->  46.135.14.22   requires  [ WEB Server ] - number of packets:  1094
+    ->  3.215.115.144   requires  [ WEB Server ] - number of packets:  1054
+    ->  185.47.222.89   requires  [ WEB Server ] - number of packets:  907
+    ->  212.79.111.99   requires  [ WEB Server ] - number of packets:  783
+    ->  46.34.226.203   requires  [ WEB Server ] - number of packets:  673
+    ->  78.80.22.50   requires  [ WEB Server ] - number of packets:  641
+    ->  46.135.47.67   requires  [ WEB Server ] - number of packets:  630
+    ->  34.237.75.187   requires  [ WEB Server ] - number of packets:  607
+    ->  46.13.96.25   requires  [ WEB Server ] - number of packets:  578
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  187
+  IP: 147.229.13.235
+  Last communication:  Sun Mar 15 19:59:08 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  192.121.140.180   provides  [ WEB Server ] - number of packets:  8707
+    ->  99.86.245.219   provides  [ WEB Server ] - number of packets:  211
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  212
+  IP: 147.229.13.98
+  Last communication:  Sun Mar 15 19:59:26 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  52.156.204.185   provides  [ WEB Server ] - number of packets:  54
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  213
+  IP: 147.32.232.21
+  Last communication:  Sun Mar 15 19:59:22 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  195.28.131.242   requires  [ WEB Server ] - number of packets:  71
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  215
+  IP: 147.229.13.193
+  Last communication:  Sun Mar 15 19:59:25 2020
+  MAC: ---
+  Labels:
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+    [ Streaming Server ] -  RTSP protokol (Real Time Streaming Protocol) is use by streaming platform (server) to stream video (Youtube,..) to client (web browser, Skype, Spotify,...), also for IP cameras
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  164.132.162.20   requires  [ Streaming Server ] - number of packets:  20042
+    ->  62.210.88.49   requires  [ Streaming Server ] - number of packets:  4184
+    ->  116.202.80.211   provides  [ File Server ] - number of packets:  305
+
+RTSP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 97.54
+FTP : ▇ 2.46 
+
+######################################################################
+Device ID:  218
+  IP: 147.32.232.146
+  Last communication:  Sun Mar 15 19:59:14 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  2.18.68.233   provides  [ WEB Server ] - number of packets:  52285
+    ->  104.103.77.103   provides  [ WEB Server ] - number of packets:  16674
+    ->  84.39.152.31   provides  [ WEB Server ] - number of packets:  1220
+    ->  192.124.249.31   provides  [ WEB Server ] - number of packets:  780
+    ->  2.18.68.233   provides  [ WEB Server ] - number of packets:  361
+    ->  23.202.54.84   provides  [ WEB Server ] - number of packets:  124
+    ->  217.68.13.81   provides  [ WEB Server ] - number of packets:  92
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 73.39
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 26.61
+
+######################################################################
+Device ID:  236
+  IP: 147.229.13.231
+  Last communication:  Sun Mar 15 19:59:18 2020
+  MAC: ---
+  Labels:
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  116.202.80.211   requires  [ File Server ] - number of packets:  405
+
+FTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  237
+  IP: 195.113.172.5
+  Last communication:  Sun Mar 15 19:59:17 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  62.163.74.150   requires  [ WEB Server ] - number of packets:  86
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  243
+  IP: 195.113.172.2
+  Last communication:  Sun Mar 15 19:59:22 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  2.18.68.36   provides  [ WEB Server ] - number of packets:  3637
+    ->  2.18.68.36   provides  [ WEB Server ] - number of packets:  1176
+    ->  131.225.105.11   provides  [ WEB Server ] - number of packets:  246
+    ->  131.225.105.11   provides  [ File Server ] - number of packets:  138
+    ->  152.19.134.142   provides  [ WEB Server ] - number of packets:  50
+    ->  209.132.181.16   provides  [ WEB Server ] - number of packets:  50
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 70.55
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 26.85
+FTP  : ▇ 2.61 
+
+######################################################################
+Device ID:  270
+  IP: 147.229.13.174
+  Last communication:  Sun Mar 15 19:59:02 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  82.142.127.102   provides  [ WEB Server ] - number of packets:  29275
+    ->  185.8.236.194   provides  [ WEB Server ] - number of packets:  448
+
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 98.49
+HTTPS: ▏ 1.51 
+
+######################################################################
+Device ID:  278
+  IP: 147.229.13.210
+  Last communication:  Sun Mar 15 19:59:24 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  88.99.210.93   provides  [ WEB Server ] - number of packets:  1470
+    ->  3.120.198.117   provides  [ WEB Server ] - number of packets:  569
+    ->  62.204.231.170   provides  [ VPN ] - number of packets:  446
+    ->  85.93.177.161   provides  [ WEB Server ] - number of packets:  288
+    ->  104.26.7.234   provides  [ WEB Server ] - number of packets:  157
+    ->  1.1.1.1   provides  [ DNS Server ] - number of packets:  150
+    ->  104.26.6.234   provides  [ WEB Server ] - number of packets:  113
+
+HTTPS  : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 81.33
+OpenVPN: ▇▇▇▇▇▇▇▇ 13.97
+DNS    : ▇▇ 4.70 
+
+######################################################################
+Device ID:  290
+  IP: 147.32.232.58
+  Last communication:  Sun Mar 15 19:59:16 2020
+  MAC: ---
+  Labels:
+    [ SNMP Agent ] -  SNMP Manager request the SNMP Agent using protocol SNMP on port 161 (snmp - Simple Network Management Protocol)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  109.75.147.106   requires  [ SNMP Agent ] - number of packets:  131
+    ->  185.99.69.124   requires  [ SNMP Agent ] - number of packets:  88
+
+SNMP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  302
+  IP: 147.32.232.175
+  Last communication:  Sun Mar 15 19:59:21 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  5.9.17.118   requires  [ WEB Server ] - number of packets:  358
+    ->  71.6.147.254   requires  [ WEB Server ] - number of packets:  174
+    ->  52.29.132.29   requires  [ WEB Server ] - number of packets:  81
+
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 71.62
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 28.38
+
+######################################################################
+Device ID:  307
+  IP: 147.32.232.134
+  Last communication:  Sun Mar 15 19:59:19 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  157.240.30.18   provides  [ WEB Server ] - number of packets:  1370
+    ->  169.54.204.232   provides  [ WEB Server ] - number of packets:  760
+    ->  3.120.198.117   provides  [ WEB Server ] - number of packets:  650
+    ->  1.1.1.1   provides  [ WEB Server ] - number of packets:  459
+    ->  157.240.30.54   provides  [ WEB Server ] - number of packets:  454
+    ->  172.227.129.183   provides  [ WEB Server ] - number of packets:  312
+    ->  157.240.30.35   provides  [ WEB Server ] - number of packets:  149
+    ->  52.114.74.45   provides  [ WEB Server ] - number of packets:  66
+    ->  157.240.30.27   provides  [ WEB Server ] - number of packets:  62
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  311
+  IP: 147.32.232.71
+  Last communication:  Sun Mar 15 19:59:18 2020
+  MAC: ---
+  Labels:
+    [ Chat Server ] -  Cisco Webex communication with their multimedia server on this port
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  185.186.251.104   requires  [ Chat Server ] - number of packets:  1457
+
+cslistener: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  312
+  IP: 147.229.13.153
+  Last communication:  Sun Mar 15 19:59:19 2020
+  MAC: ---
+  Labels:
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  116.202.80.211   provides  [ WEB Server ] - number of packets:  296
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+FTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+######################################################################
+Device ID:  319
+  IP: 147.32.232.155
+  Last communication:  Sun Mar 15 19:59:19 2020
+  MAC: ---
+  Labels:
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  116.202.80.211   provides  [ WEB Server ] - number of packets:  195
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+FTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+######################################################################
+Device ID:  324
+  IP: 147.229.13.213
+  Last communication:  Sun Mar 15 19:59:13 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  104.111.239.44   provides  [ WEB Server ] - number of packets:  187
+    ->  52.156.204.185   provides  [ WEB Server ] - number of packets:  54
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  354
+  IP: 195.113.172.29
+  Last communication:  Sun Mar 15 19:59:22 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  131.225.105.11   provides  [ WEB Server ] - number of packets:  6363
+    ->  143.166.156.113   provides  [ WEB Server ] - number of packets:  234
+    ->  162.243.159.138   provides  [ WEB Server ] - number of packets:  163
+
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 96.54
+HTTPS: ▇ 3.46 
+
+######################################################################
+Device ID:  420
+  IP: 147.229.13.75
+  Last communication:  Sun Mar 15 19:59:23 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  193.179.166.241   provides  [ WEB Server ] - number of packets:  584
+    ->  93.184.221.168   provides  [ WEB Server ] - number of packets:  581
+    ->  93.184.220.29   provides  [ WEB Server ] - number of packets:  151
+    ->  99.86.243.45   provides  [ WEB Server ] - number of packets:  137
+    ->  184.51.8.204   provides  [ WEB Server ] - number of packets:  136
+    ->  40.118.102.46   provides  [ WEB Server ] - number of packets:  107
+    ->  23.7.195.160   provides  [ WEB Server ] - number of packets:  81
+    ->  52.42.1.51   provides  [ WEB Server ] - number of packets:  62
+    ->  193.179.166.161   provides  [ WEB Server ] - number of packets:  51
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 92.01
+HTTP : ▇▇▇▇ 7.99 
+
+######################################################################
+Device ID:  431
+  IP: 147.32.232.106
+  Last communication:  Sun Mar 15 19:59:12 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  46.135.47.67   requires  [ WEB Server ] - number of packets:  3138
+    ->  178.255.168.11   requires  [ WEB Server ] - number of packets:  183
+    ->  80.250.4.93   requires  [ WEB Server ] - number of packets:  153
+    ->  77.236.206.200   requires  [ WEB Server ] - number of packets:  117
+    ->  90.176.46.10   requires  [ WEB Server ] - number of packets:  62
+    ->  94.142.238.252   requires  [ WEB Server ] - number of packets:  50
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  433
+  IP: 147.229.13.88
+  Last communication:  Sun Mar 15 19:59:16 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  104.45.71.122   provides  [ WEB Server ] - number of packets:  1006
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  437
+  IP: 147.229.13.117
+  Last communication:  Sun Mar 15 19:59:10 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  178.128.196.68   provides  [ WEB Server ] - number of packets:  1559
+    ->  199.232.17.111   provides  [ WEB Server ] - number of packets:  1329
+    ->  157.240.30.35   provides  [ WEB Server ] - number of packets:  688
+    ->  13.107.246.10   provides  [ WEB Server ] - number of packets:  676
+    ->  81.0.239.201   provides  [ WEB Server ] - number of packets:  625
+    ->  82.117.137.222   provides  [ WEB Server ] - number of packets:  451
+    ->  81.0.212.200   provides  [ WEB Server ] - number of packets:  403
+    ->  3.218.62.216   provides  [ WEB Server ] - number of packets:  371
+    ->  93.184.220.70   provides  [ WEB Server ] - number of packets:  325
+    ->  3.123.73.128   provides  [ WEB Server ] - number of packets:  258
+    ->  52.219.73.1   provides  [ WEB Server ] - number of packets:  231
+    ->  54.84.68.16   provides  [ WEB Server ] - number of packets:  180
+    ->  52.219.72.79   provides  [ WEB Server ] - number of packets:  145
+    ->  104.17.64.4   provides  [ WEB Server ] - number of packets:  88
+    ->  82.117.137.222   provides  [ WEB Server ] - number of packets:  75
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 90.55
+HTTP : ▇▇▇▇▇ 9.45 
+
+######################################################################
+Device ID:  447
+  IP: 147.229.13.121
+  Last communication:  Sun Mar 15 19:59:16 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  73.44.243.151   provides  [ WEB Server ] - number of packets:  313
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  461
+  IP: 147.229.13.132
+  Last communication:  Sun Mar 15 19:58:52 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  79.110.82.199   provides  [ WEB Server ] - number of packets:  796
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  464
+  IP: 147.229.13.156
+  Last communication:  Sun Mar 15 19:59:02 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  104.111.239.44   provides  [ WEB Server ] - number of packets:  144
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  505
+  IP: 195.113.172.30
+  Last communication:  Sun Mar 15 19:59:20 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  131.225.105.11   provides  [ WEB Server ] - number of packets:  50
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  508
+  IP: 147.32.232.108
+  Last communication:  Sun Mar 15 19:59:05 2020
+  MAC: ---
+  Labels:
+    [ File Server ] -  FTP protocol (File Transfer Protocol) use for file transfer (command)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  116.202.80.211   provides  [ WEB Server ] - number of packets:  91
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+FTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+######################################################################
+Device ID:  530
+  IP: 147.229.13.180
+  Last communication:  Sun Mar 15 19:58:59 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  128.252.203.10   provides  [ WEB Server ] - number of packets:  41586
+    ->  104.111.235.232   provides  [ WEB Server ] - number of packets:  186
+    ->  99.86.243.84   provides  [ WEB Server ] - number of packets:  142
+
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 99.22
+HTTPS: ▏ 0.78 
+
+######################################################################
+Device ID:  531
+  IP: 147.32.232.178
+  Last communication:  Sun Mar 15 19:59:26 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  213.138.116.80   provides  [ WEB Server ] - number of packets:  898
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  540
+  IP: 147.229.13.64
+  Last communication:  Sun Mar 15 19:59:13 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  209.132.183.108   provides  [ WEB Server ] - number of packets:  272
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  566
+  IP: 147.32.232.164
+  Last communication:  Sun Mar 15 19:59:21 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  173.231.58.194   requires  [ WEB Server ] - number of packets:  88
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  600
+  IP: 147.229.13.172
+  Last communication:  Sun Mar 15 19:55:14 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  89.221.213.64   provides  [ WEB Server ] - number of packets:  478
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  613
+  IP: 147.32.232.111
+  Last communication:  Sun Mar 15 19:59:06 2020
+  MAC: ---
+  Labels:
+    [ VPN ] -  OpenVPN create crypted tunnel between two device
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  84.21.126.10   provides  [ VPN ] - number of packets:  16785
+    ->  79.98.77.229   requires  [ VPN ] - number of packets:  598
+
+OpenVPN: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  697
+  IP: 147.32.232.231
+  Last communication:  Sun Mar 15 19:59:12 2020
+  MAC: ---
+  Labels:
+    [ VPN ] -  OpenVPN create crypted tunnel between two device
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  217.195.168.193   requires  [ VPN ] - number of packets:  128
+
+OpenVPN: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  717
+  IP: 147.229.13.33
+  Last communication:  Sun Mar 15 19:59:01 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can take IP address from DHCP)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  52.158.209.219   provides  [ WEB Server ] - number of packets:  72
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+
+147.32.232.150 : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 73.80
+147.32.232.238 : ▇▇▇▇ 6.63 
+195.113.172.15 : ▇ 2.18 
+147.32.232.156 : ▇ 1.98 
+147.32.232.146 : ▇ 1.92 
+147.32.232.215 : ▏ 1.21 
+147.229.13.180 : ▏ 1.12 
+147.32.232.8   : ▏ 1.12 
+147.32.232.212 : ▏ 0.98 
+147.32.232.217 : ▏ 0.91 
+147.229.13.174 : ▏ 0.80 
+147.229.13.193 : ▏ 0.66 
+147.32.232.111 : ▏ 0.47 
+195.113.172.72 : ▏ 0.45 
+147.32.232.218 : ▏ 0.44 
+147.32.232.213 : ▏ 0.41 
+195.113.172.41 : ▏ 0.36 
+147.229.13.93  : ▏ 0.33 
+147.32.232.142 : ▏ 0.31 
+147.32.232.83  : ▏ 0.28 
+147.32.232.77  : ▏ 0.27 
+147.32.232.45  : ▏ 0.27 
+147.229.13.77  : ▏ 0.25 
+147.229.13.235 : ▏ 0.24 
+147.229.13.249 : ▏ 0.20 
+147.229.13.117 : ▏ 0.20 
+195.113.172.29 : ▏ 0.18 
+147.229.13.195 : ▏ 0.18 
+147.32.232.180 : ▏ 0.17 
+147.32.232.232 : ▏ 0.15 
+195.113.172.2  : ▏ 0.14 
+147.229.13.218 : ▏ 0.13 
+147.32.232.163 : ▏ 0.12 
+147.32.232.134 : ▏ 0.11 
+147.229.13.232 : ▏ 0.11 
+147.32.232.106 : ▏ 0.10 
+147.229.13.210 : ▏ 0.09 
+147.32.232.237 : ▏ 0.07 
+147.229.13.104 : ▏ 0.06 
+147.229.13.192 : ▏ 0.06 
+147.229.13.71  : ▏ 0.06 
+147.229.13.75  : ▏ 0.05 
+147.229.13.112 : ▏ 0.05 
+147.229.13.185 : ▏ 0.04 
+147.32.232.71  : ▏ 0.04 
+147.229.13.88  : ▏ 0.03 
+195.113.172.3  : ▏ 0.03 
+147.32.232.178 : ▏ 0.02 
+147.229.13.132 : ▏ 0.02 
+147.32.232.175 : ▏ 0.02 
+147.32.232.66  : ▏ 0.02 
+147.229.13.172 : ▏ 0.01 
+195.113.172.33 : ▏ 0.01 
+147.229.13.231 : ▏ 0.01 
+147.229.13.74  : ▏ 0.01 
+147.229.13.97  : ▏ 0.01 
+147.229.13.121 : ▏ 0.01 
+147.229.13.153 : ▏ 0.01 
+147.229.13.64  : ▏ 0.01 
+147.229.13.213 : ▏ 0.01 
+195.113.172.27 : ▏ 0.01 
+147.32.232.58  : ▏ 0.01 
+147.229.13.150 : ▏ 0.01 
+147.229.13.171 : ▏ 0.01 
+147.32.232.155 : ▏ 0.01 
+147.229.13.96  : ▏ 0.01 
+147.32.232.236 : ▏ 0.00 
+195.113.172.98 : ▏ 0.00 
+147.229.13.222 : ▏ 0.00 
+147.229.13.156 : ▏ 0.00 
+147.32.232.231 : ▏ 0.00 
+147.32.232.108 : ▏ 0.00 
+147.32.232.164 : ▏ 0.00 
+195.113.172.5  : ▏ 0.00 
+195.113.172.74 : ▏ 0.00 
+147.229.13.33  : ▏ 0.00 
+147.32.232.21  : ▏ 0.00 
+147.32.232.174 : ▏ 0.00 
+195.113.172.99 : ▏ 0.00 
+147.229.13.98  : ▏ 0.00 
+195.113.172.106: ▏ 0.00 
+195.113.172.30 : ▏ 0.00 
+
