@@ -150,8 +150,8 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
                 JSON["Routers"].append(IP)
             if not Service[1] in JSON["Services"]:
                 JSON["Services"].append(Service[1])
-            if Service[1] == "DHCP Client":
-                createJSON["Labels"].append({"Label": "End Device", "Description": "PC, Mobile Phone,... (everything that can take IP address from DHCP)"})
+            #if Service[1] == "DHCP Client":
+            #    createJSON["Labels"].append({"Label": "End Device", "Description": "PC, Mobile Phone,... (everything that can take IP address from DHCP)"})
             createJSON["Labels"].append({"Label": "%s" % Service[1], "Description": "%s" % Service[3]})
     cursor.execute("SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(ipo=IP, t="WEB Server") )
     WebServer = cursor.fetchone()
@@ -159,7 +159,14 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
         tmp = 1
         if not "End Device" in JSON["Services"]:
             JSON["Services"].append("End Device")
-        createJSON["Labels"].append({"Label": "End Device", "Description": "PC, Mobile Phone,... (everything that can take IP address from DHCP)"})
+        createJSON["Labels"].append({"Label": "End Device", "Description": "PC, Mobile Phone,... (everything that can access web services)"})
+    cursor.execute("SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(ipo=IP, t="Mail Server") )
+    MailServer = cursor.fetchone()
+    if MailServer:
+        tmp = 1
+        if not "End Device" in JSON["Services"]:
+            JSON["Services"].append("End Device")
+        createJSON["Labels"].append({"Label": "End Device", "Description": "PC, Mobile Phone,... (everything that can send emails)"})
     cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP) )
     Router = cursor.fetchone()
     if Router:
