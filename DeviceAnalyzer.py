@@ -553,8 +553,8 @@ def DoAnalyze(SQLiteConnection, GraphLocal, GraphGlobal):
                     "IPStatistic": [],
                     "Devices": []
                 }    
-    write_json(JSON, "DependencyMapping")
-    read_json(JSON, "DependencyMapping")
+    write_json(JSON, "PassiveAutodiscovery")
+    read_json(JSON, "PassiveAutodiscovery")
     #==================================================================
     IPStatistic = {}    
     cursor = SQLiteConnection.cursor()
@@ -582,7 +582,7 @@ def DoAnalyze(SQLiteConnection, GraphLocal, GraphGlobal):
     x = datetime.datetime.now()
     JSON["DateAnalyze"] = str(x)
     JSON["NumberDevice"] = DeviceID - 1
-    write_json(JSON, "DependencyMapping")    
+    write_json(JSON, "PassiveAutodiscovery")    
 #=======================================================================================================================================
 #=======================================================================================================================================
 #=======================================================================================================================================
