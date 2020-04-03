@@ -8,14 +8,14 @@ import sqlite3
 #Check if port is some services and if port services is in database, if port is a service and if it is NOT in database, put in them
 #IP = ip address; PORT = transport layer port; table = string of table (local or global services); cursor and SQLiteConnection = sqlite3 database
 def Services(IP, PORT, table, cursor, SQLiteConnection, PrintServices):
-    cursor.execute("SELECT * FROM {tb} WHERE IP='{io}' AND PortNumber={pos}".format(tb=table, io=IP, pos=PORT ) )
-    rows = cursor.fetchall()
-    if rows:        #if port and IP is in database, do nothing
-        return
-    else:
-        cursor.execute("SELECT * FROM {tb} WHERE PortNumber={pos}".format(tb="Services", pos=PORT ) )
-        row = cursor.fetchone()
-        if row:     #if port is services, push informatings to database  
+    cursor.execute("SELECT * FROM {tb} WHERE PortNumber={pos}".format(tb="Services", pos=PORT ) )
+    row = cursor.fetchone()
+    if row:     #if port is services  
+        cursor.execute("SELECT * FROM {tb} WHERE IP='{io}' AND PortNumber={pos}".format(tb=table, io=IP, pos=PORT ) )
+        rows = cursor.fetchall()
+        if rows:        #if port and IP is in database, do nothing
+            return
+        else:           #push services to db
             if PrintServices == True:   
                 if table == "LocalServices":
                     print("New local services: ", IP, " -> ", row[1])
@@ -25,10 +25,9 @@ def Services(IP, PORT, table, cursor, SQLiteConnection, PrintServices):
                 cursor.execute("INSERT INTO {tb} (PortNumber, IP) VALUES ('{port}', '{ip}')".format(tb=table, port=PORT, ip=IP) )
                 SQLiteConnection.commit()
             except sqlite3.IntegrityError:
-                None                
-                #print("Error with inserting into table ", table)        
-        else:
-            return        
+                print("Error with inserting into table ", table)
+    else:
+        return
 #=================================================================================================================================
 #Dependencies resolved, push into database or update
 def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, BYTES, cursor, SQLiteConnection, MappPorts, PrintDependency):
