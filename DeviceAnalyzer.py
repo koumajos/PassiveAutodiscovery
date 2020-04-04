@@ -67,7 +67,7 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
     networkx.draw(G, pos, with_labels=True)
     plt.axis('off')
     plt.savefig("Graph_Local_IPv4.png")    
-    plt.show()
+#    plt.show()
     #=================================
     plt.figure("Map of Local Dependencies IPv6", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
     H = networkx.Graph()        
@@ -81,7 +81,7 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
     networkx.draw(H, pos, with_labels=True)
     plt.axis('off')
     plt.savefig("Graph_Local_IPv6.png")    
-    plt.show()    
+#    plt.show()    
 #=======================================================================================================================================
 #Create graph of global to local dependencies
 def GraphGlobalDependencies(cursor, SQLiteConnection):
@@ -102,7 +102,7 @@ def GraphGlobalDependencies(cursor, SQLiteConnection):
         networkx.draw(H, pos, with_labels=True)
         plt.axis('off')
         plt.savefig("Graph_Global_%s.png" % device[0])
-        plt.show()
+#        plt.show()
 #=======================================================================================================================================
 #MAC address and vendor adding
 def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
@@ -129,30 +129,29 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
 #=======================================================================================================================================
 #Labels adding   
 def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
-    cursor.execute("SELECT * FROM LocalServices WHERE IP='{ip}'".format(ip=IP) )
+    cursor.execute("SELECT S.PortNumber, S.DeviceType, S.Shortcut, S.Description FROM LocalServices LS JOIN Services S ON LS.PortNumber=S.PortNumber WHERE LS.IP='{ip}'".format(ip=IP) )
     Labels = cursor.fetchall()
     tmp = 0    
     if Labels:
-        for Label in Labels:
+        for Service in Labels:
             #==========TEST THIS====================================================================================================================
             if GL == True:
-                cursor.execute("SELECT * FROM Global WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}')".format(port=Label[0], ip=IP) )
+                cursor.execute("SELECT * FROM Global WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}')".format(port=Service[0], ip=IP) )
                 Global = cursor.fetchone()
-                cursor.execute("SELECT * FROM Dependencies WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}') ".format(port=Label[0], ip=IP) )
+                cursor.execute("SELECT * FROM Dependencies WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}') ".format(port=Service[0], ip=IP) )
                 Local = cursor.fetchone()
                 if not Global and not Local:
                     continue            
             #==============================================================================================================================
             tmp = 1        
-            cursor.execute("SELECT * FROM Services WHERE PortNumber='{port}'".format(port=Label[0]) )
-            Service = cursor.fetchone()
-            if Label[1] == "Router" and not IP in JSON["Routers"]:
+            if Service[1] == "Router" and not IP in JSON["Routers"]:
                 JSON["Routers"].append(IP)
             if not Service[1] in JSON["Services"]:
                 JSON["Services"].append(Service[1])
             #if Service[1] == "DHCP Client":
             #    createJSON["Labels"].append({"Label": "End Device", "Description": "PC, Mobile Phone,... (everything that can take IP address from DHCP)"})
             createJSON["Labels"].append({"Label": "%s" % Service[1], "Description": "%s" % Service[3]})
+    #============================================================================================================================================================
     cursor.execute("SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(ipo=IP, t="WEB Server") )
     WebServer = cursor.fetchone()
     if WebServer:
