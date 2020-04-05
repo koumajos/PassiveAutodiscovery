@@ -6,6 +6,9 @@ import os
 import sqlite3
 import ipaddress
 import re
+#=======================
+import argparse
+from argparse import RawTextHelpFormatter
 #python modules:
 import Collector
 #=================================================================================================================================
@@ -18,117 +21,121 @@ trap.setRequiredFmt(0, pytrap.FMT_UNIREC, inputspec)
 rec = pytrap.UnirecTemplate(inputspec)
 #=================================================================================================================================
 # Main loop
-print("You can input network addresses... (end input by: end )")
-NetworkLocalAddresses = []
-while True:
-    tmp = input()
-    if tmp == "end":
-        break
-    try:
-        ip = ipaddress.ip_network(tmp)
-        NetworkLocalAddresses.append(tmp)
-        print("Add new netwrok ip address: ", tmp)    
-    except:
-        print("Bad network address entered!")
-#==========================================================
-print("Only mapping entered networks? [yes]: ")    
-tmp = input()
-if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-    Networks = True
-else:
-    Networks = False
-#==========================================================
-print("Mapping only \"usualy\" transport layer port(no - will map all ports)? [yes]: ")    
-tmp = input()
-if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-    MappPorts = True
-else:
-    MappPorts = False
-#==========================================================
-print("Mapping the dependencies to global subnets(no private and entered network)? [yes]: ")    
-tmp = input()
-if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-    GlobalMapping = True
-else:
-    GlobalMapping = False
-#==========================================================
-DeleteGlobal = False
-if GlobalMapping == True:
-    print("Delete periodicly dependencies that have small amount of packets(you will set the number) from global dependencies? [yes]: ")    
-    tmp = input()
-    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-        DeleteGlobal = True
-    else:
-        DeleteGlobal = False
-    if DeleteGlobal == True:
-        print("Set number of packets:")
-        tmp = input()        
-        PacketNumber = int(tmp)
-#==========================================================
-print("Would you like print some information while capturing data on netwrok? [yes]")
-tmp = input()
-if tmp == "yes":
-    #==========================================================
-    print("Print if modul find new local device(print will slow program) [yes]: ")    
-    tmp = input()
-    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-        PrintLocalDevice = True
-    else:
-        PrintLocalDevice = False
-    #==========================================================
-    print("Print if modul find new local services(print will slow program) [yes]: ")    
-    tmp = input()
-    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-        PrintLocalServices = True
-    else:
-        PrintLocalServices = False
-    #==========================================================
-    print("Print if modul find new local dependency(print will slow program) [yes]: ")    
-    tmp = input()
-    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-        PrintLocalDependency = True
-    else:
-        PrintLocalDependency = False
-    #==========================================================
-    print("Print if found MAC adress for device? [yes]: ")    
-    tmp = input()
-    if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-        PrintMAC = True
-    else:
-        PrintMAC = False
-    #==========================================================
-    PrintGlobalService = False
-    PrintGlobalDependency = False
-    if GlobalMapping == True:
-        print("Print if modul find new global service(print will slow program): ")   
-        tmp = input()
-        if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-            PrintGlobalService = True
-        else:
-            PrintGlobalService = False
-        #==========================================================
-        print("Print if modul find new global dependency(print will slow program): ")    
-        tmp = input()
-        if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-            PrintGlobalDependency = True
-        else:
-            PrintGlobalDependency = False
-    #==========================================================
-else:
-    PrintLocalDevice = False
-    PrintLocalServices = False
-    PrintLocalDependency = False
-    PrintMAC = False
-    PrintGlobalService = False
-    PrintGlobalDependency = False
-#==========================================================
+parser = argparse.ArgumentParser( description="""Collect flow from network interface and output to database
+
+Database is created by CreateScript.py.
+Then analyze with DeviceAnalyzer.py.
+
+Usage:""", formatter_class=RawTextHelpFormatter)
+#=====================================================
+parser.add_argument(
+    '-i',
+    help="mandatory pytrap parameter",
+    type=str,
+    metavar='IFC',
+    default="u:basicflow"
+)
+#=====================================================
+parser.add_argument(
+    '-H', '--HELP',
+    help="Print help (--help and -h will print help of pytrap modules)",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-d', '--database',
+    help="Set name of the database without . part,  default is Database",
+    type=str,
+    metavar='NAME',
+    default="Database"
+)
+#=====================================================
+parser.add_argument(
+    '-N', '--networks',
+    help="IP addresses and mask (IPaddress/MASK - 192.168.1.0/24) of networks to monitor",
+    type=str,
+    nargs='+',
+    metavar='IPs',
+    default=""
+)
+#=====================================================
+parser.add_argument(
+    '-!', '--OnlySetNetworks',
+    help="Only monitor entered networks via parameter N (ussage: -N ... -! )",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-U', '--UsualyPorts',
+    help="Map only \"usualy\" transport layer ports",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-G', '--GlobalDependencies',
+    help="Mapping the dependencies to global subnets",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-D', '--DeleteGlobal',
+    help="Delete periodicly dependencies that have setted amount of packets from global dependencies",
+    type=int,
+    metavar='NUMBER',
+    default=0
+)
+#=====================================================
+parser.add_argument(
+    '-l', '--localdev',
+    help="Print if modul find new local device(print will slow program)",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-s', '--localserv',
+    help="Print if modul find new local services(print will slow program)",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-L', '--localdependencies',
+    help="Print if modul find new dependencies between two \"local\" device(print will slow program)",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-m', '--macdev',
+    help="Print if found MAC adress for \"local\" device(print will slow program)",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-S', '--globalserv',
+    help="Print if modul find new global service(print will slow program)",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-g', '--globaldependencies',
+    help="Print if modul find new dependency between \"local\" device and global device(print will slow program)",
+    action="store_true"
+)
+#=====================================================
+arguments = parser.parse_args()
+#=====================================================
+if arguments.HELP == True:
+    print(parser.print_help())
+    sys.exit()
+#=================================================================================================================================
+#=================================================================================================================================
+#=================================================================================================================================
 try:    #connect to a database
     print("Connecting to a database....", end='')
-    if not os.path.exists('Database.db'):
+    if not os.path.exists(arguments.database + ".db"):
         print("")
-        print("can't connect to Database.db")
+        print("can't connect to ", arguments.database + ".db")
         sys.exit()
-    SQLiteConnection = sqlite3.connect('Database.db')
+    SQLiteConnection = sqlite3.connect(arguments.database + ".db")
     print("done")
 except sqlite3.Error as error:
     print("Can't connect to a database:  ", error)
@@ -143,17 +150,20 @@ while True:     #main loop for load ip-flows from interfaces
     if len(data) <= 1:
         break
     rec.setData(data)
-    #===============================
-    Collector.collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapping, PrintLocalDevice, PrintLocalServices,PrintLocalDependency, PrintGlobalService,PrintGlobalDependency, MappPorts,PrintMAC)
-    #===============================
+    #====================================================
+    Collector.collector(rec, SQLiteConnection, arguments)
+    #====================================================
     tmp = tmp + 1
-    if DeleteGlobal == True and tmp % 10000 == 0:
-        Collector.DeleteGlobalDependencies(SQLiteConnection, PacketNumber)
-if DeleteGlobal == True:
-    Collector.DeleteGlobalDependencies(SQLiteConnection, PacketNumber)
+    if arguments.DeleteGlobal != 0 and tmp % 10000 == 0:
+        Collector.DeleteGlobalDependencies(SQLiteConnection, arguments.DeleteGlobal)
+if arguments.DeleteGlobal != 0:
+    Collector.DeleteGlobalDependencies(SQLiteConnection, arguments.DeleteGlobal)
+#=================================================================================================================================
 # Free allocated TRAP IFCs
 trap.finalize()
 # Close database connection
 if(SQLiteConnection):
     SQLiteConnection.close()
+#=================================================================================================================================
+#=================================================================================================================================
 #=================================================================================================================================

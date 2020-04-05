@@ -16,6 +16,9 @@ import pandas
 import numpy
 import networkx
 import matplotlib.pyplot as plt
+#=======================
+import argparse
+from argparse import RawTextHelpFormatter
 #=======================================================================================================================================
 #plot percent graph
 def plot(data):
@@ -429,8 +432,8 @@ def IPAddress(IP, cursor, createJSON):
 #=======================================================================================================================================
 #PrintDevice from JSON files   
 def PrintDeviceFromJSON(JSON):
-    if not JSON["LocalDependencies"] and not JSON["GlobalDependencies"]:
-        return
+    if not JSON["LocalDependencies"] and not JSON["GlobalDependencies"] and not JSON["Labels"]:
+        return    
     print("######################################################################") 
     print("Device ID: ", JSON["DeviceID"])
     #=================================================================================    
@@ -439,7 +442,7 @@ def PrintDeviceFromJSON(JSON):
     for i in JSON["IP"]:
         if tmp == 0:
             print(i, end='')
-            tmp = 1
+            tmp = i
         else:
             print(" <", i, ">", end='')
     print("")
@@ -458,7 +461,14 @@ def PrintDeviceFromJSON(JSON):
     if not JSON["Labels"]:
         print("    ---")
     for i in JSON["Labels"]:
-        print("    [", i["Label"], "] - ", i["Description"])  
+        if arguments.DNS == True and i["Label"] == "WEB Server":
+            try:
+                domain = socket.gethostbyaddr(i)
+                print("    [", i["Label"], "] - DomainName:", domain)  
+            except:
+                print("    [", i["Label"], "] - ", i["Description"])  
+        else:
+            print("    [", i["Label"], "] - ", i["Description"])  
     #=================================================================================    
     print("  DHCP:")
     if not JSON["DHCP"]:
@@ -483,13 +493,31 @@ def PrintDeviceFromJSON(JSON):
     print("  Global Dependencies:")
     if not JSON["GlobalDependencies"]:
         print("    ---")
-    tmp = 0
-    for i in JSON["GlobalDependencies"]:
-        if tmp < 16:        
-            print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"])    
-            tmp = tmp + 1
-        else:
-            break
+    if arguments.GlobalNumber == -1:
+        for i in JSON["GlobalDependencies"]:
+            if arguments.DNS == True and i["Service"] == "WEB Server":
+                try:
+                    domain = socket.gethostbyaddr(i["IP"])
+                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain,"  - number of packets: ", i["Packets"] )    
+                except:
+                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"] )    
+            else:
+                print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"] )    
+    else:
+        tmp = 0
+        for i in JSON["GlobalDependencies"]:
+            if tmp < arguments.GlobalNumber:        
+                if arguments.DNS == True and i["Service"] == "WEB Server":
+                    try:
+                        domain = socket.gethostbyaddr(i["IP"])
+                        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain,"  - number of packets: ", i["Packets"] )    
+                    except:
+                        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"] )    
+                else:
+                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"] )    
+                tmp = tmp + 1
+            else:
+                break
     #=================================================================================    
     if not JSON["GlobalStatistic"]:
         print("")    
@@ -499,8 +527,111 @@ def PrintDeviceFromJSON(JSON):
             IPStatistic[i["Service"]] = i["Procents"]
         plot(IPStatistic.items())
 #=======================================================================================================================================
+#PrintDevice from JSON files   
+def PrintDeviceToFileFromJSON(JSON, arguments):
+    if not JSON["LocalDependencies"] and not JSON["GlobalDependencies"]:
+        return    
+    sample = open("%s.txt" % arguments.file, 'w') 
+    print("######################################################################", file = sample) 
+    print("Device ID: ", JSON["DeviceID"], file = sample)
+    #=================================================================================    
+    print("  IP: ", end='', file = sample)
+    tmp = 0
+    for i in JSON["IP"]:
+        if tmp == 0:
+            print(i, end='', file = sample)
+            tmp = i
+        else:
+            print(" <", i, ">", end='', file = sample)
+    print("", file = sample)
+    #=================================================================================    
+    print("  Last communication: ", time.ctime(float(JSON["LastCom"])), file = sample )
+    #=================================================================================    
+    print("  MAC: ", end='', file = sample)
+    if JSON["MAC"] == "":
+        print("---", file = sample)
+    else:
+        print(JSON["MAC"], end='', file = sample)
+        if JSON["Vendor"] == "":
+            print(", ", JSON["Vendor"], ", ", JSON["Country"], file = sample)
+    #=================================================================================    
+    print("  Labels:", file = sample)
+    if not JSON["Labels"]:
+        print("    ---", file = sample)
+    for i in JSON["Labels"]:
+        if arguments.DNS == True and i["Label"] == "WEB Server":
+            try:
+                domain = socket.gethostbyaddr(i)
+                print("    [", i["Label"], "] - DomainName:", domain, file = sample)  
+            except:
+                print("    [", i["Label"], "] - ", i["Description"], file = sample)  
+        else:
+            print("    [", i["Label"], "] - ", i["Description"], file = sample)  
+    #=================================================================================    
+    print("  DHCP:", file = sample)
+    if not JSON["DHCP"]:
+        print("    ---", file = sample)
+    for i in JSON["DHCP"]:
+        print("    ", i["DHCPServ"], " in ", i["DHCPTime"], file = sample)
+    #=================================================================================    
+    print("  Local Dependencies:", file = sample)
+    if not JSON["LocalDependencies"]:
+        print("    ---", file = sample)
+    for i in JSON["LocalDependencies"]:
+        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
+    #=================================================================================    
+    if not JSON["LocalStatistic"]:
+        print("", file = sample)    
+    else:    
+        IPStatistic = {} 
+        for i in JSON["LocalStatistic"]:
+            IPStatistic[i["Service"]] = i["Procents"]
+        print("  Print Local Statistic:", file = sample)
+        for i, j in IPStatistic.items():
+            print("    ", i, "\t\t\t", j, "%", file = sample)    
+    #=================================================================================    
+    print("  Global Dependencies:", file = sample)
+    if not JSON["GlobalDependencies"]:
+        print("    ---", file = sample)    
+    if arguments.GlobalNumber == -1:
+        for i in JSON["GlobalDependencies"]:
+            if arguments.DNS == True and i["Service"] == "WEB Server":
+                try:
+                    domain = socket.gethostbyaddr(i["IP"])
+                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain,"  - number of packets: ", i["Packets"], file = sample)    
+                except:
+                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
+            else:
+                print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
+    else:
+        tmp = 0
+        for i in JSON["GlobalDependencies"]:
+            if tmp < arguments.GlobalNumber:        
+                if arguments.DNS == True and i["Service"] == "WEB Server":
+                    try:
+                        domain = socket.gethostbyaddr(i["IP"])
+                        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain,"  - number of packets: ", i["Packets"], file = sample)    
+                    except:
+                        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
+                else:
+                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
+                tmp = tmp + 1
+            else:
+                break
+    #=================================================================================    
+    if not JSON["GlobalStatistic"]:
+        print("", file = sample)    
+    else:   
+        IPStatistic = {} 
+        for i in JSON["GlobalStatistic"]:
+            IPStatistic[i["Service"]] = i["Procents"]
+        print("  Print Global Statistic:", file = sample)
+        for i, j in IPStatistic.items():
+            print("    ", i, "\t\t\t", j, "%", file = sample)    
+    sample.close() 
+#=======================================================================================================================================
 #Analyze single device   
-def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic, GL):    
+def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic, GL, arguments):    
     #==================================================================
     createJSON = {  "DeviceID":0,
                     "LastCom": 0,
@@ -537,12 +668,45 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
     GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON)    
     StatProcent(GlobalStatistic, createJSON, 1)    
     #==================================================================
-    PrintDeviceFromJSON(createJSON)
+    if arguments.print == True:
+        PrintDeviceFromJSON(createJSON)
+    if arguments.file != "":
+        print("Output printed to file: ", arguments.file)
+        PrintDeviceToFileFromJSON(createJSON, arguments)
     #==================================================================
     JSON["Devices"].append(createJSON)
 #=======================================================================================================================================
+#Analyze single device
+def AnalyzeSingleDevice(SQLiteConnection, arguments):
+    try:
+        IP = ipaddress.ip_address(arguments.device)
+    except:
+        print("ERROR: Entered value isn't IP address")
+        sys.exit()
+    cursor = SQLiteConnection.cursor()
+    cursor.execute("SELECT * FROM LocalDevice WHERE IP='{ip}'".format(ip=arguments.device) )
+    device = cursor.fetchone()
+    if not device:
+        print("ERROR: Entered IP address isn't in database")
+        sys.exit()
+    JSON = {   "Name": "AnalyzeSingleDevice", 
+                    "DateAnalyze": "", 
+                    "Routers": [],                    
+                    "Services": [],                    
+                    "IPStatistic": [],
+                    "Devices": []
+                }    
+    write_json(JSON, arguments.json)
+    read_json(JSON, arguments.json)
+    IPStatistic = {}    
+    AnalyzeLocalDevice("XXX", device[0], device[1], cursor, SQLiteConnection, JSON, IPStatistic, True, arguments)
+    x = datetime.datetime.now()
+    JSON["DateAnalyze"] = str(x)
+    write_json(JSON, arguments.json)
+    print("Output JSON: ", arguments.json)
+#=======================================================================================================================================
 #Main function of Analyzer
-def DoAnalyze(SQLiteConnection, GraphLocal, GraphGlobal):
+def DoAnalyze(SQLiteConnection, arguments):
     #==================================================================
     JSON = {   "Name": "DeppendencyMapping", 
                     "DateAnalyze": "", 
@@ -552,8 +716,8 @@ def DoAnalyze(SQLiteConnection, GraphLocal, GraphGlobal):
                     "IPStatistic": [],
                     "Devices": []
                 }    
-    write_json(JSON, "PassiveAutodiscovery")
-    read_json(JSON, "PassiveAutodiscovery")
+    write_json(JSON, arguments.json)
+    read_json(JSON, arguments.json)
     #==================================================================
     IPStatistic = {}    
     cursor = SQLiteConnection.cursor()
@@ -568,12 +732,14 @@ def DoAnalyze(SQLiteConnection, GraphLocal, GraphGlobal):
     cursor.execute("SELECT * FROM LocalDevice")
     LocalDevices = cursor.fetchall()
     for LocalDevice in LocalDevices:
-        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON, IPStatistic, GL)
+        if LocalDevice[0] == "255.255.255.255" or LocalDevice[0] == "0.0.0.0":
+            continue
+        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON, IPStatistic, GL, arguments)
         DeviceID = DeviceID + 1
     #==================================================================
-    if GraphLocal == True:    
+    if arguments.localgraph == True:    
         GraphLocalDependencies(cursor, SQLiteConnection)
-    if GraphGlobal == True:
+    if arguments.globalgraph == True:
         GraphGlobalDependencies(cursor, SQLiteConnection)
     #==================================================================
     StatProcent(IPStatistic, JSON, 2)    
@@ -581,38 +747,101 @@ def DoAnalyze(SQLiteConnection, GraphLocal, GraphGlobal):
     x = datetime.datetime.now()
     JSON["DateAnalyze"] = str(x)
     JSON["NumberDevice"] = DeviceID - 1
-    write_json(JSON, "PassiveAutodiscovery")    
+    write_json(JSON, arguments.json)
+    print("Output JSON: ", arguments.json)    
 #=======================================================================================================================================
 #=======================================================================================================================================
 #=======================================================================================================================================
 # Main loop
+parser = argparse.ArgumentParser( description="""Analyze of captured network flow in database. 
+Database is created by CreateScript. Filled with PassiveAutodiscovery.py NEMEA modul with coaporate Collector.py.
+
+Usage:""", formatter_class=RawTextHelpFormatter)
+#=====================================================
+parser.add_argument(
+    '-D', '--device',
+    help="Analyze single device [DEVICE = IP address of device to analyze]",
+    type=str,
+    default=""
+)
+#=====================================================
+parser.add_argument(
+    '-d', '--database',
+    help="Set name of the database without . part,  default is Database",
+    type=str,
+    metavar='NAME',
+    default="Database"
+)
+#=====================================================
+parser.add_argument(
+    '-G', '--GlobalNumber',
+    help="Number of global dependencies to print, default: all dependencies",
+    type=int,
+    metavar='NUMBER',
+    default=-1
+)
+#=====================================================
+parser.add_argument(
+    '-J', '--json',
+    help="print to JSON file [NAME = name of the file without . part (file will be automatic set to .json), default = PassiveAutodiscovery ]",
+    type=str,
+    metavar='NAME',
+    default="PassiveAutodiscovery"
+)
+#=====================================================
+parser.add_argument(
+    '-f', '--file',
+    help="print to file [NAME = name of the file without . part (file will be automatic set to .txt) ]",
+    type=str,
+    metavar='NAME',
+    default=""
+)
+#=====================================================
+parser.add_argument(
+    '-p', '--print',
+    help="print to command line",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-DNS', '--DNS',
+    help="Transalte [WEB Servers] IP to domain name and show in output",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-l', '--localgraph',
+    help="create graph of dependencies between local devices and safe it to file",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-g', '--globalgraph',
+    help="create graph of dependencies between local devices and safe it to file",
+    action="store_true"
+)
+#=====================================================
+arguments = parser.parse_args()
+#=====================================================
 try:    #connect to a database
     print("Connecting to a database....", end='')
-    if not os.path.exists('Database.db'):
+    if not os.path.exists(arguments.database + ".db"):
         print("")
-        print("can't connect to Database.db")
+        print("can't connect to ", arguments.database + ".db")
         sys.exit()
-    SQLiteConnection = sqlite3.connect('Database.db')
+    SQLiteConnection = sqlite3.connect(arguments.database + ".db")
     print("done")
 except sqlite3.Error as error:
     print("Can't connect to a database:  ", error)
 #=====================================================
-print("Print Graph of local dependencies? [yes]: ")    
-tmp = input()
-if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-    GraphLocal = True
+if arguments.device != "":
+    AnalyzeSingleDevice(SQLiteConnection, arguments)
 else:
-    GraphLocal = False
-#=====================================================
-print("Print Graph of global dependencies? [yes]: ")    
-tmp = input()
-if tmp == "yes" or tmp == "YES" or tmp == "Yes":
-    GraphGlobal = True
-else:
-    GraphGlobal = False
-#=====================================================
-DoAnalyze(SQLiteConnection, GraphLocal, GraphGlobal)
+    DoAnalyze(SQLiteConnection, arguments)
 #=====================================================
 # Close database connection
 if(SQLiteConnection):
     SQLiteConnection.close()
+#=======================================================================================================================================
+#=======================================================================================================================================
+#=======================================================================================================================================

@@ -7,7 +7,7 @@ import sqlite3
 #=================================================================================================================================
 #Check if port is some services and if port services is in database, if port is a service and if it is NOT in database, put in them
 #IP = ip address; PORT = transport layer port; table = string of table (local or global services); cursor and SQLiteConnection = sqlite3 database
-def Services(IP, PORT, table, cursor, SQLiteConnection, PrintServices):
+def Services(IP, PORT, table, cursor, SQLiteConnection, arguments):
     cursor.execute("SELECT * FROM {tb} WHERE PortNumber={pos}".format(tb="Services", pos=PORT ) )
     row = cursor.fetchone()
     if row:     #if port is services  
@@ -17,9 +17,9 @@ def Services(IP, PORT, table, cursor, SQLiteConnection, PrintServices):
             return
         else:           #push services to db
             if PrintServices == True:   
-                if table == "LocalServices":
+                if  arguments.localserv == True and table == "LocalServices":
                     print("New local services: ", IP, " -> ", row[1])
-                else:
+                if arguments.globalserv == True and table == "GlobalServices":
                     print("New global services: ", IP, " -> ", row[1])
             try:
                 cursor.execute("INSERT INTO {tb} (PortNumber, IP) VALUES ('{port}', '{ip}')".format(tb=table, port=PORT, ip=IP) )
@@ -30,8 +30,8 @@ def Services(IP, PORT, table, cursor, SQLiteConnection, PrintServices):
         return
 #=================================================================================================================================
 #Dependencies resolved, push into database or update
-def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, BYTES, cursor, SQLiteConnection, MappPorts, PrintDependency):
-    if MappPorts == True:
+def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, BYTES, cursor, SQLiteConnection, arguments):
+    if arguments.UsualyPorts == True:
         try:
             cursor.execute("SELECT * FROM Services WHERE PortNumber={pts} OR PortNumber={pos}".format(pts=SRC_PORT, pos=DST_PORT ) )
             row = cursor.fetchone()
@@ -69,11 +69,10 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, BYTES, c
             print("Error with inserting into table ", table)    
     #=================================================================================================================================================================    
     else:   #else found a new local or global dependencies
-        if PrintDependency == True:
-            if table == "Dependencies":
-                print("new local dependencies: ", SRC_IP, " -> ", DST_IP)
-            else:
-                print("new global dependencies: ", SRC_IP, " -> ", DST_IP)
+        if arguments.localdependencies == True and table == "Dependencies":
+            print("new local dependencies: ", SRC_IP, " -> ", DST_IP)
+        if arguments.globaldependencies == True and table == "Global":
+            print("new global dependencies: ", SRC_IP, " -> ", DST_IP)
         try:
             cursor.execute("INSERT INTO {tb} (IP_origin, IP_target, Port_origin, Port_target, NumPackets, NumBytes) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')".format(tb=table) % (SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, "") )
             SQLiteConnection.commit()
@@ -116,8 +115,8 @@ def Routers(IP, MAC, cursor, SQLiteConnection):
             print("Error with inserting into table Routers")
 #=================================================================================================================================
 #Add MAC
-def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, PrintMAC):
-    if PrintMAC == True:
+def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
+    if arguments.macdev == True:
         print("New MAC address: ", IP, " -> ", MAC)
     try:
         cursor.execute("INSERT INTO MAC (IP, MAC, FirstUse, LastUse) VALUES ('%s', '%s', '%s', '%s')" % (IP, MAC, TIME, '') )
@@ -126,7 +125,7 @@ def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, PrintMAC):
         print("Error with inserting into table MAC")
 #=================================================================================================================================
 #Check if MAC address is in database for this IP address and if no add it to database, if yes do stuffs
-def MAC(IP, MAC, TIME, cursor, SQLiteConnection, PrintMAC):
+def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
     #=======If device mac is router, do not continue in MAC code=======    
     cursor.execute("SELECT * FROM Routers WHERE MAC='%s'" % MAC )
     routers = cursor.fetchall()
@@ -146,54 +145,54 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection, PrintMAC):
             if newip == oldip:   #if ip match, end it 
                 return           
             elif newip.version == oldip.version:    #if not and have same version (one MAC can have both of IPv4 and IPv6 addresses)
-                if newip.is_link_local or oldip.is_link_local or ipadr.is_multicast:
+                if newip.is_link_local == True or oldip.is_link_local == True:
                     tmp = 1
                     continue    
                 #TODO TEST THIS!!!                
                 tmp = 2                
-                cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='%s'" % IP)
-                DHCProws = cursor.fetchall()
-                if DHCProws:
-                    lastrow = DHCProws[0]                
-                    for DHCProw in DHCProws:
-                        if DHCProw[3] > lastrow[3]:    #if DHCP com. for IP was after MAC use and  
-                            lastrow = DHCProw         
-                        else:
-                            None
-                    if TIME > DHCProw[3] and row[3] < DHCProw[3]:
-                        try:
-                            cursor.execute("UPDATE MAC SET LastUse='%s' WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (TIME, row[1], row[2], row[3]) )
-                            SQLiteConnection.commit()                    
-                        except sqlite3.IntegrityError:
-                            None                        
-                        MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, PrintMAC)
-                        return
-                    elif TIME > DHCProw[3] and row[3] > DHCProw[3]:
-                        Routers(IP, MAC, cursor, SQLiteConnection)
-                        Routers(row[1], MAC, cursor, SQLiteConnection)
-                        try:                        
-                            cursor.execute("DELETE FROM MAC WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (row[1], row[2], row[3]) )
-                            SQLiteConnection.commit()
-                        except sqlite3.IntegrityError:
-                            None
-                        return                    
-                    else:
-                        continue
-                else:
-                    tmp = 1
+#                cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='%s'" % IP)
+#                DHCProws = cursor.fetchall()
+#                if DHCProws:
+#                    lastrow = DHCProws[0]                
+#                    for DHCProw in DHCProws:
+#                        if DHCProw[3] > lastrow[3]:    #if DHCP com. for IP was after MAC use and  
+#                            lastrow = DHCProw         
+#                        else:
+#                            None
+#                    if float(TIME) > float(DHCProw[3]) and float(row[3]) < float(DHCProw[3]):
+#                        try:
+#                            cursor.execute("UPDATE MAC SET LastUse='%s' WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (TIME, row[1], row[2], row[3]) )
+#                            SQLiteConnection.commit()                    
+#                        except sqlite3.IntegrityError:
+#                            None                        
+#                        MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments)
+#                        return
+#                    elif float(TIME) > float(DHCProw[3]) and float(row[3]) > float(DHCProw[3]):
+#                        Routers(IP, MAC, cursor, SQLiteConnection)
+#                        Routers(row[1], MAC, cursor, SQLiteConnection)
+#                        try:                        
+#                            cursor.execute("DELETE FROM MAC WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (row[1], row[2], row[3]) )
+#                            SQLiteConnection.commit()
+#                        except sqlite3.IntegrityError:
+#                            None
+#                        return                    
+#                    else:
+#                        continue
+#                else:
+#                    tmp = 1
             else:           
                 if tmp == 2:
                     continue
                 else:
                     tmp = 1        
         if tmp == 1:
-            MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, PrintMAC)
+            MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments)
             return
     else:
-        MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, PrintMAC)
+        MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments)
 #=================================================================================================================================
 #Check if local IP address is in database, if not push it do table LocalDevice
-def NewDevice(IP, TIME, cursor, SQLiteConnection, PrintLocalDevice):
+def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
     cursor.execute("SELECT * FROM LocalDevice WHERE LocalDevice.IP='%s'" % IP)
     row = cursor.fetchone()
     if row:
@@ -204,7 +203,7 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, PrintLocalDevice):
             print("Error with updating value in table LocalDevice")
         return
     else:
-        if PrintLocalDevice == True:
+        if arguments.localdev == True:
             print("New local device: ", IP)
         try:
             cursor.execute("INSERT INTO LocalDevice (IP, LastCom) VALUES ('%s', '%s')" % (IP, TIME) )
@@ -216,16 +215,13 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, PrintLocalDevice):
 def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
     cursor = SQLiteConnection.cursor()
     try:
-#        cursor.execute("SELECT COUNT(*) FROM Global WHERE NumPackets < 6 AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)")
-#        row = cursor.fetchone()
-#        print("Delete: ", row[0], " records")
         cursor.execute("DELETE FROM Global WHERE NumPackets < {number} AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)".format(number=PacketNumber))
         SQLiteConnection.commit()
     except sqlite3.IntegrityError:
         print("Error in deleting rows from Global")
 #=================================================================================================================================
 #collector collect information from ipflows and push them into database
-def collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapping, PrintLocalDevice, PrintLocalServices, PrintLocalDependency, PrintGlobalServices, PrintGlobalDependency, MappPorts, PrintMAC):
+def collector(rec, SQLiteConnection, arguments):
     MACtemplate = True
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
     DstIP = ipaddress.ip_address(rec.DST_IP)    
@@ -245,7 +241,7 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapp
         return
     src = False    
     dst = False    
-    for nip in NetworkLocalAddresses:
+    for nip in arguments.networks:
         NIP = ipaddress.ip_network(nip)
         if NIP.version == 4:
             NIPv4 = ipaddress.IPv4Network(nip)       
@@ -259,74 +255,74 @@ def collector(rec, SQLiteConnection, NetworkLocalAddresses, Networks, GlobalMapp
             break
         else:
             continue
-    if Networks == True:        
+    if arguments.OnlySetNetworks == True:        
         if src:        #Source Device is in local network
-            NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, SQLiteConnection, PrintLocalDevice)
+            NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, SQLiteConnection, arguments)
             if MACtemplate == True:
-                MAC(rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, SQLiteConnection, PrintMAC)                
+                MAC(rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, SQLiteConnection, arguments)                
             if DstIP.is_private or dst:    #Destination Device is in local network
-                NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, PrintLocalDevice)        
+                NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, arguments)        
                 if MACtemplate == True:
-                    MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, PrintMAC)                
+                    MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, arguments)                
                 #=====================================================================================
-                NewDependencies("Dependencies", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintLocalDependency)
-                Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
-                Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)        
+                NewDependencies("Dependencies", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, arguments)
+                Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, arguments)
+                Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, arguments)        
                 DHCP(rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.TIME_LAST, cursor, SQLiteConnection)                    
             else:    #Destination Device is in global network
-                Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
-                if GlobalMapping == True:
-                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintGlobalDependency)
-                    Services(rec.DST_IP, rec.DST_PORT, "GlobalServices", cursor, SQLiteConnection, PrintGlobalServices)
+                Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, arguments)
+                if arguments.GlobalDependencies == True:
+                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, arguments)
+                    Services(rec.DST_IP, rec.DST_PORT, "GlobalServices", cursor, SQLiteConnection, arguments)
                 if MACtemplate == True:
                     Routers(rec.DST_IP, rec.DST_MAC, cursor, SQLiteConnection)
         else:    #Source Device is in global network
             if dst:
-                NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, PrintLocalDevice)        
-                Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
+                NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, arguments)        
+                Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, arguments)
                 #=====================================================================================        
-                if GlobalMapping == True:
-                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintGlobalDependency)
-                    Services(rec.SRC_IP, rec.SRC_PORT, "GlobalServices", cursor, SQLiteConnection, PrintGlobalServices)
+                if arguments.GlobalDependencies == True:
+                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, arguments)
+                    Services(rec.SRC_IP, rec.SRC_PORT, "GlobalServices", cursor, SQLiteConnection, arguments)
                 if MACtemplate == True:
+                    MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, arguments)                
                     Routers(rec.SRC_IP, rec.SRC_MAC, cursor, SQLiteConnection)
             else:
                 return 
     else:
         if SrcIP.is_private or src:        #Source Device is in local network
-            NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, SQLiteConnection, PrintLocalDevice)
+            NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, SQLiteConnection, arguments)
             if MACtemplate == True:
-                MAC(rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, SQLiteConnection, PrintMAC)                
+                MAC(rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, SQLiteConnection, arguments)                
             if DstIP.is_private or dst:    #Destination Device is in local network
-                NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, PrintLocalDevice)        
+                NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, arguments)        
                 if MACtemplate == True:
-                    MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, PrintMAC)                
+                    MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, arguments)                
                 #=====================================================================================
-                NewDependencies("Dependencies", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintLocalDependency)
-                Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
-                Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)        
+                NewDependencies("Dependencies", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, arguments)
+                Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, arguments)
+                Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, arguments)        
                 DHCP(rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.TIME_LAST, cursor, SQLiteConnection)                    
             else:    #Destination Device is in global network
-                Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
-                if GlobalMapping == True:
-                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintGlobalDependency)
-                    Services(rec.DST_IP, rec.DST_PORT, "GlobalServices", cursor, SQLiteConnection, PrintGlobalServices)
+                Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, arguments)
+                if arguments.GlobalDependencies == True:
+                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, arguments)
+                    Services(rec.DST_IP, rec.DST_PORT, "GlobalServices", cursor, SQLiteConnection, arguments)
                 if MACtemplate == True:
                     Routers(rec.DST_IP, rec.DST_MAC, cursor, SQLiteConnection)
         else:    #Source Device is in global network
             if DstIP.is_private or dst:
-                NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, PrintLocalDevice)        
+                NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, arguments)        
                 #=====================================================================================        
-                Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, PrintLocalServices)
-                if GlobalMapping == True:
-                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, MappPorts, PrintGlobalDependency)
-                    Services(rec.SRC_IP, rec.SRC_PORT, "GlobalServices", cursor, SQLiteConnection, PrintGlobalServices)
+                Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, arguments)
+                if arguments.GlobalDependencies == True:
+                    NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, rec.BYTES, cursor, SQLiteConnection, arguments)
+                    Services(rec.SRC_IP, rec.SRC_PORT, "GlobalServices", cursor, SQLiteConnection, arguments)
                 if MACtemplate == True:
-                    MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, PrintMAC)                
+                    MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, arguments)                
                     Routers(rec.SRC_IP, rec.SRC_MAC, cursor, SQLiteConnection)
             else:
                 return 
 #=================================================================================================================================
 #=================================================================================================================================
 #=================================================================================================================================
-

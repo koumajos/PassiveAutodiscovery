@@ -6,19 +6,41 @@ import sys
 import urllib
 import urllib.request
 #import urllib2
+#=======================
+import argparse
+from argparse import RawTextHelpFormatter
+#===============================================================================================
+# Main loop
+parser = argparse.ArgumentParser( description="""Create sqlite3 database. 
+Database is filled with PassiveAutodiscovery.py NEMEA modul with coaporate Collector.py.
+Then analyze with DeviceAnalyzer.py.
+
+Usage:""", formatter_class=RawTextHelpFormatter)
+#=====================================================
+parser.add_argument(
+    '-d', '--database',
+    help="Set name of the database without . part,  default is Database",
+    type=str,
+    metavar='NAME',
+    default="Database"
+)
+#=====================================================
+arguments = parser.parse_args()
+#=====================================================
+FILE = arguments.database + ".db"
 #===============================================================================================
 try:
     print("Connecting to database....", end = '')
-    if os.path.exists('Database.db'):
+    if os.path.exists(FILE):
         print("")
         print("Database already exists. Do you want do delete it and create new? [yes] - ", end = '')
         if(input() == "yes"):
             print("Removing old database and create new one....", end = '')
-            os.remove("Database.db")
+            os.remove(FILE)
         else:
             print("Exiting script....")
             sys.exit()
-    SQLiteConnection = sqlite3.connect('Database.db')
+    SQLiteConnection = sqlite3.connect(FILE)
     c = SQLiteConnection.cursor()
     print("done")
     with open('Database_sqlite_create.sql') as sqlite_file:
