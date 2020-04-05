@@ -80,9 +80,47 @@ Python libraries:
 * os
 * sys
 * urllib
-* urllib.request
+* from urllib - urllib.request
+* argparse
+* from argparse - RawTextHelpFormatter
+
+## PassiveAutodiscovery
+Python libraries: 
+* pytrap
+* sys
+* os
+* sqlite3
+* ipaddress
+* re
+* argparse
+* from argparse - RawTextHelpFormatter
+Python modules:
+* Collector
 
 ## Collector
+Python libraries: 
+* sys
+* os
+* ipaddress
+* sqlite3
 
 ## Analyzer
+Python libraries: 
+* sys
+* os
+* ipaddress
+* sqlite3
+* time
+* json
+* math
+* socket
+* datetime
+* from termgraph - termgraph
+* tempfile
+* pandas
+* numpy
+* networkx
+* matplotlib.pyplot
+* argparse
+* from argparse - RawTextHelpFormatter
 
