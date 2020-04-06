@@ -498,7 +498,7 @@ def PrintDeviceFromJSON(JSON):
             if arguments.DNS == True and i["Service"] == "WEB Server":
                 try:
                     domain = socket.gethostbyaddr(i["IP"])
-                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain,"  - number of packets: ", i["Packets"] )    
+                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain[0],"  - number of packets: ", i["Packets"] )    
                 except:
                     print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"] )    
             else:
@@ -510,7 +510,7 @@ def PrintDeviceFromJSON(JSON):
                 if arguments.DNS == True and i["Service"] == "WEB Server":
                     try:
                         domain = socket.gethostbyaddr(i["IP"])
-                        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain,"  - number of packets: ", i["Packets"] )    
+                        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain[0],"  - number of packets: ", i["Packets"] )    
                     except:
                         print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"] )    
                 else:
@@ -598,7 +598,7 @@ def PrintDeviceToFileFromJSON(JSON, arguments):
             if arguments.DNS == True and i["Service"] == "WEB Server":
                 try:
                     domain = socket.gethostbyaddr(i["IP"])
-                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain,"  - number of packets: ", i["Packets"], file = sample)    
+                    print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain[0],"  - number of packets: ", i["Packets"], file = sample)    
                 except:
                     print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
             else:
@@ -610,7 +610,7 @@ def PrintDeviceToFileFromJSON(JSON, arguments):
                 if arguments.DNS == True and i["Service"] == "WEB Server":
                     try:
                         domain = socket.gethostbyaddr(i["IP"])
-                        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain,"  - number of packets: ", i["Packets"], file = sample)    
+                        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain[0],"  - number of packets: ", i["Packets"], file = sample)    
                     except:
                         print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
                 else:
@@ -824,7 +824,7 @@ parser.add_argument(
 #=====================================================
 parser.add_argument(
     '-o', '--onlylocal',
-    help="Analyze only local network",
+    help="Analyze only local dependencies",
     action="store_true"
 )
 #=====================================================
