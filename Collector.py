@@ -243,14 +243,18 @@ def collector(rec, SQLiteConnection, arguments):
     dst = False    
     for nip in arguments.networks:
         NIP = ipaddress.ip_network(nip)
-        if NIP.version == 4:
-            NIPv4 = ipaddress.IPv4Network(nip)       
-            if SrcIP == NIPv4.broadcast_address or DstIP == NIPv4.broadcast_address:
-                return        
         if SrcIP in NIP:
+            if NIP.version == 4:
+                NIPv4 = ipaddress.IPv4Network(nip)       
+                if SrcIP == NIPv4.broadcast_address:
+                    return        
             src = True
             break
         elif DstIP in NIP:
+            if NIP.version == 4:
+                NIPv4 = ipaddress.IPv4Network(nip)       
+                if DstIP == NIPv4.broadcast_address:
+                    return        
             dst = True
             break
         else:
