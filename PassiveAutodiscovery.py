@@ -12,14 +12,6 @@ from argparse import RawTextHelpFormatter
 #python modules:
 import Collector
 #=================================================================================================================================
-trap = pytrap.TrapCtx()
-trap.init(sys.argv)
-# Set the list of required fields in received messages.
-# This list is an output of e.g. flow_meter - basic flow.
-inputspec = "ipaddr DST_IP,ipaddr SRC_IP,uint64 BYTES,uint64 LINK_BIT_FIELD,time TIME_FIRST,time TIME_LAST,uint32 PACKETS,uint16 DST_PORT,uint16 SRC_PORT,uint8 DIR_BIT_FIELD,uint8 PROTOCOL,uint8 TCP_FLAGS,uint8 TOS,uint8 TTL"
-trap.setRequiredFmt(0, pytrap.FMT_UNIREC, inputspec)
-rec = pytrap.UnirecTemplate(inputspec)
-#=================================================================================================================================
 # Main loop
 parser = argparse.ArgumentParser( description="""Collect flow from network interface and output to database
 
@@ -30,15 +22,26 @@ Usage:""", formatter_class=RawTextHelpFormatter)
 #=====================================================
 parser.add_argument(
     '-i',
-    help="mandatory pytrap parameter",
+    help="Specification of interface types and their parameters, see \"-h trap\" (mandatory parameter).",
     type=str,
-    metavar='IFC',
-    default="u:basicflow"
+    metavar='IFC_SPEC',
 )
 #=====================================================
 parser.add_argument(
-    '-H', '--HELP',
-    help="Print help (--help and -h will print help of pytrap modules)",
+    '-v',
+    help="Be verbose.",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-vv',
+    help="Be more verbose.",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-vvv',
+    help="Be even more verbose.",
     action="store_true"
 )
 #=====================================================
@@ -122,10 +125,14 @@ parser.add_argument(
 )
 #=====================================================
 arguments = parser.parse_args()
-#=====================================================
-if arguments.HELP == True:
-    print(parser.print_help())
-    sys.exit()
+#=================================================================================================================================
+trap = pytrap.TrapCtx()
+trap.init(sys.argv)
+# Set the list of required fields in received messages.
+# This list is an output of e.g. flow_meter - basic flow.
+inputspec = "ipaddr DST_IP,ipaddr SRC_IP,uint64 BYTES,uint64 LINK_BIT_FIELD,time TIME_FIRST,time TIME_LAST,uint32 PACKETS,uint16 DST_PORT,uint16 SRC_PORT,uint8 DIR_BIT_FIELD,uint8 PROTOCOL,uint8 TCP_FLAGS,uint8 TOS,uint8 TTL"
+trap.setRequiredFmt(0, pytrap.FMT_UNIREC, inputspec)
+rec = pytrap.UnirecTemplate(inputspec)
 #=================================================================================================================================
 #=================================================================================================================================
 #=================================================================================================================================
