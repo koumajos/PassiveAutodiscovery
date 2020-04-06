@@ -664,9 +664,10 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
     LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON)
     StatProcent(LocalStatistic, createJSON, 0)
     #==================================================================
-    GlobalStatistic = {}    
-    GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON)    
-    StatProcent(GlobalStatistic, createJSON, 1)    
+    if arguments.onlylocal == False:
+        GlobalStatistic = {}    
+        GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON)    
+        StatProcent(GlobalStatistic, createJSON, 1)    
     #==================================================================
     if arguments.print == True:
         PrintDeviceFromJSON(createJSON)
@@ -818,6 +819,12 @@ parser.add_argument(
 parser.add_argument(
     '-g', '--globalgraph',
     help="create graph of dependencies between local devices and safe it to file",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-o', '--onlylocal',
+    help="Analyze only local network",
     action="store_true"
 )
 #=====================================================
