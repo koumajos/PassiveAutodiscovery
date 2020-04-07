@@ -528,10 +528,9 @@ def PrintDeviceFromJSON(JSON):
         plot(IPStatistic.items())
 #=======================================================================================================================================
 #PrintDevice from JSON files   
-def PrintDeviceToFileFromJSON(JSON, arguments):
+def PrintDeviceToFileFromJSON(JSON, arguments, sample):
     if not JSON["LocalDependencies"] and not JSON["GlobalDependencies"]:
         return    
-    sample = open("%s.txt" % arguments.file, 'w') 
     print("######################################################################", file = sample) 
     print("Device ID: ", JSON["DeviceID"], file = sample)
     #=================================================================================    
@@ -627,11 +626,10 @@ def PrintDeviceToFileFromJSON(JSON, arguments):
             IPStatistic[i["Service"]] = i["Procents"]
         print("  Print Global Statistic:", file = sample)
         for i, j in IPStatistic.items():
-            print("    ", i, "\t\t\t", j, "%", file = sample)    
-    sample.close() 
+            print("    ", i, "\t\t\t", j, "%", file = sample)     
 #=======================================================================================================================================
 #Analyze single device   
-def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic, GL, arguments):    
+def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic, GL, arguments, sample):    
     #==================================================================
     createJSON = {  "DeviceID":0,
                     "LastCom": 0,
@@ -672,8 +670,8 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
     if arguments.print == True:
         PrintDeviceFromJSON(createJSON)
     if arguments.file != "":
-        print("Output printed to file: ", arguments.file)
-        PrintDeviceToFileFromJSON(createJSON, arguments)
+        print("Output for device ", IP," printed to file: ", arguments.file)
+        PrintDeviceToFileFromJSON(createJSON, arguments, sample)
     #==================================================================
     JSON["Devices"].append(createJSON)
 #=======================================================================================================================================
@@ -699,8 +697,14 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
                 }    
     write_json(JSON, arguments.json)
     read_json(JSON, arguments.json)
-    IPStatistic = {}    
-    AnalyzeLocalDevice("XXX", device[0], device[1], cursor, SQLiteConnection, JSON, IPStatistic, True, arguments)
+    IPStatistic = {}
+    if arguments.file != "":
+        sample = open("%s.txt" % arguments.file, 'w')
+    else:
+        sample = "" 
+    AnalyzeLocalDevice("XXX", device[0], device[1], cursor, SQLiteConnection, JSON, IPStatistic, True, arguments, sample)
+    if arguments.file != "":
+        sample.close()
     x = datetime.datetime.now()
     JSON["DateAnalyze"] = str(x)
     write_json(JSON, arguments.json)
@@ -730,12 +734,16 @@ def DoAnalyze(SQLiteConnection, arguments):
     if GlobalC[0] == 0:
         GL = False
     #==================================================================    
+    if arguments.file != "":
+        sample = open("%s.txt" % arguments.file, 'w')
+    else:
+        sample = "" 
     cursor.execute("SELECT * FROM LocalDevice")
     LocalDevices = cursor.fetchall()
     for LocalDevice in LocalDevices:
         if LocalDevice[0] == "255.255.255.255" or LocalDevice[0] == "0.0.0.0":
             continue
-        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON, IPStatistic, GL, arguments)
+        AnalyzeLocalDevice(DeviceID, LocalDevice[0], LocalDevice[1], cursor, SQLiteConnection, JSON, IPStatistic, GL, arguments, sample)
         DeviceID = DeviceID + 1
     #==================================================================
     if arguments.localgraph == True:    
@@ -743,8 +751,25 @@ def DoAnalyze(SQLiteConnection, arguments):
     if arguments.globalgraph == True:
         GraphGlobalDependencies(cursor, SQLiteConnection)
     #==================================================================
-    StatProcent(IPStatistic, JSON, 2)    
+    if arguments.file != "":
+        print("######################################################################", file = sample) 
+        print("  Print Statistic of using network by devices in %:", file = sample)
+        Procents = {}
+        tmp = 0        
+        for i, j in IPStatistic.items():
+            tmp = tmp + j
+        for i, j in IPStatistic.items():
+            Procents[i] = (j*100)/tmp
+        Procents = {r: Procents[r] for r in sorted(Procents, key=Procents.get, reverse=True)}
+        for i, j in Procents.items():
+            print("    ", i, "\t\t\t", j, "%", file = sample)     
+    else:
+        print("######################################################################") 
+        print("  Print Statistic of using network by devices in %:")
+        StatProcent(IPStatistic, JSON, 2)    
     #==================================================================
+    if arguments.file != "":
+        sample.close()
     x = datetime.datetime.now()
     JSON["DateAnalyze"] = str(x)
     JSON["NumberDevice"] = DeviceID - 1
