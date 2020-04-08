@@ -153,7 +153,16 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
                 JSON["Services"].append(Service[1])
             #if Service[1] == "DHCP Client":
             #    createJSON["Labels"].append({"Label": "End Device", "Description": "PC, Mobile Phone,... (everything that can take IP address from DHCP)"})
-            createJSON["Labels"].append({"Label": "%s" % Service[1], "Description": "%s" % Service[3]})
+            if Service[1] == "WEB Server":
+                try:
+                    domain = socket.gethostbyaddr(IP)
+                    if not {"Label": "%s" % Service[1], "Description": "%s" % domain[0]} in createJSON["Labels"]:
+                        createJSON["Labels"].append({"Label": "%s" % Service[1], "Description": "%s" % domain[0]})
+                    continue
+                except:
+                    None
+            if not {"Label": "%s" % Service[1], "Description": "%s" % Service[3]} in createJSON["Labels"]:
+                createJSON["Labels"].append({"Label": "%s" % Service[1], "Description": "%s" % Service[3]})
     #============================================================================================================================================================
     cursor.execute("SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(ipo=IP, t="WEB Server") )
     WebServer = cursor.fetchone()
@@ -754,16 +763,10 @@ def DoAnalyze(SQLiteConnection, arguments):
     if arguments.file != "":
         print("######################################################################", file = sample) 
         print("  Print Statistic of using network by devices in %:", file = sample)
-        Procents = {}
-        tmp = 0        
+        StatProcent(IPStatistic, JSON, 3)
         for i, j in IPStatistic.items():
-            tmp = tmp + j
-        for i, j in IPStatistic.items():
-            Procents[i] = (j*100)/tmp
-        Procents = {r: Procents[r] for r in sorted(Procents, key=Procents.get, reverse=True)}
-        for i, j in Procents.items():
             print("    ", i, "\t\t\t", j, "%", file = sample)     
-    else:
+    if arguments.print == True:
         print("######################################################################") 
         print("  Print Statistic of using network by devices in %:")
         StatProcent(IPStatistic, JSON, 2)    
