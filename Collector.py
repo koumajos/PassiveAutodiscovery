@@ -3,7 +3,6 @@ import sys
 import os
 import ipaddress
 import sqlite3
-
 #=================================================================================================================================
 #Check if port is some services and if port services is in database, if port is a service and if it is NOT in database, put in them
 #IP = ip address; PORT = transport layer port; table = string of table (local or global services); cursor and SQLiteConnection = sqlite3 database
@@ -16,11 +15,10 @@ def Services(IP, PORT, table, cursor, SQLiteConnection, arguments):
         if rows:        #if port and IP is in database, do nothing
             return
         else:           #push services to db
-            if PrintServices == True:   
-                if  arguments.localserv == True and table == "LocalServices":
-                    print("New local services: ", IP, " -> ", row[1])
-                if arguments.globalserv == True and table == "GlobalServices":
-                    print("New global services: ", IP, " -> ", row[1])
+            if  arguments.localserv == True and table == "LocalServices":
+                print("New local services: ", IP, " -> ", row[1])
+            if arguments.globalserv == True and table == "GlobalServices":
+                print("New global services: ", IP, " -> ", row[1])
             try:
                 cursor.execute("INSERT INTO {tb} (PortNumber, IP) VALUES ('{port}', '{ip}')".format(tb=table, port=PORT, ip=IP) )
                 SQLiteConnection.commit()
@@ -222,12 +220,12 @@ def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
 #=================================================================================================================================
 #collector collect information from ipflows and push them into database
 def collector(rec, SQLiteConnection, arguments):
+    cursor = SQLiteConnection.cursor()
     MACtemplate = True
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
     DstIP = ipaddress.ip_address(rec.DST_IP)    
     ban1 = ipaddress.ip_address('0.0.0.0')
     ban2 = ipaddress.ip_address('255.255.255.255')
-    cursor = SQLiteConnection.cursor()
     if SrcIP.is_multicast or DstIP.is_multicast:
         return
     try:    

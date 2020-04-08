@@ -4,6 +4,7 @@ import pytrap
 import sys
 import os
 import sqlite3
+import csv
 import ipaddress
 import re
 #=======================
@@ -89,6 +90,12 @@ parser.add_argument(
 )
 #=====================================================
 parser.add_argument(
+    '-RAM', '--RAM',
+    help="Safe database in RAM memory and safe to file after modul end",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
     '-l', '--localdev',
     help="Print if modul find new local device(print will slow program)",
     action="store_true"
@@ -136,16 +143,66 @@ rec = pytrap.UnirecTemplate(inputspec)
 #=================================================================================================================================
 #=================================================================================================================================
 #=================================================================================================================================
-try:    #connect to a database
-    print("Connecting to a database....", end='')
-    if not os.path.exists(arguments.database + ".db"):
-        print("")
-        print("can't connect to ", arguments.database + ".db")
-        sys.exit()
-    SQLiteConnection = sqlite3.connect(arguments.database + ".db")
-    print("done")
-except sqlite3.Error as error:
-    print("Can't connect to a database:  ", error)
+if arguments.RAM == True:
+    try:
+        print("Creating database in RAM memory....", end='')
+        SQLiteConnection = sqlite3.connect(":memory:")
+        cursor = SQLiteConnection.cursor()
+        print("done")
+    except sqlite3.Error as error:
+        print("Cant delete database in RAM memory: ", error)
+    try:
+        print("Create schema of database in memory...", end='')        
+        qry = open('Database_sqlite_create.sql', 'r').read()
+        sqlite3.complete_statement(qry)
+        cursor.executescript(qry)
+        print("done")
+    except sqlite3.Error as error:
+        print("Cant create database in RAM memory: ", error)
+    try:
+        try:
+            reader = csv.reader(open('Ports_url.csv','r'), delimiter=',')
+            print("Inserting data to table Ports....", end='')
+        except:
+            reader = csv.reader(open('Ports.csv','r'), delimiter=',')
+            print("Inserting data to table Ports....", end='')
+        for row in reader:
+            to_db = [row[0], row[1], row[2], row[3]]
+            cursor.execute("INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);", to_db)
+        print("done")
+        #===============================================================================================
+        try:    
+            reader = csv.reader(open('VendorsMAC_url.csv','r'), delimiter=',')
+            print("Inserting data to table VendorsMAC....", end='')
+        except:
+            reader = csv.reader(open('VendorsMAC.csv','r'), delimiter=',')    
+            print("Inserting data to table VendorsMAC....", end='')
+        for row in reader:
+            to_db = [row[0], row[1], row[2], row[4], row[5]]
+            cursor.execute("INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);", to_db)
+        print("done")
+        #===============================================================================================
+        print("Inserting Services data to table....", end='')
+        reader = csv.reader(open('Services.csv','r'), delimiter=',')    
+        for row in reader:
+            to_db = [row[0], row[1], row[2], row[3]]
+            cursor.execute("INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);", to_db)
+        SQLiteConnection.commit()
+        print("done")
+    except sqlite3.Error as error:
+        print("Cant create database in RAM memory: ", error)
+else:
+    try:    #connect to a database
+        print("Connecting to a database....", end='')
+        if not os.path.exists(arguments.database + ".db"):
+            print("")
+            print("can't connect to ", arguments.database + ".db")
+            sys.exit()
+        SQLiteConnection = sqlite3.connect(arguments.database + ".db")
+        print("done")
+    except sqlite3.Error as error:
+        print("Can't connect to a database:  ", error)
+print("Running script:")                       
 tmp = 0
 while True:     #main loop for load ip-flows from interfaces
     try:
@@ -169,6 +226,23 @@ if arguments.DeleteGlobal != 0:
 # Free allocated TRAP IFCs
 trap.finalize()
 # Close database connection
+if arguments.RAM == True:
+    try:    #connect to a database
+        print("Connecting to a database....", end='')
+        if os.path.exists(arguments.database + ".db"):
+            os.remove(arguments.database + ".db")        
+        SQLiteConnectionBackUP = sqlite3.connect(arguments.database + ".db")
+        print("done")
+        print("Exporting data from RAM memory to file", arguments.database, ".db...", end='')    
+        with SQLiteConnectionBackUP:
+            for line in SQLiteConnection.iterdump():
+                if line not in ('BEGIN;', 'COMMIT;'):
+                    SQLiteConnectionBackUP.execute(line)
+        SQLiteConnectionBackUP.commit()
+        print("done")        
+    except sqlite3.Error as error:
+        print("Can't connect to a database:  ", error)
+
 if(SQLiteConnection):
     SQLiteConnection.close()
 #=================================================================================================================================
