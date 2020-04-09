@@ -116,19 +116,20 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
     mac = ""    
     if row:
         createJSON["MAC"] = row[2]
-        mac = map(''.join, zip(*[iter(row[2])]*8))
+        mac = [row[2][i:i+8] for i in range(0, len(row[2]), 8) ][0] 
     elif Router:
-        mac = map(''.join, zip(*[iter(Router[1])]*8))    
+        createJSON["MAC"] = Router[1]
+        mac = [Router[1][i:i+8] for i in range(0, len(Router[1]), 8) ][0] 
     else:
         None
     if mac != "":
-        cursor.execute("SELECT * FROM VendorsMAC WHERE VendorMAC='{m}'".format(m=list(mac)[0].upper()))
+        cursor.execute("SELECT * FROM VendorsMAC WHERE VendorMAC='{m}'".format(m=mac.upper()))
         row = cursor.fetchone()
         if row:        
             createJSON["Vendor"] = row[3]
             createJSON["Country"] = row[4]
         else:
-            None
+            createJSON["Vendor"] = "Not Find"
 #=======================================================================================================================================
 #Labels adding   
 def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
@@ -222,7 +223,7 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
 #=======================================================================================================================================
 #LocalDependencies records adding  
 def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
-    cursor.execute("SELECT * FROM Dependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumBytes DESC".format(ipo=IP, ipt=IP) )
+    cursor.execute("SELECT * FROM Dependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumPackets DESC".format(ipo=IP, ipt=IP) )
     Dependencies = cursor.fetchall()    
     if Dependencies:    
         for Dependency in Dependencies:
@@ -463,7 +464,7 @@ def PrintDeviceFromJSON(JSON):
         print("---")
     else:
         print(JSON["MAC"], end='')
-        if JSON["Vendor"] == "":
+        if JSON["Vendor"] != "":
             print(", ", JSON["Vendor"], ", ", JSON["Country"])
     #=================================================================================    
     print("  Labels:")
@@ -560,7 +561,7 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
         print("---", file = sample)
     else:
         print(JSON["MAC"], end='', file = sample)
-        if JSON["Vendor"] == "":
+        if JSON["Vendor"] != "":
             print(", ", JSON["Vendor"], ", ", JSON["Country"], file = sample)
     #=================================================================================    
     print("  Labels:", file = sample)
