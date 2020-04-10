@@ -118,7 +118,7 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
         createJSON["MAC"] = row[2]
         mac = [row[2][i:i+8] for i in range(0, len(row[2]), 8) ][0] 
     elif Router:
-        createJSON["MAC"] = Router[1]
+        createJSON["RouterMAC"] = Router[1]
         mac = [Router[1][i:i+8] for i in range(0, len(Router[1]), 8) ][0] 
     else:
         None
@@ -182,12 +182,28 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
     cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP) )
     Router = cursor.fetchone()
     if Router:
-        tmp = 1
-        if not "Router" in JSON["Services"]:
-            JSON["Services"].append("Router")
-        createJSON["Labels"].append({"Label": "Router", "Description": "Routing network device"})
-        if not IP in JSON["Routers"]:
-            JSON["Routers"].append(IP)
+        cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1]) )
+        Routers = cursor.fetchall()
+        devices4 = 0
+        devices6 = 0
+        for i in Routers:
+            ipd = ipaddress.ip_address(i[2])
+            if ipd.is_global == False:            
+                if ipd.version == 4:
+                    devices4 = devices4 + 1
+                else:
+                    devices6 = devices6 + 1
+            if devices6 > 1 or devices4 > 1:
+                break
+        if devices6 > 1 or devices4 > 1:
+            None
+        else:
+            tmp = 1
+            if not "Router" in JSON["Services"]:
+                JSON["Services"].append("Router")
+            createJSON["Labels"].append({"Label": "Router", "Description": "Routing network device"})
+            if not IP in JSON["Routers"]:
+                JSON["Routers"].append(IP)
     if tmp == 0:
         if not "Unknown" in JSON["Services"]:
             JSON["Services"].append("Unknown")
@@ -433,12 +449,16 @@ def IPAddress(IP, cursor, createJSON):
             if not ip[1] == IP:
                 createJSON["IP"].append(ip[1])
     else:
-        cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1]) )
-        Routers = cursor.fetchall()
-        for ip in Routers:
-            ipd = ipaddress.ip_address(ip[2])        
-            if ipd.is_private and ip[2] != IP:
-                createJSON["IP"].append(ip[2])
+        cursor.execute("SELECT DeviceType FROM LocalServices LS JOIN Services S ON LS.PortNumber=S.PortNumber WHERE LS.IP='{ip}' AND S.DeviceType='{device}'".format(ip=IP, device="Router") )
+        Router = cursor.fetchall()
+        if Router:
+            cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1]) )
+            Routers = cursor.fetchall()
+            IPD = ipaddress.ip_address(IP)        
+            for ip in Routers:
+                ipd = ipaddress.ip_address(ip[2])        
+                if ipd.is_private and ip[2] != IP and IPD.version == ipd.version:
+                    createJSON["DeviceBehindRouter"].append(ip[2])
 #=======================================================================================================================================
 #PrintDevice from JSON files   
 def PrintDeviceFromJSON(JSON):
@@ -460,10 +480,14 @@ def PrintDeviceFromJSON(JSON):
     print("  Last communication: ", time.ctime(float(JSON["LastCom"])) )
     #=================================================================================    
     print("  MAC: ", end='')
-    if JSON["MAC"] == "":
+    if JSON["MAC"] == "" and JSON["RouterMAC"] == "":
         print("---")
-    else:
+    elif JSON["RouterMAC"] == "":
         print(JSON["MAC"], end='')
+        if JSON["Vendor"] != "":
+            print(", ", JSON["Vendor"], ", ", JSON["Country"])
+    else:
+        print(" of router behind this device or this device itself is this router: ", JSON["RouterMAC"], end='')
         if JSON["Vendor"] != "":
             print(", ", JSON["Vendor"], ", ", JSON["Country"])
     #=================================================================================    
@@ -557,10 +581,14 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
     print("  Last communication: ", time.ctime(float(JSON["LastCom"])), file = sample )
     #=================================================================================    
     print("  MAC: ", end='', file = sample)
-    if JSON["MAC"] == "":
+    if JSON["MAC"] == "" and JSON["RouterMAC"] == "":
         print("---", file = sample)
-    else:
+    elif JSON["RouterMAC"] == "":
         print(JSON["MAC"], end='', file = sample)
+        if JSON["Vendor"] != "":
+            print(", ", JSON["Vendor"], ", ", JSON["Country"], file = sample)
+    else:
+        print(" of router behind this device or this device itself is this router: ", JSON["RouterMAC"], end='', file = sample)
         if JSON["Vendor"] != "":
             print(", ", JSON["Vendor"], ", ", JSON["Country"], file = sample)
     #=================================================================================    
@@ -645,6 +673,7 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
                     "LastCom": 0,
                     "IP": [], 
                     "MAC": "", 
+                    "RouterMAC": "", 
                     "Vendor": "",
                     "Country": "", 
                     "Labels": [],
