@@ -513,8 +513,17 @@ def PrintDeviceFromJSON(JSON):
     print("  Local Dependencies:")
     if not JSON["LocalDependencies"]:
         print("    ---")
-    for i in JSON["LocalDependencies"]:
-        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"])    
+    if arguments.LocalNumber != -1:
+        tmp = 0
+        for i in JSON["LocalDependencies"]:
+            if tmp < arguments.LocalNumber:
+                print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"])    
+                tmp = tmp + 1
+            else:
+                break
+    else:
+        for i in JSON["LocalDependencies"]:
+            print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"])    
     #=================================================================================    
     if not JSON["LocalStatistic"]:
         print("")    
@@ -614,8 +623,17 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
     print("  Local Dependencies:", file = sample)
     if not JSON["LocalDependencies"]:
         print("    ---", file = sample)
-    for i in JSON["LocalDependencies"]:
-        print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
+    if arguments.LocalNumber != -1:
+        tmp = 0
+        for i in JSON["LocalDependencies"]:
+            if tmp < arguments.LocalNumber:
+                print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
+                tmp = tmp + 1
+            else:
+                break
+    else:
+        for i in JSON["LocalDependencies"]:
+            print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "] - number of packets: ", i["Packets"], file = sample)    
     #=================================================================================    
     if not JSON["LocalStatistic"]:
         print("", file = sample)    
@@ -835,6 +853,14 @@ parser.add_argument(
 parser.add_argument(
     '-G', '--GlobalNumber',
     help="Number of global dependencies to print, default: all dependencies",
+    type=int,
+    metavar='NUMBER',
+    default=-1
+)
+#=====================================================
+parser.add_argument(
+    '-L', '--LocalNumber',
+    help="Number of local dependencies to print, default: all dependencies",
     type=int,
     metavar='NUMBER',
     default=-1
