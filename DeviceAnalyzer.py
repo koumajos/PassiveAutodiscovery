@@ -50,7 +50,7 @@ def write_json(data, filename):
         json.dump(data, f, indent=4) 
 #=======================================================================================================================================
 #Create graph of local to local dependencies
-def GraphLocalDependencies(cursor, SQLiteConnection):
+def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
     cursor.execute("SELECT * FROM Dependencies")
     rows = cursor.fetchall()
     if not rows:
@@ -69,7 +69,8 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
     pos = networkx.spring_layout(G)    
     networkx.draw(G, pos, with_labels=True)
     plt.axis('off')
-    plt.savefig("Graph_Local_IPv4.png")    
+    plt.savefig("Graph_Local_IPv4.png")
+    createJSON["Files"].append("Graph_Local_IPv4.png")    
 #    plt.show()
     #=================================
     plt.figure("Map of Local Dependencies IPv6", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
@@ -84,10 +85,11 @@ def GraphLocalDependencies(cursor, SQLiteConnection):
     networkx.draw(H, pos, with_labels=True)
     plt.axis('off')
     plt.savefig("Graph_Local_IPv6.png")    
+    createJSON["Files"].append("Graph_Local_IPv6.png")    
 #    plt.show()    
 #=======================================================================================================================================
 #Create graph of global to local dependencies
-def GraphGlobalDependencies(cursor, SQLiteConnection):
+def GraphGlobalDependencies(cursor, SQLiteConnection, JSON):
     print("######################################################################") 
     cursor.execute("SELECT * FROM LocalDevice")
     LocalDevices = cursor.fetchall()
@@ -105,7 +107,50 @@ def GraphGlobalDependencies(cursor, SQLiteConnection):
         networkx.draw(H, pos, with_labels=True)
         plt.axis('off')
         plt.savefig("Graph_Global_%s.png" % device[0])
+        createJSON["Files"].append("Graph_Global_%s.png" % device[0])    
 #        plt.show()
+#=======================================================================================================================================
+#Create graph of global to local dependencies
+def GraphLocalToGlobal(cursor, SQLiteConnection, JSON):
+    print("######################################################################") 
+    cursor.execute("SELECT * FROM (SELECT IP_origin AS IP FROM Global GROUP BY IP_origin HAVING COUNT(*) > 1 UNION ALL SELECT IP_target AS IP FROM Global GROUP BY IP_target HAVING COUNT(*) > 1) GROUP BY IP")
+    IP = cursor.fetchall()
+    I = networkx.Graph()
+    tmp = 0
+    for i in IP:
+        ip = ipaddress.ip_address(i[0])
+        if ip.is_global == True:
+            cursor.execute("SELECT * FROM (SELECT IP_target AS IP, IP_origin AS IPM FROM Global WHERE IP_origin='{ipo}' UNION ALL SELECT IP_origin AS IP, IP_target AS IPM FROM Global WHERE IP_target='{ipo}') GROUP BY IP".format(ipo=i[0], ipt=i[0]))
+            Dependencies = cursor.fetchall()
+            if len(Dependencies) > 1:            
+                for j in Dependencies:
+                    I.add_node(j[0],  bipartite=0)
+                    I.add_node(j[1],  bipartite=1)
+                    I.add_edge(j[0], j[1])
+                if len(I) > 15:
+                    try:                    
+                        # Separate by group
+                        l, r = networkx.bipartite.sets(I)
+                        pos = {}    
+                        # Update position for node from each group
+                        pos.update((node, (1, index)) for index, node in enumerate(l))
+                        pos.update((node, (2, index)) for index, node in enumerate(r))
+                        networkx.draw(I, pos, with_labels=True)
+                        x_values, y_values = zip(*pos.values())
+                        x_max = max(x_values)
+                        x_min = min(x_values)
+                        x_margin = (x_max - x_min) * 0.25
+                        plt.xlim(x_min - x_margin, x_max + x_margin)
+                        plt.axis('off')
+                        plt.savefig("Graph_GlobalsToLocals_%s.png" % tmp)
+                        #plt.show()
+                        plt.clf()                        
+                        JSON["Files"].append("Graph_GlobalsToLocals_%s.png" % tmp)    
+                        tmp = tmp + 1
+                        I.clear()
+                    except:
+                        I.clear()
+                        #return
 #=======================================================================================================================================
 #MAC address and vendor adding
 def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
@@ -699,7 +744,7 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
                     "LocalDependencies": [],                    
                     "LocalStatistic": [], 
                     "GlobalDependencies": [],                    
-                    "GlobalStatistic": [], 
+                    "GlobalStatistic": [] 
                   }
     #==================================================================
     createJSON["DeviceID"] = DeviceID
@@ -750,7 +795,8 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
                     "Routers": [],                    
                     "Services": [],                    
                     "IPStatistic": [],
-                    "Devices": []
+                    "Devices": [],
+                    "Files": []
                 }    
     write_json(JSON, arguments.json)
     read_json(JSON, arguments.json)
@@ -776,10 +822,16 @@ def DoAnalyze(SQLiteConnection, arguments):
                     "Routers": [],                    
                     "Services": [],                    
                     "IPStatistic": [],
-                    "Devices": []
+                    "Devices": [],
+                    "Files": []
                 }    
     write_json(JSON, arguments.json)
     read_json(JSON, arguments.json)
+    #==================================================================
+    if arguments.bipartite == True:        
+        cursor = SQLiteConnection.cursor()
+        GraphLocalToGlobal(cursor, SQLiteConnection, JSON)
+        sys.exit()    
     #==================================================================
     IPStatistic = {}    
     cursor = SQLiteConnection.cursor()
@@ -804,9 +856,11 @@ def DoAnalyze(SQLiteConnection, arguments):
         DeviceID = DeviceID + 1
     #==================================================================
     if arguments.localgraph == True:    
-        GraphLocalDependencies(cursor, SQLiteConnection)
+        GraphLocalDependencies(cursor, SQLiteConnection, JSON)
     if arguments.globalgraph == True:
-        GraphGlobalDependencies(cursor, SQLiteConnection)
+        GraphGlobalDependencies(cursor, SQLiteConnection, JSON)
+    if arguments.bipartite == True:        
+        GraphLocalToGlobal(cursor, SQLiteConnection, JSON)
     #==================================================================
     if arguments.file != "":
         print("######################################################################", file = sample) 
@@ -902,7 +956,13 @@ parser.add_argument(
 #=====================================================
 parser.add_argument(
     '-g', '--globalgraph',
-    help="create graph of dependencies between local devices and safe it to file",
+    help="create graph of dependencies between local device and all global devices which was visited by local device, then safe it to file",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-b', '--bipartite',
+    help="create graph of dependencies between local devices and  global devices that was visited by more local devices, then safe it to file",
     action="store_true"
 )
 #=====================================================
