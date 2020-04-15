@@ -76,6 +76,12 @@ parser.add_argument(
 )
 #=====================================================
 parser.add_argument(
+    '-I', '--ignoreIncompletelyTCP',
+    help="Ignore incompletely TCP conection (1 packet)",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
     '-G', '--GlobalDependencies',
     help="Mapping the dependencies to global subnets",
     action="store_true"
@@ -214,6 +220,10 @@ while True:     #main loop for load ip-flows from interfaces
     if len(data) <= 1:
         break
     rec.setData(data)
+    #====================================================
+    if arguments.ignoreIncompletelyTCP == True:
+        if rec.PROTOCOL == 6 and rec.PACKETS == 1:      #6 is TCP, https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+            continue      
     #====================================================
     Collector.collector(rec, SQLiteConnection, arguments)
     #====================================================
