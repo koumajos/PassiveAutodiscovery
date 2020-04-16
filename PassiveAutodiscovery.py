@@ -159,13 +159,17 @@ rec = pytrap.UnirecTemplate(inputspec)
 #=================================================================================================================================
 #=================================================================================================================================
 #=================================================================================================================================
+if arguments.PRINT == True and (arguments.localdev == True or arguments.localserv == True or arguments.globalserv == True or arguments.localdependencies == True or arguments.globaldependencies == True or arguments.macdev == True):
+    print("Parameters -P and (-l or -s or -L -g -S -m) can't be combinated")
+    sys.exit()
+#=================================================================================================================================
 colorama.init()
 def move_cursor(x,y):
     print ("\x1b[{};{}H".format(y+1,x+1))
 def clear():
     print ("\x1b[2J")
 clear()
-
+#=================================================================================================================================
 def PRINT(oldT, startT, arguments, tmp):
     move_cursor(0,0)
     print("PassiveAutodiscovery modul")
