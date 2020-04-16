@@ -219,8 +219,7 @@ def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
         print("Error in deleting rows from Global")
 #=================================================================================================================================
 #collector collect information from ipflows and push them into database
-def collector(rec, SQLiteConnection, arguments):
-    cursor = SQLiteConnection.cursor()
+def collector(rec, SQLiteConnection, cursor, arguments):
     MACtemplate = True
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
     DstIP = ipaddress.ip_address(rec.DST_IP)    

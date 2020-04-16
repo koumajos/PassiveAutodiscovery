@@ -8,6 +8,10 @@ import csv
 import ipaddress
 import re
 #=======================
+import time
+import colorama
+from datetime import datetime
+#=======================
 import argparse
 from argparse import RawTextHelpFormatter
 #python modules:
@@ -77,7 +81,7 @@ parser.add_argument(
 #=====================================================
 parser.add_argument(
     '-I', '--ignoreIncompletelyTCP',
-    help="Ignore incompletely TCP conection (1 packet)",
+    help="Ignore incompletely TCP conection (2 or less packet)",
     action="store_true"
 )
 #=====================================================
@@ -98,6 +102,12 @@ parser.add_argument(
 parser.add_argument(
     '-RAM', '--RAM',
     help="Safe database in RAM memory and safe to file after modul end",
+    action="store_true"
+)
+#=====================================================
+parser.add_argument(
+    '-P', '--PRINT',
+    help="Printing information in menu",
     action="store_true"
 )
 #=====================================================
@@ -149,66 +159,113 @@ rec = pytrap.UnirecTemplate(inputspec)
 #=================================================================================================================================
 #=================================================================================================================================
 #=================================================================================================================================
+colorama.init()
+def move_cursor(x,y):
+    print ("\x1b[{};{}H".format(y+1,x+1))
+def clear():
+    print ("\x1b[2J")
+clear()
+
+def PRINT(oldT, startT, arguments, tmp):
+    move_cursor(0,0)
+    print("PassiveAutodiscovery modul")
+    print("from: ", arguments.i, "      to: ", arguments.database, ".db")
+    print("Networks: ", end='')
+    if arguments.networks != "" and arguments.OnlySetNetworks == True:
+        for i in arguments.networks:        
+            if i != arguments.networks[-1]:            
+                print(i, ", ", end='')
+            else:
+                print(i)
+    elif arguments.networks != "":
+        for i in arguments.networks:        
+            print(i, ", ", end='')
+        print("Private networks")
+    else:
+        print("Private subnets")
+    print("")        
+    print("Started time: ", datetime.fromtimestamp(startT))            
+    print("")
+    oldT = time.time()
+    print("Time: " + str(int((oldT - startT)/60)) + " min" + "      " + "IP flows: " + str(tmp))
+    cursor.execute("SELECT COUNT(*) FROM LocalDevice")
+    devices = cursor.fetchone()
+    cursor.execute("SELECT COUNT(*) FROM LocalServices")
+    services = cursor.fetchone()
+    print("Find Devices: " + str(devices[0]) + "      " + "Find Services: " +  str(services[0]))
+    cursor.execute("SELECT COUNT(*) FROM Dependencies")
+    Dependencies = cursor.fetchone()
+    cursor.execute("SELECT COUNT(*) FROM Global")
+    Global = cursor.fetchone()
+    print("Local Dependencies: " + str(Dependencies[0]) + "      " + "Global Dependencies: " + str(Global[0]))
+    return oldT
+#=================================================================================================================================
 if arguments.RAM == True:
     try:
-        print("Creating database in RAM memory....", end='')
+        #print("Creating database in RAM memory....", end='')
         SQLiteConnection = sqlite3.connect(":memory:")
         cursor = SQLiteConnection.cursor()
-        print("done")
+        #print("done")
     except sqlite3.Error as error:
         print("Cant delete database in RAM memory: ", error)
     try:
-        print("Create schema of database in memory...", end='')        
+        #print("Create schema of database in memory...", end='')        
         qry = open('Database_sqlite_create.sql', 'r').read()
         sqlite3.complete_statement(qry)
         cursor.executescript(qry)
-        print("done")
+        #print("done")
     except sqlite3.Error as error:
         print("Cant create database in RAM memory: ", error)
     try:
         try:
             reader = csv.reader(open('Ports_url.csv','r'), delimiter=',')
-            print("Inserting data to table Ports....", end='')
+         #   print("Inserting data to table Ports....", end='')
         except:
             reader = csv.reader(open('Ports.csv','r'), delimiter=',')
-            print("Inserting data to table Ports....", end='')
+        #    print("Inserting data to table Ports....", end='')
         for row in reader:
             to_db = [row[0], row[1], row[2], row[3]]
             cursor.execute("INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);", to_db)
-        print("done")
+        #print("done")
         #===============================================================================================
         try:    
             reader = csv.reader(open('VendorsMAC_url.csv','r'), delimiter=',')
-            print("Inserting data to table VendorsMAC....", end='')
+        #    print("Inserting data to table VendorsMAC....", end='')
         except:
             reader = csv.reader(open('VendorsMAC.csv','r'), delimiter=',')    
-            print("Inserting data to table VendorsMAC....", end='')
+        #    print("Inserting data to table VendorsMAC....", end='')
         for row in reader:
             to_db = [row[0], row[1], row[2], row[4], row[5]]
             cursor.execute("INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);", to_db)
-        print("done")
+        #print("done")
         #===============================================================================================
-        print("Inserting Services data to table....", end='')
+        #print("Inserting Services data to table....", end='')
         reader = csv.reader(open('Services.csv','r'), delimiter=',')    
         for row in reader:
             to_db = [row[0], row[1], row[2], row[3]]
             cursor.execute("INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);", to_db)
         SQLiteConnection.commit()
-        print("done")
+        #print("done")
     except sqlite3.Error as error:
         print("Cant create database in RAM memory: ", error)
 else:
     try:    #connect to a database
-        print("Connecting to a database....", end='')
+        #print("Connecting to a database....", end='')
         if not os.path.exists(arguments.database + ".db"):
-            print("")
+        #    print("")
             print("can't connect to ", arguments.database + ".db")
             sys.exit()
         SQLiteConnection = sqlite3.connect(arguments.database + ".db")
-        print("done")
+        cursor = SQLiteConnection.cursor()
+        #print("done")
     except sqlite3.Error as error:
         print("Can't connect to a database:  ", error)
-print("Running script:")                       
+if arguments.PRINT == True:
+    startT = time.time()
+    oldT  = time.time()
+    oldT = PRINT(oldT, startT, arguments, 0)
+else:
+    print("Running script:")                       
 tmp = 0
 while True:     #main loop for load ip-flows from interfaces
     try:
@@ -222,10 +279,14 @@ while True:     #main loop for load ip-flows from interfaces
     rec.setData(data)
     #====================================================
     if arguments.ignoreIncompletelyTCP == True:
-        if rec.PROTOCOL == 6 and rec.PACKETS == 1:      #6 is TCP, https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+        if rec.PROTOCOL == 6 and rec.PACKETS < 3:      #6 is TCP, https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
             continue      
     #====================================================
-    Collector.collector(rec, SQLiteConnection, arguments)
+    if arguments.PRINT == True:    
+        if oldT + 60 < time.time():
+            oldT = PRINT(oldT, startT, arguments, tmp)
+    #====================================================
+    Collector.collector(rec, SQLiteConnection, cursor, arguments)
     #====================================================
     tmp = tmp + 1
     if arguments.DeleteGlobal != 0 and tmp % 10000 == 0:
