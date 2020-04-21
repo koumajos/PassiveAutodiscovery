@@ -33,7 +33,7 @@ def clear():
     print ("\x1b[2J")
 #=================================================================================================================================
 #=================================================================================================================================
-def PRINT(oldT, startT, arguments, tmp):
+def PRINT(oldT, startT, arguments, tmp, cursor):
     move_cursor(0,0)
     print("PassiveAutodiscovery modul")
     print("from: ", arguments.i, "      to: ", arguments.database, ".db")
@@ -222,50 +222,38 @@ def PYTRAP():
 #=================================================================================================================================
 def RAMDatabase():
     try:
-        #print("Creating database in RAM memory....", end='')
         SQLiteConnection = sqlite3.connect(":memory:")
         cursor = SQLiteConnection.cursor()
-        #print("done")
     except sqlite3.Error as error:
         print("Cant delete database in RAM memory: ", error)
     try:
-        #print("Create schema of database in memory...", end='')        
         qry = open('Database_sqlite_create.sql', 'r').read()
         sqlite3.complete_statement(qry)
         cursor.executescript(qry)
-        #print("done")
     except sqlite3.Error as error:
         print("Cant create database in RAM memory: ", error)
     try:
         try:
             reader = csv.reader(open('Ports_url.csv','r'), delimiter=',')
-         #   print("Inserting data to table Ports....", end='')
         except:
             reader = csv.reader(open('Ports.csv','r'), delimiter=',')
-        #    print("Inserting data to table Ports....", end='')
         for row in reader:
             to_db = [row[0], row[1], row[2], row[3]]
             cursor.execute("INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);", to_db)
-        #print("done")
         #===============================================================================================
         try:    
             reader = csv.reader(open('VendorsMAC_url.csv','r'), delimiter=',')
-        #    print("Inserting data to table VendorsMAC....", end='')
         except:
             reader = csv.reader(open('VendorsMAC.csv','r'), delimiter=',')    
-        #    print("Inserting data to table VendorsMAC....", end='')
         for row in reader:
             to_db = [row[0], row[1], row[2], row[4], row[5]]
             cursor.execute("INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);", to_db)
-        #print("done")
         #===============================================================================================
-        #print("Inserting Services data to table....", end='')
         reader = csv.reader(open('Services.csv','r'), delimiter=',')    
         for row in reader:
             to_db = [row[0], row[1], row[2], row[3]]
             cursor.execute("INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);", to_db)
         SQLiteConnection.commit()
-        #print("done")
     except sqlite3.Error as error:
         print("Cant create database in RAM memory: ", error)
     return SQLiteConnection, cursor
@@ -300,23 +288,33 @@ def ConnectToDatabase():
         print("Can't connect to a database:  ", error)
 #=================================================================================================================================
 #=================================================================================================================================
+def IncompletePackets(arguments, rec):
+    if arguments.ignoreIncompletelyTCP == True:
+        if rec.PROTOCOL == 6 and rec.PACKETS < 3:      #6 is TCP, https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+            return True
+    return False    
+#=================================================================================================================================
+#=================================================================================================================================
 # Main function
 def Main():
     arguments = Arguments()
     rec, trap = PYTRAP()
-    #=================================================================================================================================
-    #=================================================================================================================================
+    #====================================================
     if arguments.RAM == True:
         SQLiteConnection, cursor = RAMDatabase()
     else:
         SQLiteConnection, cursor = ConnectToDatabase()
+    #====================================================
     if arguments.PRINT == True:
         startT = time.time()
-        oldT = PRINT(startT, startT, arguments, 0)
+        oldT = PRINT(startT, startT, arguments, 0, cursor)
     else:
-        print("Running script:")                       
-    Dtmp = 0
-    Rtmp = 0
+        print("Script is running...")                       
+    #====================================================
+    Dtmp = 0        #counter of IP flows that is subdued to database
+    Rtmp = 0        #counter of IP flows that isn't subdueded to database
+    # Dtmp + Rtmp == all IP flows captured 
+    #====================================================
     while True:     #main loop for load ip-flows from interfaces
         try:
             data = trap.recv()
@@ -328,28 +326,28 @@ def Main():
             break
         rec.setData(data)
         #====================================================
-        if arguments.ignoreIncompletelyTCP == True:
-            if rec.PROTOCOL == 6 and rec.PACKETS < 3:      #6 is TCP, https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
-                Rtmp = Rtmp + 1            
-                continue      
+        if IncompletePackets(arguments, rec) == True:
+            Rtmp = Rtmp + 1            
+            continue
         #====================================================
         if arguments.PRINT == True:    
             if oldT + 60 < time.time():
-                oldT = PRINT(oldT, startT, arguments, Dtmp + Rtmp)
+                oldT = PRINT(oldT, startT, arguments, Dtmp + Rtmp, cursor)
         #====================================================
         Collector.collector(rec, SQLiteConnection, cursor, arguments)
         #====================================================
         Dtmp = Dtmp + 1
         if arguments.DeleteGlobal != 0 and Dtmp % 10000 == 0:
             Collector.DeleteGlobalDependencies(SQLiteConnection, arguments.DeleteGlobal)
+    #====================================================
+    # if delete dependencies from table Global, must delete in end of the script    
     if arguments.DeleteGlobal != 0:
         Collector.DeleteGlobalDependencies(SQLiteConnection, arguments.DeleteGlobal)
-    #=================================================================================================================================
     # Free allocated TRAP IFCs
     trap.finalize()
-    # Close database connection
-    if arguments.RAM == True:
+    if arguments.RAM == True:       #if database was safed in RAM memory, safed it to file
         SafeRAMDatabase()
+    # Close database connection
     if(SQLiteConnection):
         SQLiteConnection.close()
 #===============================================================================================
