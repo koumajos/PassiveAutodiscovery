@@ -420,7 +420,7 @@ def Main():
     # Dtmp + Rtmp == all IP flows captured 
     #====================================================
     while True:     #main loop for load ip-flows from interfaces
-        try:
+        try:    #load IP flow from IFC interface
             data = trap.recv()
         except pytrap.FormatChanged as e:
             fmttype, inputspec = trap.getDataFmt(0)
@@ -428,20 +428,20 @@ def Main():
             data = e.data
         if len(data) <= 1:
             break
-        rec.setData(data)
+        rec.setData(data)   # set the IP flow to created tempalte
         #====================================================
-        if IncompleteTraffic(arguments, rec) == True:
+        if IncompleteTraffic(arguments, rec) == True:   #fillter incomplete IP flow
             Rtmp = Rtmp + 1            
             continue
         #====================================================
-        if arguments.PRINT == True:    
+        if arguments.PRINT == True:    #if prints actualizate information enable, print it every minute
             if oldT + 60 < time.time():
                 oldT = PRINT(oldT, startT, arguments, Dtmp + Rtmp, cursor)
         #====================================================
-        Collector.collector(rec, SQLiteConnection, cursor, arguments)
+        Collector.collector(rec, SQLiteConnection, cursor, arguments)   #analyze te IP flow and data from it get to database
         #====================================================
         Dtmp = Dtmp + 1
-        if arguments.DeleteGlobal != 0 and Dtmp % 10000 == 0:
+        if arguments.DeleteGlobal != 0 and Dtmp % 10000 == 0:       # if delete some dependencies enabled and is time for periodic delete do it
             Collector.DeleteGlobalDependencies(SQLiteConnection, arguments.DeleteGlobal)
     #====================================================
     # if delete dependencies from table Global, must delete in end of the script    
