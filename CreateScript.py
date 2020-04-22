@@ -2,7 +2,7 @@
 """CreateScript
 
 This script is part of PassiveAutodiscovery modul for 
-modular monitoring system NEMEA (Network MeasurementAnalysis).
+modular monitoring system NEMEA (Network Measurement Analysis).
 This part is for:
     Script allows to create sqlite3 database file with inserted name.
     Then the database file will be scructured by SQL file (Database_sqlite_create.sql).
@@ -41,9 +41,9 @@ def CreateDB(FILE):
 
     Returns:
     --------
-    SQLiteConnection
+    SQLiteConnection : sqlite3
         The connection to created sqlite3 database.
-    cursor
+    cursor : sqlite3
         The cursor for execute SQL commands in created sqlite3 database.
     """
     try:
@@ -80,7 +80,7 @@ def DownloadData(name):
 
     Returns:
     --------
-    reader
+    reader : csv
         The opened data taht have been downloaded.
     """
     try:        #try download the file from url, if can't download or connect, use the archive local file (can be deprecated)
@@ -103,15 +103,15 @@ def InserData(SQLiteConnection, cursor, readerP, readerM, readerS):
     
     Parameters:
     -----------
-    SQLiteConnection 
+    SQLiteConnection : sqlite3 
         The connection to the sqlite3 database.
-    cursor
+    cursor : sqlite3
         The cursor at the sqlite3 database.
-    readerP
+    readerP : csv
         The opened file that is fill with initial Ports table data
-    readerM
+    readerM : csv
         The opened file that is fill with initial VendorsMAC table data
-    readerS
+    readerS : csv
         The opened file that is fill with initial Services table data
     """
     try:
