@@ -1,12 +1,38 @@
 #!/usr/bin/python3.6
+"""
+Collector script analyze IP flow that get from PassiveAutodiscovery module. 
+
+Collector get database connection, arguments and IP flow.
+IP flow si analyzed and arguemnts specificate how to do it.
+The analyze get information from IP flow and add them to sqlite3 database. 
+"""
+#libraries for working with OS UNIX files and system
 import sys
 import os
+#library for working with IP addresses
 import ipaddress
+#library for working with sqlite3 database
 import sqlite3
 #=================================================================================================================================
-#Check if port is some services and if port services is in database, if port is a service and if it is NOT in database, put in them
+#=================================================================================================================================
 #IP = ip address; PORT = transport layer port; table = string of table (local or global services); cursor and SQLiteConnection = sqlite3 database
 def Services(IP, PORT, table, cursor, SQLiteConnection, arguments):
+    """Check if port in IP flow is used by some role of device (services), if yes and if it is NOT in database, put record to sqlite3 database.
+    
+    Parameters:
+    -----------
+    IP : str
+    
+    PORT : int
+
+    table : str
+
+    cursor : sqlite3
+
+    SQLiteConnection : sqlite3
+
+    arguments : argparse   
+    """
     cursor.execute("SELECT * FROM {tb} WHERE PortNumber={pos}".format(tb="Services", pos=PORT ) )
     row = cursor.fetchone()
     if row:     #if port is services  
@@ -27,8 +53,18 @@ def Services(IP, PORT, table, cursor, SQLiteConnection, arguments):
     else:
         return
 #=================================================================================================================================
+#=================================================================================================================================
 #Dependencies resolved, push into database or update
 def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, BYTES, cursor, SQLiteConnection, arguments):
+    """
+    
+    Parameters:
+    -----------
+    
+    Returns:
+    --------
+    
+    """
     if arguments.UsualyPorts == True:
         try:
             cursor.execute("SELECT * FROM Services WHERE PortNumber={pts} OR PortNumber={pos}".format(pts=SRC_PORT, pos=DST_PORT ) )
@@ -77,9 +113,17 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, BYTES, c
         except sqlite3.IntegrityError:
             print("Error with inserting into table ", table)
 #=================================================================================================================================
-#
-#
+#=================================================================================================================================
 def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
+    """
+    
+    Parameters:
+    -----------
+    
+    Returns:
+    --------
+    
+    """
     if (SRC_PORT == 68 and DST_PORT == 67) or (SRC_PORT == 546 and DST_PORT == 547):
         #print("DHCP for ip address: ", SRC_IP)
         try:
@@ -97,9 +141,19 @@ def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
     else:
         return
 #=================================================================================================================================
+#=================================================================================================================================
 #Add router dependencies to database
 #IP = IP address of device behind router; MAC = mac address of router, cursor and SQLiteConnection = database connection
 def Routers(IP, MAC, cursor, SQLiteConnection):
+    """
+    
+    Parameters:
+    -----------
+    
+    Returns:
+    --------
+    
+    """
     cursor.execute("SELECT * FROM Routers WHERE MAC='%s' AND IP='%s'" % (MAC, IP))
     row = cursor.fetchone()
     if row:
@@ -112,8 +166,18 @@ def Routers(IP, MAC, cursor, SQLiteConnection):
         except sqlite3.IntegrityError:
             print("Error with inserting into table Routers")
 #=================================================================================================================================
+#=================================================================================================================================
 #Add MAC
 def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
+    """
+    
+    Parameters:
+    -----------
+    
+    Returns:
+    --------
+    
+    """
     if arguments.macdev == True:
         print("New MAC address: ", IP, " -> ", MAC)
     try:
@@ -123,7 +187,17 @@ def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
         print("Error with inserting into table MAC")
 #=================================================================================================================================
 #Check if MAC address is in database for this IP address and if no add it to database, if yes do stuffs
+#=================================================================================================================================
 def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
+    """
+    
+    Parameters:
+    -----------
+    
+    Returns:
+    --------
+    
+    """
     #=======If device mac is router, do not continue in MAC code=======    
     cursor.execute("SELECT * FROM Routers WHERE MAC='%s'" % MAC )
     routers = cursor.fetchall()
@@ -189,8 +263,18 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
     else:
         MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments)
 #=================================================================================================================================
+#=================================================================================================================================
 #Check if local IP address is in database, if not push it do table LocalDevice
 def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
+    """
+    
+    Parameters:
+    -----------
+    
+    Returns:
+    --------
+    
+    """
     cursor.execute("SELECT * FROM LocalDevice WHERE LocalDevice.IP='%s'" % IP)
     row = cursor.fetchone()
     if row:
@@ -209,8 +293,18 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
         except sqlite3.IntegrityError:
             print("Error with inserting into table LocalDevice")
 #=================================================================================================================================
+#=================================================================================================================================
 #deleting small packets dependencies from global
 def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
+    """
+    
+    Parameters:
+    -----------
+    
+    Returns:
+    --------
+    
+    """
     cursor = SQLiteConnection.cursor()
     try:
         cursor.execute("DELETE FROM Global WHERE NumPackets < {number} AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)".format(number=PacketNumber))
@@ -218,8 +312,18 @@ def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
     except sqlite3.IntegrityError:
         print("Error in deleting rows from Global")
 #=================================================================================================================================
+#=================================================================================================================================
 #collector collect information from ipflows and push them into database
 def collector(rec, SQLiteConnection, cursor, arguments):
+    """
+    
+    Parameters:
+    -----------
+    
+    Returns:
+    --------
+    
+    """
     MACtemplate = True
     SrcIP = ipaddress.ip_address(rec.SRC_IP)
     DstIP = ipaddress.ip_address(rec.DST_IP)    

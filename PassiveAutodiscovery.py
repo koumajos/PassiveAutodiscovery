@@ -192,8 +192,8 @@ def Arguments():
     )
     #=====================================================
     parser.add_argument(
-        '-I', '--ignoreIncompletelyTCP',
-        help="Ignore incompletely TCP conection (2 or less packet)",
+        '-F', '--FilterIPFlows',
+        help="Filter incompletely conection",
         action="store_true"
     )
     #=====================================================
@@ -389,9 +389,11 @@ def IncompleteTraffic(arguments, rec):
         False if Ip flows isn't incomplete.
         
     """
-    if arguments.ignoreIncompletelyTCP == True:
-        if rec.PROTOCOL == 6 and rec.PACKETS < 3:      #6 is TCP, https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
-            return True
+    if arguments.FilterIPFlows == False:
+        return False
+    #===========================================
+    if rec.PROTOCOL == 6 and rec.PACKETS < 3:      #6 is TCP, https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+        return True
     #TODO: Try fillter incomplete traffic using UDP protocol (??or other protocol??)
     return False    
 #=================================================================================================================================
