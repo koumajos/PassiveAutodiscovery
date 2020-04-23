@@ -1013,11 +1013,30 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
 #=======================================================================================================================================
 #=======================================================================================================================================
 def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic, GL, arguments, sample):    
-    """
+    """Analyze a device and output of it add to JSON document.
 
     Parameters:
     -----------
-        
+    DeviceID : int
+        Number of device in analyze.
+    IP : str
+        Device IP address.
+    TIME : int
+        Time of last comunication.
+    cursor : sqlite3
+        Cursor to sqlite3 database for execute SQL queries.
+    SQLiteConnection : sqlite3
+        Connection to sqlite3 database.
+    JSON : JSON
+        JSON file loaded in python.        
+    IPStatistic : dictionary
+        Dictionary contains statistic of using network by devices.
+    GL : bool
+        True if global dependencies exists.
+    arguments : argparse
+        Setted arguments of the script.
+    sample : opened file
+        Output file.    
     """
     #==================================================================
     createJSON = {  "DeviceID":0,
@@ -1067,11 +1086,14 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
 #=======================================================================================================================================
 #=======================================================================================================================================
 def AnalyzeNetwork(SQLiteConnection, arguments):
-    """
+    """Analyze network subnet from arguments.
 
     Parameters:
     -----------
-        
+    SQLiteConnection : sqlite3
+        Connection to sqlite3 database.
+    arguments : argparse
+        Setted arguments of the script.
     """
     #==================================================================
     JSON = {        "Name": "AnalyzeNetwork",
@@ -1141,11 +1163,14 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
 #=======================================================================================================================================
 #=======================================================================================================================================
 def AnalyzeSingleDevice(SQLiteConnection, arguments):
-    """
+    """Analyze device from arguments.
 
     Parameters:
     -----------
-        
+    SQLiteConnection : sqlite3
+        Connection to sqlite3 database.
+    arguments : argparse
+        Setted arguments of the script.
     """
     try:
         IP = ipaddress.ip_address(arguments.device)
@@ -1183,11 +1208,14 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
 #=======================================================================================================================================
 #=======================================================================================================================================
 def DoAnalyze(SQLiteConnection, arguments):
-    """
+    """Analyze all "local" devices from database table LocalDevice.
 
     Parameters:
     -----------
-        
+    SQLiteConnection : sqlite3
+        Connection to sqlite3 database.
+    arguments : argparse
+        Setted arguments of the script.
     """
     #==================================================================
     JSON = {   "Name": "PassiveAutodiscovery", 
@@ -1252,14 +1280,12 @@ def DoAnalyze(SQLiteConnection, arguments):
 #=======================================================================================================================================
 #=======================================================================================================================================
 def Arguments():
-    """
+    """Arguments of the DeviceAnalyzer script.
 
-    Parameters:
-    -----------
-        
     Returns:
     --------
-    
+    arguments : argparse
+        Setted arguments of the script.
     """    
     parser = argparse.ArgumentParser( description="""Analyze of captured network flow in database. 
     Database is created by CreateScript. Filled with PassiveAutodiscovery.py NEMEA modul with coaporate Collector.py.
@@ -1372,14 +1398,16 @@ def Arguments():
 #=======================================================================================================================================
 #=======================================================================================================================================
 def ConnectToDatabase(arguments):
-    """
+    """Connect to sqlite3 database which analyze.
 
     Parameters:
     -----------
-        
+    arguments : argparse
+        Setted arguments of the script.
     Returns:
     --------
-    
+    SQLiteConnection : sqlite3
+        Connection to sqlite3 database with name from arguments.
     """
     try:    #connect to a database
         print("Connecting to a database....", end='')
@@ -1395,7 +1423,7 @@ def ConnectToDatabase(arguments):
 #=======================================================================================================================================
 #=======================================================================================================================================
 def Main():
-    """
+    """Main function call one of three function by arguments where it is set.
 
     """
     arguments = Arguments()
