@@ -275,10 +275,10 @@ def PYTRAP():
         
     Returns:
     --------
-        rec : pytrap
-            Templete of IP flows.
-        trap : pytrap
-            Init pytrap NEMEA library, for capture IP flows from IFC interface setted in paramater -i.
+    rec : pytrap
+        Templete of IP flows.
+    trap : pytrap
+        Init pytrap NEMEA library, for capture IP flows from IFC interface setted in paramater -i.
     """
     trap = pytrap.TrapCtx()
     trap.init(sys.argv)
@@ -295,10 +295,10 @@ def RAMDatabase():
         
     Returns:
     --------
-        SQLiteConnection : sqlite3
-            The connection to the created sqlite3 database.
-        cursor : sqlite3
-            The cursor to the created database to execute SQL commands.
+    SQLiteConnection : sqlite3
+        The connection to the created sqlite3 database.
+    cursor : sqlite3
+        The cursor to the created database to execute SQL commands.
     """
     try:
         SQLiteConnection = sqlite3.connect(":memory:")      #create database in RAM memory
@@ -338,16 +338,20 @@ def RAMDatabase():
     return SQLiteConnection, cursor
 #=================================================================================================================================
 #=================================================================================================================================
-def SafeRAMDatabase():
+def SafeRAMDatabase(SQLiteConnection, arguments):
     """Safe the RAM menory based sqlite3 database to output sqlite3 database file (.db) with selected name from parameter -d.
-        
+    
+    Parameters:
+    -----------
+    SQLiteConnection : sqlite3
+        The connection to the created sqlite3 database.
+    arguments : argparse
+        Setted arguments of module.    
     """
     try:    #connect to a database
-        print("Connecting to a database....", end='')
         if os.path.exists(arguments.database + ".db"):
             os.remove(arguments.database + ".db")        
         SQLiteConnectionBackUP = sqlite3.connect(arguments.database + ".db")
-        print("done")
         print("Exporting data from RAM memory to file", arguments.database, ".db...", end='')    
         with SQLiteConnectionBackUP:
             for line in SQLiteConnection.iterdump():
@@ -359,9 +363,20 @@ def SafeRAMDatabase():
         print("Can't connect to a database:  ", error)
 #=================================================================================================================================
 #=================================================================================================================================
-def ConnectToDatabase():
+def ConnectToDatabase(arguments):
     """Connect to sqlite3 databased based in file (.db) with name setted in parameter -d.
     
+    Parameters:
+    -----------
+    arguments : argparse
+        Setted arguments of module.    
+        
+    Returns:
+    --------
+    SQLiteConnection : sqlite3
+        The connection to the created sqlite3 database.
+    cursor : sqlite3
+        The cursor to the created database to execute SQL commands.
     """
     try:    #connect to a database
         if not os.path.exists(arguments.database + ".db"):
@@ -371,6 +386,7 @@ def ConnectToDatabase():
         cursor = SQLiteConnection.cursor()
     except sqlite3.Error as error:
         print("Can't connect to a database:  ", error)
+    return SQLiteConnection, cursor
 #=================================================================================================================================
 #=================================================================================================================================
 def IncompleteTraffic(arguments, rec):
@@ -378,7 +394,7 @@ def IncompleteTraffic(arguments, rec):
         
     Parameters:
     -----------
-    arguemnts : argparse
+    arguments : argparse
         Setted arguments of module.
     rec : pytrap    
         Analyzed IP flow.
@@ -409,7 +425,7 @@ def Main():
     if arguments.RAM == True:
         SQLiteConnection, cursor = RAMDatabase()
     else:
-        SQLiteConnection, cursor = ConnectToDatabase()
+        SQLiteConnection, cursor = ConnectToDatabase(arguments)
     #====================================================
     if arguments.PRINT == True:
         startT = time.time()
@@ -449,10 +465,12 @@ def Main():
     # if delete dependencies from table Global, must delete in end of the script    
     if arguments.DeleteGlobal != 0:
         Collector.DeleteGlobalDependencies(SQLiteConnection, arguments.DeleteGlobal)
+    if arguments.PRINT == True:    #if prints actualizate information enable, print it every minute
+        oldT = PRINT(oldT, startT, arguments, Dtmp + Rtmp, cursor)
     # Free allocated TRAP IFCs
     trap.finalize()
     if arguments.RAM == True:       #if database was safed in RAM memory, safed it to file
-        SafeRAMDatabase()
+        SafeRAMDatabase(SQLiteConnection, arguments)
     # Close database connection
     if(SQLiteConnection):
         SQLiteConnection.close()
