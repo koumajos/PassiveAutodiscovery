@@ -1,26 +1,17 @@
 #!/usr/bin/python3.6
-"""PassiveAutodiscovery module 
+"""PassiveAutodiscovery module:
     
     This is module for modular monitoring system NEMEA (Network Measurement Analysis).
     
-    Module main funkcionality is Autodiscovery, Device Recognition and Deppendency mapping.
-    For this funkcionalities module use passive analyze. That mean that module take IP flows
-    from IFC interface, that is always filled by flow_meter, and analyze them. Flow_meter 
-    capture packets on network interface and create from it IP flows. 
-    (Module can also use files of IP flows as IFC interface)
+    Module main funkcionality is Autodiscovery, Device Recognition and Deppendency mapping.For this funkcionalities module use passive analyze. That mean that module take IP flows from IFC interface, that is always filled by flow_meter, and analyze them. Flow_meter capture packets on network interface and create from it IP flows. (Module can also use files of IP flows as IFC interface)
     Module use sqlite3 database for safing data from IP flows.     
     --------------
     Autodiscovery:
-        Finds "local" device from network traffic. (local device = device that is from 
-        private subnet 10.0.0.0/8 or 172.16.0.0/16 or 192.168.0.0/24 OR device from 
-        subnet that was inserted by user with parameter -N)
+        Finds "local" device from network traffic. (local device = device that is from private subnet 10.0.0.0/8 or 172.16.0.0/16 or 192.168.0.0/24 OR device from subnet that was inserted by user with parameter -N)
     Device Recognition:
-        Module recognize the roles of device in network and set to the device labels. This labels
-        marks the roles of device. In the example for device that has role dhcp server fro the 
-        network, will module set to device label [DHCP Server].
+        Module recognize the roles of device in network and set to the device labels. This labels marks the roles of device. In the example for device that has role dhcp server fro the network, will module set to device label [DHCP Server].
     Deppendency mapping:
-        Module safe all dependencies between "local" devices. Can also safe dependencies
-        between "local" device and "global" devices(devices that aren't "local").
+        Module safe all dependencies between "local" devices. Can also safe dependencies between "local" device and "global" devices(devices that aren't "local").
 
     Module is coaporate with Collector.py script that fill sqlite3 database. 
     The output from the database (entire analyze) is created by DeviceAnalyzer.py script.   
@@ -264,6 +255,13 @@ def Arguments():
     if arguments.PRINT == True and (arguments.localdev == True or arguments.localserv == True or arguments.globalserv == True or arguments.localdependencies == True or arguments.globaldependencies == True or arguments.macdev == True):
         print("Parameters -P and (-l or -s or -L -g -S -m) can't be combinated")
         sys.exit()
+    if arguments.networks != "":
+        for net in arguments.networks:
+            try:
+                NET = ipaddress.ip_network(net)
+            except:
+                print("Badly inserted ip address of network ", net)
+                sys.exit()
     if arguments.PRINT == True:
         colorama.init()
         clear()

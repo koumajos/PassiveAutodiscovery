@@ -1,17 +1,13 @@
 #!/usr/bin/python3.6
-"""CreateScript
+"""CreateScript:
 
-This script is part of PassiveAutodiscovery modul for 
-modular monitoring system NEMEA (Network Measurement Analysis).
-This part is for:
-    Script allows to create sqlite3 database file with inserted name.
-    Then the database file will be scructured by SQL file (Database_sqlite_create.sql).
+    This script is part of PassiveAutodiscovery modul for modular monitoring system NEMEA (Network Measurement Analysis).
+    This part is for:
+        Script allows to create sqlite3 database file with inserted name. Then the database file will be scructured by SQL file (Database_sqlite_create.sql).
 
-    Script will try download actualizate initial data from web database and 
-    download it (.csv files).If donwloading of anz file failed, the script will 
-    use backup file which is (in default state) stored in the same folder.
+        Script will try download actualizate initial data from web database and download it (.csv files).If donwloading of anz file failed, the script will use backup file which is (in default state) stored in the same folder.
 
-    The initial data from files will be added to tables: Ports, VendorsMAC and Services
+        The initial data from files will be added to tables: Ports, VendorsMAC and Services
 """
 #libraries for working with sqlite3 database
 import sqlite3

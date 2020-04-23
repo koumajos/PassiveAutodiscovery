@@ -1,12 +1,13 @@
 #!/usr/bin/python3.6
-"""
-Collector script analyze IP flow that get from PassiveAutodiscovery module. 
+"""Collector script:
 
-Collector get database connection, arguments and IP flow.
-IP flow si analyzed and arguemnts specificate how to do it.
-The analyze get information from IP flow and add them to sqlite3 database. 
+    Collector script analyze IP flow that get from PassiveAutodiscovery module. 
 
-Collector function collector is call from PassiveAutodiscovery module.
+    Collector get database connection, arguments and IP flow.
+    IP flow si analyzed and arguemnts specificate how to do it.
+    The analyze get information from IP flow and add them to sqlite3 database. 
+
+    Collector function collector is call from PassiveAutodiscovery module.
 """
 #libraries for working with OS UNIX files and system
 import sys
@@ -414,7 +415,7 @@ def collector(rec, SQLiteConnection, cursor, arguments):
             if NIP.version == 4:
                 NIPv4 = ipaddress.IPv4Network(nip)       
                 if SrcIP == NIPv4.broadcast_address:
-                    return        
+                    return
             src = True
             break
         elif DstIP in NIP:
