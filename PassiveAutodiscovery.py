@@ -82,7 +82,7 @@ def PRINT(oldT, startT, arguments, NumFlows, cursor):
     NumFlows : int
         Number of IP flows that bean analyze by module.
     cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL commands.
+        Cursor to sqlite3 database for execute SQL queries.
     Returns:
     --------
     oldT : int
@@ -298,7 +298,7 @@ def RAMDatabase():
     SQLiteConnection : sqlite3
         The connection to the created sqlite3 database.
     cursor : sqlite3
-        The cursor to the created database to execute SQL commands.
+        The cursor to the created database to execute SQL queries.
     """
     try:
         SQLiteConnection = sqlite3.connect(":memory:")      #create database in RAM memory
@@ -376,7 +376,7 @@ def ConnectToDatabase(arguments):
     SQLiteConnection : sqlite3
         The connection to the created sqlite3 database.
     cursor : sqlite3
-        The cursor to the created database to execute SQL commands.
+        The cursor to the created database to execute SQL queries.
     """
     try:    #connect to a database
         if not os.path.exists(arguments.database + ".db"):

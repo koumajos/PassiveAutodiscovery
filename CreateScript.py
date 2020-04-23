@@ -44,7 +44,7 @@ def CreateDB(FILE):
     SQLiteConnection : sqlite3
         The connection to created sqlite3 database.
     cursor : sqlite3
-        The cursor for execute SQL commands in created sqlite3 database.
+        The cursor for execute SQL queries in created sqlite3 database.
     """
     try:
         print("Connecting to database....", end = '')
@@ -106,7 +106,7 @@ def InserData(SQLiteConnection, cursor, readerP, readerM, readerS):
     SQLiteConnection : sqlite3 
         The connection to the sqlite3 database.
     cursor : sqlite3
-        The cursor at the sqlite3 database.
+        The cursor at the sqlite3 database for execute SQL queries.
     readerP : csv
         The opened file that is fill with initial Ports table data
     readerM : csv

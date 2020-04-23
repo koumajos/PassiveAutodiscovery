@@ -30,7 +30,7 @@ def Services(IP, PORT, table, cursor, SQLiteConnection, arguments):
     table : str
         Name of the table to safe potencial record (if device is  "local": table == LocalServices, if device is "global": table == GlobalServices).
     cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL commands.
+        Cursor to sqlite3 database for execute SQL queries.
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
@@ -76,7 +76,7 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, cursor, 
     PACKETS : int
         Number of packet carryed in dependency(single IP flow).
     cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL commands.
+        Cursor to sqlite3 database for execute SQL queries.
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
@@ -147,7 +147,7 @@ def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
     TIME : int
         Unix time of IP flow.
     cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL commands.
+        Cursor to sqlite3 database for execute SQL queries.
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
     """
@@ -179,7 +179,7 @@ def Routers(IP, MAC, cursor, SQLiteConnection):
     MAC : str
         MAC address of router.
     cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL commands.
+        Cursor to sqlite3 database for execute SQL queries.
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
     """
@@ -208,7 +208,7 @@ def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
     TIME : int
         Unix time of IP flow where was combiantion IP and MAC used.
     cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL commands.
+        Cursor to sqlite3 database for execute SQL queries.
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
@@ -236,7 +236,7 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
     TIME : int
         Unix time of the IP flow.
     cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL commands.
+        Cursor to sqlite3 database for execute SQL queries.
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
@@ -321,7 +321,7 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
     TIME : int
         Unix time of the IP flow.    
     cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL commands.
+        Cursor to sqlite3 database for execute SQL queries.
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
@@ -374,7 +374,7 @@ def collector(rec, SQLiteConnection, cursor, arguments):
     rec : pytrap
         Received IP flow to analyze.
     cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL commands.
+        Cursor to sqlite3 database for execute SQL queries.
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
