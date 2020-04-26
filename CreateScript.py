@@ -94,7 +94,7 @@ def DownloadData(name):
     return reader
 #===============================================================================================
 #===============================================================================================
-def InserData(SQLiteConnection, cursor, readerP, readerM, readerS):
+def InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF):
     """Insert initial data to tables
     
     Parameters:
@@ -109,6 +109,8 @@ def InserData(SQLiteConnection, cursor, readerP, readerM, readerS):
         The opened file that is fill with initial VendorsMAC table data
     readerS : csv
         The opened file that is fill with initial Services table data
+    readerF : csv
+        The opened file that is fill with initial Filter table data
     """
     try:
         print("Inserting data to table Ports....", end='')
@@ -125,6 +127,11 @@ def InserData(SQLiteConnection, cursor, readerP, readerM, readerS):
         for row in readerS:
             to_db = [row[0], row[1], row[2], row[3]]
             cursor.execute("INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);", to_db)
+        print("done")
+        print("Inserting Filter data to table....", end='')
+        for row in readerF:
+            to_db = [row[0], row[1], row[2], row[3]]
+            cursor.execute("INSERT INTO Filter (ID_Filter, PortNumber, Protocol, MinPackets) VALUES (?, ?, ?, ?);", to_db)
         print("done")
         SQLiteConnection.commit()        
     except sqlite3.Error as error:
@@ -161,7 +168,8 @@ def Main():
     readerP = DownloadData("Ports")
     readerM = DownloadData("VendorsMAC")
     readerS = csv.reader(open('Services.csv','r'), delimiter=',')    
-    InserData(SQLiteConnection, cursor, readerP, readerM, readerS)
+    readerF = csv.reader(open('Filter.csv','r'), delimiter=',')
+    InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF)
     #===============================================================================================
     #release of used resources
     cursor.close()
