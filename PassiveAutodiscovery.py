@@ -331,6 +331,11 @@ def RAMDatabase():
             to_db = [row[0], row[1], row[2], row[3]]
             cursor.execute("INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);", to_db)
         SQLiteConnection.commit()
+        reader = csv.reader(open('Filter.csv','r'), delimiter=',')    
+        for row in reader:
+            to_db = [row[0], row[1], row[2], row[3]]
+            cursor.execute("INSERT INTO Filter (ID_Filter, PortNumber, Protocol, MinPackets) VALUES (?, ?, ?, ?);", to_db)
+        SQLiteConnection.commit()
     except sqlite3.Error as error:
         print("Can't fill the database in RAM memory with initial data: ", error)
     return SQLiteConnection, cursor
@@ -387,8 +392,8 @@ def ConnectToDatabase(arguments):
     return SQLiteConnection, cursor
 #=================================================================================================================================
 #=================================================================================================================================
-def IncompleteTraffic(arguments, rec):
-    """Filter incomplete IP flows.
+def IncompleteTraffic(cursor, arguments, rec):
+    """Filter incomplete IP flows. For TCP: check if tcp handshake was complete (3 packets). For UDP: check packet number with complete connection via protocol in table Filter.
         
     Parameters:
     -----------
@@ -401,14 +406,21 @@ def IncompleteTraffic(arguments, rec):
     boolean
         True if IP flows is incomplete.         
         False if Ip flows isn't incomplete.
-        
     """
     if arguments.FilterIPFlows == False:
         return False
     #===========================================
     if rec.PROTOCOL == 6 and rec.PACKETS < 3:      #6 is TCP, https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
         return True
-    #TODO: Try fillter incomplete traffic using UDP protocol (??or other protocol??)
+    if rec.PROTOCOL == 17:
+        cursor.execute("SELECT * FROM Filter WHERE ( PortNumber='{ps}' AND Protocol='{udp}' ) OR ( PortNumber='{pt}' AND Protocol='{udp}')".format(ps=rec.SRC_PORT, pt=rec.DST_PORT, udp="UDP") )
+        row = cursor.fetchone()
+        if row:     #if packets number is smaller then complete connection for used protocol, return true
+            if rec.PACKETS < row[3]:
+                return True
+        else:       #if use protocol isn't in table, then number of packets that are "complete" is 2 (SYN and ACK)
+            if rec.PACKETS < 2:
+                return True
     return False    
 #=================================================================================================================================
 #=================================================================================================================================
@@ -446,7 +458,7 @@ def Main():
             break
         rec.setData(data)   # set the IP flow to created tempalte
         #====================================================
-        if IncompleteTraffic(arguments, rec) == True:   #fillter incomplete IP flow
+        if IncompleteTraffic(cursor, arguments, rec) == True:   #fillter incomplete IP flow
             Rtmp = Rtmp + 1            
             continue
         #====================================================
