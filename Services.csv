@@ -3,7 +3,7 @@ PortNumber,DeviceType,Shortcut,Description
 49,Authentication Server,TACACS,Tacacs protocol (Terminal Access Controller Access-Control System) use to authenticate
 1812,Authentication Server,RADIUS,Radius protocol (Remote Authentication Dial In User Service) use for authentication and accounting packets (new-version)
 88,Authentication Server,KERBEROS,Kerberos protocol use to authenticate
-113,Authentication Server,AUTH,Auth protocol use to authenticate
+113,Authentication Server,IDENT,Ident (Auth) protocol use to authenticate
 749,Authentication Server,KERBEROS,Kerberos administration protocol use to administrate kerberos authentication server
 750,Authentication Server,KERBEROS,Kerberos version iv protocol to requests
 751,Authentication Server,KERBEROS,Kerberos version iv protocol to requests
