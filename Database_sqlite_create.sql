@@ -77,4 +77,9 @@ CREATE TABLE GlobalServices (
 	PortNumber integer,
 	IP text
 );
-
+CREATE TABLE Filter (
+	ID_Filter integer PRIMARY KEY,
+	PortNumber integer,
+	Protocol text,
+	MinPackets integer
+);
