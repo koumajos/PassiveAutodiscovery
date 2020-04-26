@@ -73,7 +73,3 @@ ID_Filter,PortNumber,Protocol,MinPackets
 73,138,UDP,1
 74,139,UDP,1
 75,445,UDP,1
-76,,UDP,
-77,,UDP,
-78,,UDP,
-79,,UDP,
