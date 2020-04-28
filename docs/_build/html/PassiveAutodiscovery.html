@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>PassiveAutodiscovery module &#8212; Passive Autodiscovery 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="DeviceAnalyzer module" href="DeviceAnalyzer.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-PassiveAutodiscovery">
+<span id="passiveautodiscovery-module"></span><h1>PassiveAutodiscovery module<a class="headerlink" href="#module-PassiveAutodiscovery" title="Permalink to this headline">¶</a></h1>
+<p>PassiveAutodiscovery module:</p>
+<p>This is module for modular monitoring system NEMEA (Network Measurement Analysis).</p>
+<p>Module main funkcionality is Autodiscovery, Device Recognition and Deppendency mapping.For this funkcionalities module use passive analyze. That mean that module take IP flows from IFC interface, that is always filled by flow_meter, and analyze them. Flow_meter capture packets on network interface and create from it IP flows. (Module can also use files of IP flows as IFC interface)
+Module use sqlite3 database for safing data from IP flows.
+————–
+Autodiscovery:</p>
+<blockquote>
+<div><p>Finds “local” device from network traffic. (local device = device that is from private subnet 10.0.0.0/8 or 172.16.0.0/16 or 192.168.0.0/24 OR device from subnet that was inserted by user with parameter -N)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Device Recognition:</dt><dd><p>Module recognize the roles of device in network and set to the device labels. This labels marks the roles of device. In the example for device that has role dhcp server fro the network, will module set to device label [DHCP Server].</p>
+</dd>
+<dt>Deppendency mapping:</dt><dd><p>Module safe all dependencies between “local” devices. Can also safe dependencies between “local” device and “global” devices(devices that aren’t “local”).</p>
+</dd>
+</dl>
+<p>Module is coaporate with Collector.py script that fill sqlite3 database.
+The output from the database (entire analyze) is created by DeviceAnalyzer.py script.</p>
+<dl class="py function">
+<dt id="PassiveAutodiscovery.Arguments">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">Arguments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.Arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Arguemtns of the module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>arguments</strong> – Setted arguemnts of the module.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>argparse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="PassiveAutodiscovery.ConnectToDatabase">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">ConnectToDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arguments</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.ConnectToDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to sqlite3 databased based in file (.db) with name setted in parameter -d.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arguments</strong> (<em>argparse</em>) – Setted arguments of module.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>SQLiteConnection</strong> (<em>sqlite3</em>) – The connection to the created sqlite3 database.</p></li>
+<li><p><strong>cursor</strong> (<em>sqlite3</em>) – The cursor to the created database to execute SQL queries.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="PassiveAutodiscovery.IncompleteTraffic">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">IncompleteTraffic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">arguments</span></em>, <em class="sig-param"><span class="n">rec</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.IncompleteTraffic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter incomplete IP flows. For TCP: check if tcp handshake was complete (3 packets). For UDP: check packet number with complete connection via protocol in table Filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arguments</strong> (<em>argparse</em>) – Setted arguments of module.</p></li>
+<li><p><strong>rec</strong> (<em>pytrap</em>) – Analyzed IP flow.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if IP flows is incomplete.
+False if Ip flows isn’t incomplete.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="PassiveAutodiscovery.Main">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">Main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.Main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function of module. First set initial things (arguemnts, pytrap library, database), then waiting for IP flows on selected IFC interface and call for them Collector.py script to add it to database.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="PassiveAutodiscovery.PRINT">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">PRINT</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">oldT</span></em>, <em class="sig-param"><span class="n">startT</span></em>, <em class="sig-param"><span class="n">arguments</span></em>, <em class="sig-param"><span class="n">NumFlows</span></em>, <em class="sig-param"><span class="n">cursor</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.PRINT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints actualication information about running the module. Enable with parameter -P.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>oldT</strong> (<em>int</em>) – UNIX time of last print.</p></li>
+<li><p><strong>startT</strong> (<em>int</em>) – UNIX time of start the module.</p></li>
+<li><p><strong>arguments</strong> (<em>argparse</em>) – Setted arguments of module.</p></li>
+<li><p><strong>NumFlows</strong> (<em>int</em>) – Number of IP flows that bean analyze by module.</p></li>
+<li><p><strong>cursor</strong> (<em>sqlite3</em>) – Cursor to sqlite3 database for execute SQL queries.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>oldT</strong> – UNIX time of this print.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="PassiveAutodiscovery.PYTRAP">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">PYTRAP</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.PYTRAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init nemea libraries and set format of IP flows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>rec</strong> (<em>pytrap</em>) – Templete of IP flows.</p></li>
+<li><p><strong>trap</strong> (<em>pytrap</em>) – Init pytrap NEMEA library, for capture IP flows from IFC interface setted in paramater -i.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="PassiveAutodiscovery.RAMDatabase">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">RAMDatabase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.RAMDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create sqlite3 database in RAM memory, create schema of it and fill the database with initial data for tables Ports, VendorsMAC and Services.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>SQLiteConnection</strong> (<em>sqlite3</em>) – The connection to the created sqlite3 database.</p></li>
+<li><p><strong>cursor</strong> (<em>sqlite3</em>) – The cursor to the created database to execute SQL queries.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="PassiveAutodiscovery.SafeRAMDatabase">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">SafeRAMDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">SQLiteConnection</span></em>, <em class="sig-param"><span class="n">arguments</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.SafeRAMDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Safe the RAM menory based sqlite3 database to output sqlite3 database file (.db) with selected name from parameter -d.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>SQLiteConnection</strong> (<em>sqlite3</em>) – The connection to the created sqlite3 database.</p></li>
+<li><p><strong>arguments</strong> (<em>argparse</em>) – Setted arguments of module.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="PassiveAutodiscovery.clear">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear command line for actualization prints.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="PassiveAutodiscovery.move_cursor">
+<code class="sig-prename descclassname">PassiveAutodiscovery.</code><code class="sig-name descname">move_cursor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#PassiveAutodiscovery.move_cursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move cursor in actualization prints to X, Y coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em>) – coordinate X</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – coordinate Y</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Passive Autodiscovery</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">PassiveAutodiscovery3</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Collector.html">Collector module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CreateScript.html">CreateScript module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceAnalyzer.html">DeviceAnalyzer module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PassiveAutodiscovery module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">PassiveAutodiscovery3</a><ul>
+      <li>Previous: <a href="DeviceAnalyzer.html" title="previous chapter">DeviceAnalyzer module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Josef Koumar.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/PassiveAutodiscovery.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

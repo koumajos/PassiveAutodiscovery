@@ -30,12 +30,12 @@ urlV = "https://macaddress.io/database/macaddress.io-db.csv"
 def CreateDB(FILE):
     """Create sqlite3 database file and then created scructure of tables in it
     
-    Parameters:
-    -----------
+    Parameters
+    --------
     FILE : str 
         The database file to create.
 
-    Returns:
+    Returns
     --------
     SQLiteConnection : sqlite3
         The connection to created sqlite3 database.
@@ -69,12 +69,12 @@ def CreateDB(FILE):
 def DownloadData(name):
     """Download initial data for sqlite3 database and open it
     
-    Parameters:
+    Parameters
     -----------
     name : str 
         The name of table for that are downloaded data.
 
-    Returns:
+    Returns
     --------
     reader : csv
         The opened data taht have been downloaded.
@@ -97,7 +97,7 @@ def DownloadData(name):
 def InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF):
     """Insert initial data to tables
     
-    Parameters:
+    Parameters
     -----------
     SQLiteConnection : sqlite3 
         The connection to the sqlite3 database.

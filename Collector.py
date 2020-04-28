@@ -22,7 +22,7 @@ import sqlite3
 def Services(IP, PORT, table, cursor, SQLiteConnection, arguments):
     """Check if port in IP flow is used by some role of device (services), if yes and if it is NOT in database, put record to sqlite3 database.
     
-    Parameters:
+    Parameters
     -----------
     IP : str
         IP address of device that comunicate on protocol with port number PORT.
@@ -62,7 +62,7 @@ def Services(IP, PORT, table, cursor, SQLiteConnection, arguments):
 def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, cursor, SQLiteConnection, arguments):
     """If dependency (local or global) doesn't exist, function will add record about it to database. Else function will find the record and update packet number on this dependency.
     
-    Parameters:
+    Parameters
     -----------
     table : str
         Table where record about dependency may be safed. ("Dependencies" - for dependencies between "local" devices, "Global" - for dependencies between "local" device and global device)    
@@ -135,7 +135,7 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, cursor, 
 def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
     """If IP flow is DHCP traffic, then safe record of it to table DHCP.
     
-    Parameters:
+    Parameters
     -----------
     SRC_IP : str
         Source IP address of dependency.
@@ -173,7 +173,7 @@ def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
 def Routers(IP, MAC, cursor, SQLiteConnection):
     """Function for adding record to table Routers. The record is MAC address of router and Ip address of device behind him or router himself.
     
-    Parameters:
+    Parameters
     -----------
     IP : str
         IP address of device behind router (or IP address of the router).
@@ -200,7 +200,7 @@ def Routers(IP, MAC, cursor, SQLiteConnection):
 def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
     """
     
-    Parameters:
+    Parameters
     -----------
     IP : str
         IP address of device.
@@ -228,7 +228,7 @@ def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
 def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
     """If device is is in local segemnt, the module can rosolve his MAC address and add record of it to table MAC. If it's router and behind it is local subnet (2 or more local device or one global device on this mac address (the same IP version)) add all record of this mac address from table MAC to table Router and add new record from this IP flow.
     
-    Parameters:
+    Parameters
     -----------
     IP : str
         IP address of the device.
@@ -315,7 +315,7 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
 def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
     """This funcion check if "local" device is in sqlite3 database table LocalDevice. If isn't, add it to table. If is, update last comunication in record of it.
     
-    Parameters:
+    Parameters
     -----------
     IP : str
         IP address of the local device.
@@ -351,7 +351,7 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
 def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
     """Delete global dependencies from table Global that have number of packer smaller then number PacketNumber.
     
-    Parameters:
+    Parameters
     -----------
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
@@ -370,7 +370,7 @@ def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
 def collector(rec, SQLiteConnection, cursor, arguments):
     """Main function of this script. This function receive IP flow, database proms and arguments. Then work with received IP flow to get information from it and record of it safe (update) in sqlite3 database that received.
     
-    Parameters:
+    Parameters
     -----------
     rec : pytrap
         Received IP flow to analyze.

@@ -42,7 +42,7 @@ import Collector
 def move_cursor(x,y):
     """Move cursor in actualization prints to X, Y coordinates.
         
-    Parameters:
+    Parameters
     -----------
     x : int
         coordinate X
@@ -62,7 +62,7 @@ def clear():
 def PRINT(oldT, startT, arguments, NumFlows, cursor):
     """Prints actualication information about running the module. Enable with parameter -P.
         
-    Parameters:
+    Parameters
     -----------
     oldT : int
         UNIX time of last print.
@@ -74,7 +74,7 @@ def PRINT(oldT, startT, arguments, NumFlows, cursor):
         Number of IP flows that bean analyze by module.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    Returns:
+    Returns
     --------
     oldT : int
         UNIX time of this print.
@@ -116,7 +116,7 @@ def PRINT(oldT, startT, arguments, NumFlows, cursor):
 def Arguments():
     """Arguemtns of the module.
         
-    Returns:
+    Returns
     --------
     arguments : argparse
         Setted arguemnts of the module.
@@ -271,7 +271,7 @@ def Arguments():
 def PYTRAP():
     """Init nemea libraries and set format of IP flows.
         
-    Returns:
+    Returns
     --------
     rec : pytrap
         Templete of IP flows.
@@ -291,7 +291,7 @@ def PYTRAP():
 def RAMDatabase():
     """Create sqlite3 database in RAM memory, create schema of it and fill the database with initial data for tables Ports, VendorsMAC and Services.
         
-    Returns:
+    Returns
     --------
     SQLiteConnection : sqlite3
         The connection to the created sqlite3 database.
@@ -344,7 +344,7 @@ def RAMDatabase():
 def SafeRAMDatabase(SQLiteConnection, arguments):
     """Safe the RAM menory based sqlite3 database to output sqlite3 database file (.db) with selected name from parameter -d.
     
-    Parameters:
+    Parameters
     -----------
     SQLiteConnection : sqlite3
         The connection to the created sqlite3 database.
@@ -369,12 +369,12 @@ def SafeRAMDatabase(SQLiteConnection, arguments):
 def ConnectToDatabase(arguments):
     """Connect to sqlite3 databased based in file (.db) with name setted in parameter -d.
     
-    Parameters:
+    Parameters
     -----------
     arguments : argparse
         Setted arguments of module.    
         
-    Returns:
+    Returns
     --------
     SQLiteConnection : sqlite3
         The connection to the created sqlite3 database.
@@ -395,13 +395,13 @@ def ConnectToDatabase(arguments):
 def IncompleteTraffic(cursor, arguments, rec):
     """Filter incomplete IP flows. For TCP: check if tcp handshake was complete (3 packets). For UDP: check packet number with complete connection via protocol in table Filter.
         
-    Parameters:
+    Parameters
     -----------
     arguments : argparse
         Setted arguments of module.
     rec : pytrap    
         Analyzed IP flow.
-    Returns:
+    Returns
     --------
     boolean
         True if IP flows is incomplete.         

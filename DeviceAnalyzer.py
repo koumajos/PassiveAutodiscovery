@@ -67,7 +67,7 @@ from argparse import RawTextHelpFormatter
 def plot(data):
     """Plot the statistical graph of using network (by protocols or devices) in %. Only for output in command line.
 
-    Parameters:
+    Parameters
     -----------
     data : list
         List of deveces/protocols with procent of use the network.  
@@ -93,11 +93,11 @@ def plot(data):
 def read_json(filename):
     """Read JSON document from file to prom data.
 
-    Parameters:
+    Parameters
     -----------
     filename : str
         Name of the output JSON document file.
-    Returns:
+    Returns
     --------
     data : JSON
         JSON format in python.
@@ -110,7 +110,7 @@ def read_json(filename):
 def write_json(data, filename): 
     """Write JSON in python to JSON document file. 
 
-    Parameters:
+    Parameters
     -----------
     data : JSON
         JSON file loaded in python filled with information.
@@ -124,7 +124,7 @@ def write_json(data, filename):
 def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
     """Function create graph of local dependencies for IP address version 4 and IP address version 6. Then safe it to file named Graph_Local_[ip verison].
 
-    Parameters:
+    Parameters
     -----------
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
@@ -172,7 +172,7 @@ def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
 def GraphGlobalDependencies(cursor, SQLiteConnection, JSON):
     """Function create graph of global dependencies for each device. Then safe them to files named Graph_Global_[IP address].
 
-    Parameters:
+    Parameters
     -----------
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
@@ -204,7 +204,7 @@ def GraphGlobalDependencies(cursor, SQLiteConnection, JSON):
 def GraphLocalToGlobal(cursor, SQLiteConnection, JSON):
     """Function create graph of dependencies between local and global device, where global is only if two or more local device have communication with. Then safe them to files named Graph_GlobalsToLocals_[number]. (Graph are for visibility safe to more files by small number of devices)
 
-    Parameters:
+    Parameters
     -----------
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
@@ -257,7 +257,7 @@ def GraphLocalToGlobal(cursor, SQLiteConnection, JSON):
 def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
     """Find if for device IP is in database MAC address record in table MAC or table Routers. If in table MAC, the device with IP has this MAC address. If in Router, the device with IP has this MAC address or is behind router with this MAC address (Ussualy cant resolve this by program).
 
-    Parameters:
+    Parameters
     -----------
     DeviceID : int
         ID of device in analyze.
@@ -296,7 +296,7 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
 def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
     """Find all labels (of roles/services) for device in database table LocalServices. Also create new label out of dependencies like [End Device].
 
-    Parameters:
+    Parameters
     -----------
     DeviceID : int
         ID of device in analyze.
@@ -392,7 +392,7 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
 def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
     """Funkcion finds for device all record of DHCP comunicationa nd set it to output.
 
-    Parameters:
+    Parameters
     -----------
     DeviceID : int
         ID of device in analyze.
@@ -415,7 +415,7 @@ def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
 def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
     """Function find if source or destination port of dependency isn't some services in network. If yes, then the packet number carry the dependendy add in LocalStatistic to the services. (this create with cyclus counter of packet by protocol in network) 
     
-    Parameters:
+    Parameters
     -----------
     LocalStatistic : dictionary
         Disctionary of protocols and number packet taht was carry over network by protocols.
@@ -448,7 +448,7 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
 def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
     """Function for device find in database all local dependencies and set in to output JSON. Also create statistic of local dependencies and statistic of using network by deveices. 
 
-    Parameters:
+    Parameters
     -----------
     DeviceID : int
         Number of device in analyze.
@@ -544,7 +544,7 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, curso
 def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
     """Function for device find in database all global dependencies and set in to output JSON. Also create statistic of global dependencies and statistic of using network by deveices. 
 
-    Parameters:
+    Parameters
     -----------
     DeviceID : int
         Number of device in analyze.
@@ -670,7 +670,7 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
 def StatProcent(Statistic, createJSON, TMP):    
     """Function receive dictionary. The dictionarz number of packets calculate and create from it procents.
 
-    Parameters:
+    Parameters
     -----------
     Statistic : dictionary
         The dictionary of statistic with protocols/devices and number of packets that was carryed in network by it.
@@ -701,7 +701,7 @@ def StatProcent(Statistic, createJSON, TMP):
 def IPAddress(IP, cursor, createJSON):   
     """Function finds in database all IP address of the device (more then one only when device used both version of IP address or change IP address while monitoring network (DHCP)).
 
-    Parameters:
+    Parameters
     -----------
     IP : str
         IP address of analyzed device.
@@ -735,7 +735,7 @@ def IPAddress(IP, cursor, createJSON):
 def PrintDeviceFromJSON(JSON, arguments):
     """Print device from output JSON document to command line.
 
-    Parameters:
+    Parameters
     -----------
     JSON : JSON
         Ouput JSON document.
@@ -875,7 +875,7 @@ def PrintDeviceFromJSON(JSON, arguments):
 def PrintDeviceToFileFromJSON(JSON, arguments, sample):
     """Print device from output JSON document to file.
 
-    Parameters:
+    Parameters
     -----------
     JSON : JSON
         Ouput JSON document.
@@ -1015,7 +1015,7 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
 def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic, GL, arguments, sample):    
     """Analyze a device and output of it add to JSON document.
 
-    Parameters:
+    Parameters
     -----------
     DeviceID : int
         Number of device in analyze.
@@ -1088,7 +1088,7 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
 def AnalyzeNetwork(SQLiteConnection, arguments):
     """Analyze network subnet from arguments.
 
-    Parameters:
+    Parameters
     -----------
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
@@ -1163,9 +1163,9 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
 #=======================================================================================================================================
 #=======================================================================================================================================
 def AnalyzeSingleDevice(SQLiteConnection, arguments):
-    """Analyze device from arguments.
+    """Analyze single device from arguments. If isn't in database print error and end. Else analyze it.
 
-    Parameters:
+    Parameters
     -----------
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
@@ -1210,7 +1210,7 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
 def DoAnalyze(SQLiteConnection, arguments):
     """Analyze all "local" devices from database table LocalDevice.
 
-    Parameters:
+    Parameters
     -----------
     SQLiteConnection : sqlite3
         Connection to sqlite3 database.
@@ -1282,7 +1282,7 @@ def DoAnalyze(SQLiteConnection, arguments):
 def Arguments():
     """Arguments of the DeviceAnalyzer script.
 
-    Returns:
+    Returns
     --------
     arguments : argparse
         Setted arguments of the script.
@@ -1400,11 +1400,11 @@ def Arguments():
 def ConnectToDatabase(arguments):
     """Connect to sqlite3 database which analyze.
 
-    Parameters:
+    Parameters
     -----------
     arguments : argparse
         Setted arguments of the script.
-    Returns:
+    Returns
     --------
     SQLiteConnection : sqlite3
         Connection to sqlite3 database with name from arguments.
