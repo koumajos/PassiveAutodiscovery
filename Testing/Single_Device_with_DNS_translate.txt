@@ -1,0 +1,66 @@
+######################################################################
+Device ID:  XXX
+  IP: 192.168.1.106
+  Last communication:  Sat Apr  4 11:49:40 2020
+  MAC: 1c:c1:de:fb:2d:9b  Labels:
+    [ DHCP Client ] -  DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can send emails)
+  DHCP:
+     192.168.1.1  in  Sat Apr  4 11:15:27 2020
+     192.168.1.1  in  Sat Apr  4 11:15:23 2020
+  Local Dependencies:
+    ->  192.168.1.1   provides  [ DNS Server ] - number of packets:  2558
+    ->  192.168.1.1   provides  [ DHCP Server ] - number of packets:  3
+    ->  192.168.1.1   requires  [ 0 ] - number of packets:  8
+    ->  192.168.1.101   provides  [ dls-monitor ] - number of packets:  29
+    ->  192.168.1.105   provides  [ 0 ] - number of packets:  14
+    ->  192.168.1.100   requires  [ 0 ] - number of packets:  6
+    ->  192.168.1.104   requires  [ 0 ] - number of packets:  8
+    ->  192.168.1.255   provides  [ Windows ] - number of packets:  20
+    ->  192.168.1.255   provides  [ SNMP Agent ] - number of packets:  3
+    ->  192.168.1.101   provides  [ Printer ] - number of packets:  834
+    ->  192.168.1.101   provides  [ Printer ] - number of packets:  34
+    ->  192.168.1.101   provides  [ SNMP Agent ] - number of packets:  19
+    ->  192.168.1.101   provides  [ Printer ] - number of packets:  34
+    ->  192.168.1.101   provides  [ 6 ] - number of packets:  2
+    ->  192.168.1.101   provides  [ Windows ] - number of packets:  18
+    ->  192.168.1.101   provides  [ Windows ] - number of packets:  36
+    ->  192.168.0.1   provides  [ SNMP Agent ] - number of packets:  2
+    ->  192.168.0.1   provides  [ Printer ] - number of packets:  10
+    ->  192.168.0.1   provides  [ Windows ] - number of packets:  6
+    ->  192.168.0.1   provides  [ Windows ] - number of packets:  3
+    ->  192.168.0.1   provides  [ dls-monitor ] - number of packets:  7
+  Print Local Statistic:
+     DNS 			 71.39268769187831 %
+     IPP 			 23.55567959810215 %
+     SMB-NetBIOS 			 2.316494557633268 %
+     LPD 			 0.9489254814401339 %
+     Printer_PDP_Data_Stream 			 0.9489254814401339 %
+     SNMP 			 0.6698297516048004 %
+     DHCP 			 0.1674574379012001 %
+  Global Dependencies:
+    ->  147.32.232.238   provides  [ Mail Server ] - number of packets:  96079
+    ->  13.32.114.8   provides  [ WEB Server ]  Domain:  ('server-13-32-114-8.prg50.r.cloudfront.net', [], ['13.32.114.8'])   - number of packets:  57769
+    ->  216.58.201.98   provides  [ WEB Server ]  Domain:  ('prg03s02-in-f98.1e100.net', [], ['216.58.201.98'])   - number of packets:  9090
+    ->  172.217.23.226   provides  [ WEB Server ]  Domain:  ('prg03s06-in-f226.1e100.net', [], ['172.217.23.226'])   - number of packets:  7431
+    ->  147.32.232.238   provides  [ Mail Server ] - number of packets:  5786
+    ->  104.28.28.103   provides  [ WEB Server ] - number of packets:  4492
+    ->  216.58.201.68   provides  [ WEB Server ]  Domain:  ('prg03s01-in-f68.1e100.net', [], ['216.58.201.68'])   - number of packets:  3265
+    ->  216.58.201.66   provides  [ WEB Server ]  Domain:  ('prg03s01-in-f66.1e100.net', [], ['216.58.201.66'])   - number of packets:  3087
+    ->  216.58.201.78   provides  [ WEB Server ]  Domain:  ('prg03s01-in-f14.1e100.net', [], ['216.58.201.78'])   - number of packets:  2628
+    ->  23.38.92.147   provides  [ WEB Server ]  Domain:  ('a23-38-92-147.deploy.static.akamaitechnologies.com', [], ['23.38.92.147'])   - number of packets:  2399
+    ->  104.22.23.88   provides  [ WEB Server ] - number of packets:  2133
+    ->  216.58.201.100   provides  [ WEB Server ]  Domain:  ('prg03s02-in-f4.1e100.net', [], ['216.58.201.100'])   - number of packets:  1765
+    ->  151.101.14.2   provides  [ WEB Server ] - number of packets:  1585
+    ->  172.217.23.194   provides  [ WEB Server ]  Domain:  ('prg03s05-in-f194.1e100.net', [], ['172.217.23.194'])   - number of packets:  1575
+    ->  213.19.162.21   provides  [ WEB Server ] - number of packets:  1493
+  Print Global Statistic:
+     HTTPS 			 55.79460527446096 %
+     IMAPS 			 41.26750279185637 %
+     SMTPS 			 2.485181685422215 %
+     HTTP 			 0.4183489390945795 %
+     NTP 			 0.02791856369727687 %
+     SMB-NetBIOS 			 0.0038656472811614126 %
+     IPP 			 0.0021475818228674512 %
+     SNMP 			 0.0004295163645734903 %

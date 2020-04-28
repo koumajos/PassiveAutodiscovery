@@ -1,0 +1,1055 @@
+Connecting to a database....done
+######################################################################
+Device ID:  1
+  IP: 192.168.3.5
+  Last communication:  Tue Feb 25 10:13:40 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.150   provides  [ crestron-cip ] - number of packets:  28957
+
+  Global Dependencies:
+    ->  147.32.127.196   provides  [ WEB Server ] - number of packets:  42240
+    ->  147.32.160.17   provides  [ WEB Server ] - number of packets:  33991
+    ->  37.46.82.69   provides  [ WEB Server ] - number of packets:  31582
+    ->  23.64.143.49   provides  [ WEB Server ] - number of packets:  282
+    ->  81.2.248.189   provides  [ Time Server ] - number of packets:  277
+    ->  94.124.107.190   provides  [ Time Server ] - number of packets:  255
+    ->  195.113.20.2   provides  [ Time Server ] - number of packets:  198
+    ->  162.159.200.123   provides  [ Time Server ] - number of packets:  194
+    ->  109.248.43.36   provides  [ Time Server ] - number of packets:  190
+    ->  46.28.110.244   provides  [ Time Server ] - number of packets:  148
+
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 97.70
+NTP  : ▏ 1.88 
+HTTPS: ▏ 0.42 
+
+######################################################################
+Device ID:  2
+  IP: 192.168.3.205
+  Last communication:  Tue Feb 25 11:46:18 2020
+  MAC: ---
+  Labels:
+    [ Time Server ] -  NTP (Network Time Protocol) protocol use for time set over network
+    [ Windows ] -  SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows
+    [ DHCP Client ] -  DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can send emails)
+  DHCP:
+     192.168.3.1  in  Tue Feb 25 07:30:31 2020
+  Local Dependencies:
+    ->  192.168.3.255   provides  [ 57621 ] - number of packets:  741
+    ->  192.168.3.255   provides  [ db-lsp ] - number of packets:  739
+    ->  255.255.255.255   provides  [ db-lsp ] - number of packets:  740
+    ->  192.168.3.218   requires  [ mdns ] - number of packets:  2
+    ->  192.168.3.255   requires  [ Windows ] - number of packets:  37
+    ->  192.168.3.1   provides  [ osu-nms ] - number of packets:  48
+    ->  192.168.3.1   requires  [ 0 ] - number of packets:  48
+    ->  192.168.3.219   provides  [ mdns ] - number of packets:  41
+    ->  192.168.3.151   provides  [ 54822 ] - number of packets:  77
+    ->  192.168.3.151   provides  [ mdns ] - number of packets:  45
+    ->  192.168.3.151   provides  [ xserveraid ] - number of packets:  6
+    ->  192.168.3.1   provides  [ DHCP Server ] - number of packets:  1
+
+SMB-NetBIOS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 97.37
+DHCP       : ▇ 2.63 
+
+  Global Dependencies:
+    ->  104.18.123.25   provides  [ WEB Server ] - number of packets:  853117
+    ->  104.18.125.25   provides  [ WEB Server ] - number of packets:  721708
+    ->  78.128.211.76   provides  [ WEB Server ] - number of packets:  549181
+    ->  157.240.30.21   provides  [ WEB Server ] - number of packets:  253310
+    ->  151.101.114.164   provides  [ WEB Server ] - number of packets:  138485
+    ->  3.120.198.117   provides  [ WEB Server ] - number of packets:  51449
+    ->  77.75.79.170   provides  [ Mail Server ] - number of packets:  48216
+    ->  151.101.12.158   provides  [ WEB Server ] - number of packets:  40651
+    ->  147.32.232.238   provides  [ Mail Server ] - number of packets:  28701
+    ->  192.229.220.133   provides  [ WEB Server ] - number of packets:  27246
+
+HTTPS      : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 95.21
+IMAPS      : ▇▇ 4.25 
+DNS        : ▏ 0.32 
+HTTP       : ▏ 0.16 
+Amazon_Echo: ▏ 0.04 
+NTP        : ▏ 0.01 
+
+######################################################################
+Device ID:  3
+  IP: 192.168.3.150
+  Last communication:  Tue Feb 25 10:13:52 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can send emails)
+  DHCP:
+     192.168.3.1  in  Tue Feb 25 08:27:58 2020
+     192.168.3.1  in  Tue Feb 25 08:27:58 2020
+  Local Dependencies:
+    ->  192.168.3.5   requires  [ ssh ] - number of packets:  28957
+    ->  192.168.3.3   provides  [ DNS Server ] - number of packets:  378
+    ->  192.168.3.1   provides  [ DHCP Server ] - number of packets:  2
+
+DNS : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 98.95
+DHCP: ▏ 1.05 
+
+  Global Dependencies:
+    ->  18.205.45.28   provides  [ WEB Server ] - number of packets:  58548
+    ->  157.240.30.27   provides  [ WEB Server ] - number of packets:  42203
+    ->  195.113.214.205   provides  [ WEB Server ] - number of packets:  34257
+    ->  195.113.214.206   provides  [ WEB Server ] - number of packets:  26212
+    ->  157.240.30.21   provides  [ WEB Server ] - number of packets:  23953
+    ->  104.16.249.249   provides  [ WEB Server ] - number of packets:  22361
+    ->  157.240.30.35   provides  [ WEB Server ] - number of packets:  14105
+    ->  157.240.30.18   provides  [ WEB Server ] - number of packets:  13997
+    ->  77.75.78.13   provides  [ WEB Server ] - number of packets:  13357
+    ->  147.251.14.50   provides  [ WEB Server ] - number of packets:  8456
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 97.24
+IMAPS: ▇ 2.43 
+HTTP : ▏ 0.29 
+NTP  : ▏ 0.04 
+
+######################################################################
+Device ID:  4
+  IP: 192.168.3.2
+  Last communication:  Tue Feb 25 13:29:55 2020
+  MAC: ---
+  Labels:
+    [ Mobile device ] -  Wifi Calling use on mobile device
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can send emails)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.1   provides  [ DNS Server ] - number of packets:  6908
+    ->  10.39.0.2   requires  [ 0 ] - number of packets:  96
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ->  195.113.214.206   provides  [ WEB Server ] - number of packets:  2067988
+    ->  173.194.150.231   provides  [ WEB Server ] - number of packets:  429604
+    ->  172.217.130.74   provides  [ WEB Server ] - number of packets:  206851
+    ->  195.113.214.204   provides  [ WEB Server ] - number of packets:  72867
+    ->  195.113.172.27   provides  [ WEB Server ] - number of packets:  59555
+    ->  195.113.214.205   provides  [ WEB Server ] - number of packets:  50919
+    ->  195.113.172.15   provides  [ Windows ] - number of packets:  41715
+    ->  195.113.172.113   provides  [ ssh ] - number of packets:  36165
+    ->  195.113.172.39   requires  [ ssh ] - number of packets:  21756
+    ->  195.113.172.45   provides  [ ssh ] - number of packets:  19837
+
+HTTPS            : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 98.33
+Terminal_Services: ▏ 1.32 
+IMAPS            : ▏ 0.25 
+HTTP             : ▏ 0.06 
+Wifi_Calling     : ▏ 0.03 
+DNS              : ▏ 0.00 
+SMTP             : ▏ 0.00 
+NTP              : ▏ 0.00 
+
+######################################################################
+Device ID:  5
+  IP: 192.168.3.204
+  Last communication:  Tue Feb 25 05:40:22 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.3   provides  [ DNS Server ] - number of packets:  8
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ->  147.32.232.238   provides  [ Mail Server ] - number of packets:  110
+    ->  216.58.201.74   provides  [ WEB Server ] - number of packets:  104
+    ->  216.58.201.68   provides  [ WEB Server ] - number of packets:  86
+    ->  172.217.23.225   provides  [ WEB Server ] - number of packets:  83
+    ->  195.113.144.244   provides  [ Mail Server ] - number of packets:  60
+    ->  66.102.1.188   requires  [ hpvroom ] - number of packets:  29
+    ->  80.158.41.224   provides  [ hpvirtgrp ] - number of packets:  12
+    ->  172.217.23.202   provides  [ WEB Server ] - number of packets:  3
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 61.88
+IMAPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 38.12
+
+######################################################################
+Device ID:  6
+  IP: 192.168.3.218
+  Last communication:  Tue Feb 25 11:46:35 2020
+  MAC: ---
+  Labels:
+    [ Windows ] -  SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows
+    [ DHCP Client ] -  DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+  DHCP:
+     192.168.3.1  in  Tue Feb 25 09:51:20 2020
+     192.168.3.1  in  Tue Feb 25 09:51:20 2020
+  Local Dependencies:
+    ->  192.168.3.205   provides  [ mdns ] - number of packets:  2
+    ->  192.168.3.255   requires  [ Windows ] - number of packets:  24
+    ->  192.168.3.219   provides  [ mdns ] - number of packets:  47
+    ->  192.168.3.151   provides  [ mdns ] - number of packets:  48
+    ->  192.168.3.1   provides  [ DHCP Server ] - number of packets:  2
+    ->  10.38.3.16   provides  [ DNS Server ] - number of packets:  2
+
+SMB-NetBIOS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 88.89
+DHCP       : ▇▇▇▇ 7.41 
+DNS        : ▇▇ 3.70 
+
+  Global Dependencies:
+    ->  3.120.198.117   provides  [ WEB Server ] - number of packets:  29415
+    ->  149.154.167.91   provides  [ WEB Server ] - number of packets:  2174
+    ->  147.32.232.238   provides  [ Mail Server ] - number of packets:  2026
+    ->  8.8.8.8   provides  [ DNS Server ] - number of packets:  154
+    ->  35.244.178.179   provides  [ WEB Server ] - number of packets:  127
+    ->  17.57.146.69   provides  [ hpvirtgrp ] - number of packets:  49
+    ->  64.233.167.188   requires  [ hpvroom ] - number of packets:  43
+    ->  35.160.116.48   provides  [ WEB Server ] - number of packets:  34
+    ->  8.8.8.8   provides  [ rtip ] - number of packets:  13
+    ->  172.217.23.238   provides  [ WEB Server ] - number of packets:  9
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 93.58
+IMAPS: ▇▇▇ 5.97 
+DNS  : ▏ 0.45 
+
+######################################################################
+Device ID:  7
+  IP: 192.168.3.255
+  Last communication:  Tue Feb 25 11:42:05 2020
+  MAC: ---
+  Labels:
+    [ Windows ] -  SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.205   requires  [ 57621 ] - number of packets:  741
+    ->  192.168.3.205   requires  [ db-lsp ] - number of packets:  739
+    ->  192.168.3.205   provides  [ Windows ] - number of packets:  37
+    ->  192.168.3.218   provides  [ Windows ] - number of packets:  24
+
+SMB-NetBIOS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  8
+  IP: 192.168.3.3
+  Last communication:  Tue Feb 25 13:28:26 2020
+  MAC: ---
+  Labels:
+    [ DNS Server ] -  DNS protocol (Domain Name System) used to translate IP address to domain name (main function)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.1   requires  [ DNS Server ] - number of packets:  2061
+    ->  192.168.3.1   requires  [ 0 ] - number of packets:  480
+    ->  192.168.3.150   requires  [ DNS Server ] - number of packets:  378
+    ->  192.168.3.220   requires  [ DNS Server ] - number of packets:  88
+    ->  192.168.3.248   requires  [ DNS Server ] - number of packets:  38144
+    ->  192.168.3.204   requires  [ DNS Server ] - number of packets:  8
+    ->  192.168.3.219   requires  [ DNS Server ] - number of packets:  12
+    ->  192.168.3.151   requires  [ DNS Server ] - number of packets:  410
+    ->  192.168.3.151   requires  [ 0 ] - number of packets:  31
+    ->  192.168.3.248   requires  [ 0 ] - number of packets:  7
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ->  1.1.1.1   provides  [ WEB Server ] - number of packets:  44462
+    ->  140.82.118.5   provides  [ WEB Server ] - number of packets:  103
+    ->  109.248.43.36   provides  [ Time Server ] - number of packets:  28
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 99.94
+NTP  : ▏ 0.06 
+
+######################################################################
+Device ID:  9
+  IP: 192.168.3.1
+  Last communication:  Tue Feb 25 13:28:26 2020
+  MAC: ---
+  Labels:
+    [ DNS Server ] -  DNS protocol (Domain Name System) used to translate IP address to domain name (main function)
+    [ DHCP Server ] -  DHCP protocol (Dynamic Host Configuration Protocol-67) using DHCP server for communication with client (END DEVICE)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.3   provides  [ DNS Server ] - number of packets:  2061
+    ->  192.168.3.2   requires  [ DNS Server ] - number of packets:  6908
+    ->  192.168.3.3   provides  [ rtip ] - number of packets:  480
+    ->  192.168.3.205   requires  [ 52794 ] - number of packets:  48
+    ->  192.168.3.205   provides  [ rtip ] - number of packets:  48
+    ->  192.168.3.248   requires  [ DHCP Server ] - number of packets:  2
+    ->  192.168.3.219   provides  [ dls-monitor ] - number of packets:  1
+    ->  192.168.3.219   requires  [ DHCP Server ] - number of packets:  3
+    ->  192.168.3.151   requires  [ DHCP Server ] - number of packets:  7
+    ->  192.168.3.205   requires  [ DHCP Server ] - number of packets:  1
+    ->  192.168.3.150   provides  [ DHCP Client ] - number of packets:  2
+    ->  192.168.3.220   provides  [ DHCP Client ] - number of packets:  2
+    ->  192.168.3.218   requires  [ DHCP Server ] - number of packets:  2
+
+DNS : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 99.58
+DHCP: ▏ 0.42 
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  10
+  IP: 192.168.3.177
+  Last communication:  Tue Feb 25 10:08:49 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  67.219.144.68   provides  [ WEB Server ] - number of packets:  100
+    ->  140.211.169.206   provides  [ WEB Server ] - number of packets:  80
+    ->  209.132.190.2   provides  [ WEB Server ] - number of packets:  80
+    ->  209.132.181.16   provides  [ WEB Server ] - number of packets:  50
+    ->  13.250.126.156   provides  [ WEB Server ] - number of packets:  50
+    ->  152.19.134.142   provides  [ WEB Server ] - number of packets:  50
+    ->  8.43.85.67   provides  [ WEB Server ] - number of packets:  50
+    ->  8.43.85.73   provides  [ WEB Server ] - number of packets:  40
+    ->  140.211.169.196   provides  [ WEB Server ] - number of packets:  40
+    ->  209.132.181.15   provides  [ WEB Server ] - number of packets:  30
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  11
+  IP: 10.39.0.2
+  Last communication:  Tue Feb 25 13:25:02 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.2   provides  [ 781 ] - number of packets:  96
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  12
+  IP: 192.168.3.220
+  Last communication:  Tue Feb 25 13:26:04 2020
+  MAC: ---
+  Labels:
+    [ Mobile device ] -  Wifi Calling use on mobile device
+    [ DHCP Client ] -  DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+  DHCP:
+     192.168.3.1  in  Tue Feb 25 09:09:00 2020
+     192.168.3.1  in  Tue Feb 25 09:09:00 2020
+  Local Dependencies:
+    ->  192.168.3.3   provides  [ DNS Server ] - number of packets:  88
+    ->  192.168.3.1   provides  [ DHCP Server ] - number of packets:  2
+
+DNS : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 95.65
+DHCP: ▇▇ 4.35 
+
+  Global Dependencies:
+    ->  195.113.172.15   provides  [ Windows ] - number of packets:  5771
+    ->  157.240.30.18   provides  [ WEB Server ] - number of packets:  1422
+    ->  8.43.85.67   provides  [ WEB Server ] - number of packets:  914
+    ->  172.217.23.228   provides  [ WEB Server ] - number of packets:  421
+    ->  216.58.201.100   provides  [ WEB Server ] - number of packets:  321
+    ->  172.217.23.238   provides  [ WEB Server ] - number of packets:  189
+    ->  172.217.23.195   provides  [ WEB Server ] - number of packets:  164
+    ->  216.58.201.78   provides  [ WEB Server ] - number of packets:  109
+    ->  195.113.172.2   requires  [ Mobile device ] - number of packets:  73
+    ->  195.113.172.3   provides  [ DNS Server ] - number of packets:  46
+
+Terminal_Services: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 58.36
+HTTPS            : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 29.00
+HTTP             : ▇▇▇▇▇▇▇▇ 10.09
+Wifi_Calling     : ▇ 1.64 
+DNS              : ▏ 0.91 
+
+######################################################################
+Device ID:  13
+  IP: 192.168.3.248
+  Last communication:  Tue Feb 25 12:46:56 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+    [ Mobile device ] -  Wifi Calling use on mobile device
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can send emails)
+  DHCP:
+     192.168.3.1  in  Tue Feb 25 07:46:21 2020
+     192.168.3.1  in  Tue Feb 25 05:32:40 2020
+  Local Dependencies:
+    ->  192.168.3.3   provides  [ DNS Server ] - number of packets:  38144
+    ->  192.168.1.230   provides  [ WEB Server ] - number of packets:  23425
+    ->  192.168.3.1   provides  [ DHCP Server ] - number of packets:  2
+    ->  10.200.15.1   requires  [ 0 ] - number of packets:  10384
+    ->  192.168.3.3   provides  [ rtip ] - number of packets:  7
+
+DNS  : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 61.95
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 38.04
+DHCP : ▏ 0.01 
+
+  Global Dependencies:
+    ->  195.113.214.206   provides  [ WEB Server ] - number of packets:  655360
+    ->  195.113.214.205   provides  [ WEB Server ] - number of packets:  243797
+    ->  173.194.150.251   provides  [ WEB Server ] - number of packets:  119810
+    ->  147.32.233.60   provides  [ WEB Server ] - number of packets:  67820
+    ->  172.217.23.206   provides  [ WEB Server ] - number of packets:  56561
+    ->  3.120.198.117   provides  [ WEB Server ] - number of packets:  36874
+    ->  172.217.23.238   provides  [ WEB Server ] - number of packets:  36650
+    ->  157.240.30.18   provides  [ WEB Server ] - number of packets:  23633
+    ->  216.58.201.78   provides  [ WEB Server ] - number of packets:  20601
+    ->  147.32.3.202   provides  [ WEB Server ] - number of packets:  16903
+
+HTTPS                  : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 98.68
+IMAPS                  : ▏ 0.64 
+HTTP                   : ▏ 0.38 
+Wifi_Calling           : ▏ 0.21 
+NTP                    : ▏ 0.04 
+Printer_PDP_Data_Stream: ▏ 0.03 
+SNMP                   : ▏ 0.01 
+SMTPS                  : ▏ 0.00 
+DNS                    : ▏ 0.00 
+
+######################################################################
+Device ID:  14
+  IP: fe80::59c3:75c0:18f:a2c7
+  Last communication:  Tue Feb 25 12:40:51 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 07:46:25 2020
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 05:32:44 2020
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ 34816 ] - number of packets:  21
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  4
+    ->  fde9:5b1a:a899::1   provides  [ 34560 ] - number of packets:  2
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  15
+  IP: fe80::a62b:b0ff:fede:53e
+  Last communication:  Tue Feb 25 12:40:51 2020
+  MAC: ---
+  Labels:
+    [ DHCP Server ] -  DHCPv6-server protocol using DHCP server for communication with client (END DEVICE)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fe80::59c3:75c0:18f:a2c7   requires  [ 0 ] - number of packets:  21
+    ->  fe80::921b:eff:fe59:4358   provides  [ 34304 ] - number of packets:  8
+    ->  fe80::921b:eff:fe59:4358   requires  [ DHCP Server ] - number of packets:  4
+    ->  fe80::59c3:75c0:18f:a2c7   requires  [ DHCP Server ] - number of packets:  4
+    ->  fde9:5b1a:a899:0:4045:c047:e551:851b   provides  [ 34560 ] - number of packets:  8
+    ->  fe80::4b1b:b7d5:c1e9:e6b8   provides  [ 34560 ] - number of packets:  2
+    ->  fe80::87a:a36c:7b82:3276   requires  [ DHCP Server ] - number of packets:  2
+    ->  fe80::87a:a36c:7b82:3276   requires  [ 0 ] - number of packets:  4
+    ->  fe80::c80:88d:da15:2c80   provides  [ 34304 ] - number of packets:  25
+    ->  fe80::c80:88d:da15:2c80   requires  [ DHCP Server ] - number of packets:  9
+    ->  fe80::18e2:2c02:a3c8:a236   provides  [ 34304 ] - number of packets:  12
+    ->  fe80::18e2:2c02:a3c8:a236   requires  [ DHCP Server ] - number of packets:  2
+    ->  fe80::e524:3b5d:b2e3:6849   requires  [ 0 ] - number of packets:  3
+    ->  fe80::e524:3b5d:b2e3:6849   requires  [ DHCP Server ] - number of packets:  1
+    ->  fe80::e985:ee19:5b1:a910   requires  [ DHCP Server ] - number of packets:  1
+    ->  fe80::e985:ee19:5b1:a910   requires  [ 0 ] - number of packets:  3
+    ->  fe80::eb0e:e33:fac:6513   requires  [ 0 ] - number of packets:  3
+    ->  fe80::eb0e:e33:fac:6513   requires  [ DHCP Server ] - number of packets:  1
+    ->  fe80::681a:adbf:6066:39cb   requires  [ 0 ] - number of packets:  3
+    ->  fe80::681a:adbf:6066:39cb   requires  [ DHCP Server ] - number of packets:  1
+    ->  fe80::7147:202b:4efd:b81c   requires  [ DHCP Server ] - number of packets:  1
+    ->  fe80::7147:202b:4efd:b81c   requires  [ 0 ] - number of packets:  3
+    ->  fe80::103c:94ea:5fbe:2b25   requires  [ 0 ] - number of packets:  3
+    ->  fe80::103c:94ea:5fbe:2b25   requires  [ DHCP Server ] - number of packets:  1
+    ->  fde9:5b1a:a899::bd8   provides  [ 34560 ] - number of packets:  2
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  16
+  IP: 192.168.1.230
+  Last communication:  Tue Feb 25 12:46:56 2020
+  MAC: ---
+  Labels:
+    [ WEB Server ] -  HTTPS protocol using for web servers (http over tls/ssl)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.248   requires  [ WEB Server ] - number of packets:  23425
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  17
+  IP: fe80::921b:eff:fe59:4358
+  Last communication:  Tue Feb 25 11:32:48 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 11:32:42 2020
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 05:32:42 2020
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   requires  [ 0 ] - number of packets:  8
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  4
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  18
+  IP: fde9:5b1a:a899:0:4045:c047:e551:851b
+  Last communication:  Tue Feb 25 05:37:57 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fde9:5b1a:a899::1   provides  [ DNS Server ] - number of packets:  10
+    ->  fde9:5b1a:a899::1   requires  [ 0 ] - number of packets:  1
+    ->  fe80::a62b:b0ff:fede:53e   requires  [ 0 ] - number of packets:  8
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  19
+  IP: fde9:5b1a:a899::1
+  Last communication:  Tue Feb 25 12:39:07 2020
+  MAC: ---
+  Labels:
+    [ DNS Server ] -  DNS protocol (Domain Name System) used to translate IP address to domain name (main function)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fde9:5b1a:a899:0:4045:c047:e551:851b   requires  [ DNS Server ] - number of packets:  10
+    ->  fde9:5b1a:a899:0:4045:c047:e551:851b   provides  [ 34816 ] - number of packets:  1
+    ->  fe80::4b1b:b7d5:c1e9:e6b8   requires  [ 0 ] - number of packets:  6
+    ->  fde9:5b1a:a899:0:a439:2f6f:967b:2b39   requires  [ DNS Server ] - number of packets:  7
+    ->  fde9:5b1a:a899:0:8461:1aa5:f5a6:15ec   requires  [ DNS Server ] - number of packets:  3
+    ->  fde9:5b1a:a899::bd8   requires  [ DNS Server ] - number of packets:  10
+    ->  fde9:5b1a:a899::bd8   provides  [ 34816 ] - number of packets:  1
+    ->  fe80::59c3:75c0:18f:a2c7   requires  [ 0 ] - number of packets:  2
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  20
+  IP: 10.200.15.1
+  Last communication:  Tue Feb 25 12:46:56 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.248   provides  [ 781 ] - number of packets:  10384
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  21
+  IP: fe80::4b1b:b7d5:c1e9:e6b8
+  Last communication:  Tue Feb 25 05:39:53 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   requires  [ 0 ] - number of packets:  2
+    ->  fde9:5b1a:a899::1   provides  [ 34560 ] - number of packets:  6
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  22
+  IP: 192.168.3.219
+  Last communication:  Tue Feb 25 10:57:35 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+  DHCP:
+     192.168.3.1  in  Tue Feb 25 05:54:38 2020
+  Local Dependencies:
+    ->  192.168.3.1   requires  [ 0 ] - number of packets:  1
+    ->  192.168.3.1   provides  [ DHCP Server ] - number of packets:  3
+    ->  192.168.3.3   provides  [ DNS Server ] - number of packets:  12
+    ->  192.168.3.205   requires  [ mdns ] - number of packets:  41
+    ->  192.168.3.218   requires  [ mdns ] - number of packets:  47
+
+DNS : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 66.67
+DHCP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 33.33
+
+  Global Dependencies:
+    ->  162.159.192.9   provides  [ Mobile device ] - number of packets:  21998
+    ->  17.253.73.203   provides  [ WEB Server ] - number of packets:  11
+
+Wifi_Calling: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 99.95
+HTTP        : ▏ 0.05 
+
+######################################################################
+Device ID:  23
+  IP: fe80::18e2:2c02:a3c8:a236
+  Last communication:  Tue Feb 25 10:15:42 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 07:30:33 2020
+  Local Dependencies:
+    ->  fe80::87a:a36c:7b82:3276   provides  [ mdns ] - number of packets:  5
+    ->  fe80::87a:a36c:7b82:3276   requires  [ 0 ] - number of packets:  16
+    ->  fe80::a62b:b0ff:fede:53e   requires  [ 0 ] - number of packets:  12
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  2
+    ->  fe80::c80:88d:da15:2c80   requires  [ 0 ] - number of packets:  15
+    ->  fe80::c80:88d:da15:2c80   provides  [ mdns ] - number of packets:  4
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  24
+  IP: fe80::87a:a36c:7b82:3276
+  Last communication:  Tue Feb 25 10:15:42 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 05:54:35 2020
+  Local Dependencies:
+    ->  fe80::18e2:2c02:a3c8:a236   requires  [ mdns ] - number of packets:  5
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  2
+    ->  fe80::422:5da:4950:c32e   provides  [ 34816 ] - number of packets:  11
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ 34560 ] - number of packets:  4
+    ->  fe80::422:5da:4950:c32e   requires  [ mdns ] - number of packets:  3
+    ->  fe80::18e2:2c02:a3c8:a236   provides  [ 34816 ] - number of packets:  16
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  25
+  IP: fe80::422:5da:4950:c32e
+  Last communication:  Tue Feb 25 09:57:07 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fe80::87a:a36c:7b82:3276   requires  [ 0 ] - number of packets:  11
+    ->  fe80::87a:a36c:7b82:3276   provides  [ mdns ] - number of packets:  3
+    ->  fe80::c80:88d:da15:2c80   provides  [ 34560 ] - number of packets:  20
+    ->  fe80::c80:88d:da15:2c80   provides  [ mdns ] - number of packets:  4
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  26
+  IP: fde9:5b1a:a899:0:a439:2f6f:967b:2b39
+  Last communication:  Tue Feb 25 10:35:51 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fde9:5b1a:a899::1   provides  [ DNS Server ] - number of packets:  7
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  27
+  IP: 192.168.3.4
+  Last communication:  Tue Feb 25 13:18:33 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  162.159.200.123   provides  [ Time Server ] - number of packets:  28
+
+NTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+######################################################################
+Device ID:  28
+  IP: fe80::c80:88d:da15:2c80
+  Last communication:  Tue Feb 25 07:57:56 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 07:35:38 2020
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 07:12:24 2020
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 07:11:44 2020
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 07:11:02 2020
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 07:10:11 2020
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   requires  [ 0 ] - number of packets:  25
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  9
+    ->  fe80::422:5da:4950:c32e   requires  [ 0 ] - number of packets:  20
+    ->  fe80::422:5da:4950:c32e   requires  [ mdns ] - number of packets:  4
+    ->  fe80::18e2:2c02:a3c8:a236   provides  [ 34816 ] - number of packets:  15
+    ->  fe80::18e2:2c02:a3c8:a236   requires  [ mdns ] - number of packets:  4
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  29
+  IP: 192.168.3.151
+  Last communication:  Tue Feb 25 08:16:24 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can send emails)
+  DHCP:
+     192.168.3.1  in  Tue Feb 25 07:35:35 2020
+     192.168.3.1  in  Tue Feb 25 07:12:23 2020
+     192.168.3.1  in  Tue Feb 25 07:11:43 2020
+     192.168.3.1  in  Tue Feb 25 07:10:48 2020
+     192.168.3.1  in  Tue Feb 25 07:10:09 2020
+  Local Dependencies:
+    ->  192.168.3.3   provides  [ DNS Server ] - number of packets:  410
+    ->  192.168.3.1   provides  [ DHCP Server ] - number of packets:  7
+    ->  192.168.3.3   provides  [ rtip ] - number of packets:  31
+    ->  192.168.3.205   requires  [ 50607 ] - number of packets:  77
+    ->  192.168.3.218   requires  [ mdns ] - number of packets:  48
+    ->  192.168.3.205   requires  [ mdns ] - number of packets:  45
+    ->  192.168.3.205   requires  [ xserveraid ] - number of packets:  6
+
+DNS : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 96.70
+DHCP: ▇ 3.30 
+
+  Global Dependencies:
+    ->  17.248.147.13   provides  [ WEB Server ] - number of packets:  982
+    ->  77.75.79.170   provides  [ Mail Server ] - number of packets:  701
+    ->  17.57.146.53   requires  [ hpvirtgrp ] - number of packets:  611
+    ->  173.194.76.109   provides  [ Mail Server ] - number of packets:  347
+    ->  74.125.140.108   provides  [ Mail Server ] - number of packets:  336
+    ->  185.28.193.15   provides  [ Mail Server ] - number of packets:  256
+    ->  130.211.33.145   provides  [ WEB Server ] - number of packets:  246
+    ->  172.217.23.206   provides  [ WEB Server ] - number of packets:  240
+    ->  147.32.232.238   provides  [ Mail Server ] - number of packets:  239
+    ->  17.248.147.46   provides  [ WEB Server ] - number of packets:  234
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 58.07
+IMAPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 41.05
+HTTP : ▏ 0.87 
+
+######################################################################
+Device ID:  30
+  IP: fde9:5b1a:a899:0:8d38:657a:384d:f65b
+  Last communication:  Tue Feb 25 07:10:10 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can send emails)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  2a00:1450:400c:c06::6c   provides  [ Mail Server ] - number of packets:  2
+    ->  2a04:fa87:fffe::c000:4902   provides  [ WEB Server ] - number of packets:  1
+
+IMAPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 66.67
+HTTP : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 33.33
+
+######################################################################
+Device ID:  31
+  IP: fde9:5b1a:a899:0:8461:1aa5:f5a6:15ec
+  Last communication:  Tue Feb 25 07:11:40 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fde9:5b1a:a899::1   provides  [ DNS Server ] - number of packets:  3
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  32
+  IP: fde9:5b1a:a899:0:d8ac:c2ce:1e4f:6356
+  Last communication:  Tue Feb 25 07:35:20 2020
+  MAC: ---
+  Labels:
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+  DHCP:
+    ---
+  Local Dependencies:
+    ---
+
+  Global Dependencies:
+    ->  2620:149:f9:101c::6   provides  [ WEB Server ] - number of packets:  1
+    ->  2a02:26f0:132:3a5::2a1   provides  [ WEB Server ] - number of packets:  1
+    ->  2a00:1450:4014:80c::2003   provides  [ WEB Server ] - number of packets:  1
+    ->  2a00:1450:400c:c09::bd   provides  [ WEB Server ] - number of packets:  1
+    ->  2a00:1450:4014:80d::2004   provides  [ WEB Server ] - number of packets:  1
+    ->  2a00:1450:4014:80c::200e   provides  [ WEB Server ] - number of packets:  1
+    ->  2a02:26f0:132:397::1931   provides  [ WEB Server ] - number of packets:  1
+    ->  2a02:26f0:132::215:4a5b   provides  [ WEB Server ] - number of packets:  1
+    ->  2a00:1450:4014:800::200e   provides  [ WEB Server ] - number of packets:  1
+    ->  2a00:1450:4014:80d::2008   provides  [ WEB Server ] - number of packets:  1
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 90.00
+HTTP : ▇▇▇▇▇ 10.00
+
+######################################################################
+Device ID:  33
+  IP: fe80::e524:3b5d:b2e3:6849
+  Last communication:  Tue Feb 25 09:30:22 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 09:30:17 2020
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ 34816 ] - number of packets:  3
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  1
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  34
+  IP: fe80::e985:ee19:5b1:a910
+  Last communication:  Tue Feb 25 09:48:16 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 09:48:11 2020
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  1
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ 34816 ] - number of packets:  3
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  35
+  IP: fe80::eb0e:e33:fac:6513
+  Last communication:  Tue Feb 25 10:03:32 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 10:03:26 2020
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ 34816 ] - number of packets:  3
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  1
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  36
+  IP: fe80::681a:adbf:6066:39cb
+  Last communication:  Tue Feb 25 10:15:14 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 10:15:09 2020
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ 34816 ] - number of packets:  3
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  1
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  37
+  IP: fe80::7147:202b:4efd:b81c
+  Last communication:  Tue Feb 25 10:51:28 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 10:51:23 2020
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  1
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ 34816 ] - number of packets:  3
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  38
+  IP: fe80::103c:94ea:5fbe:2b25
+  Last communication:  Tue Feb 25 10:54:50 2020
+  MAC: ---
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+     fe80::a62b:b0ff:fede:53e  in  Tue Feb 25 10:54:45 2020
+  Local Dependencies:
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ 34816 ] - number of packets:  3
+    ->  fe80::a62b:b0ff:fede:53e   provides  [ DHCP Server ] - number of packets:  1
+
+DHCPv6-server: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  39
+  IP: fde9:5b1a:a899::bd8
+  Last communication:  Tue Feb 25 12:39:07 2020
+  MAC: ---
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fde9:5b1a:a899::1   provides  [ DNS Server ] - number of packets:  10
+    ->  fde9:5b1a:a899::1   requires  [ 0 ] - number of packets:  1
+    ->  fe80::a62b:b0ff:fede:53e   requires  [ 0 ] - number of packets:  2
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  40
+  IP: 10.38.3.16
+  Last communication:  Tue Feb 25 11:41:29 2020
+  MAC: ---
+  Labels:
+    [ DNS Server ] -  DNS protocol (Domain Name System) used to translate IP address to domain name (main function)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.3.218   requires  [ DNS Server ] - number of packets:  2
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+  Print Statistic of using network by devices in %:
+
+192.168.3.2                         : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 36.96
+192.168.3.205                       : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 36.86
+192.168.3.248                       : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 17.90
+192.168.3.150                       : ▇▇▇▇ 4.32 
+192.168.3.5                         : ▇ 1.61 
+192.168.3.3                         : ▏ 0.99 
+192.168.3.218                       : ▏ 0.39 
+192.168.1.230                       : ▏ 0.27 
+192.168.3.219                       : ▏ 0.25 
+10.200.15.1                         : ▏ 0.12 
+192.168.3.220                       : ▏ 0.11 
+192.168.3.1                         : ▏ 0.11 
+192.168.3.151                       : ▏ 0.07 
+192.168.3.255                       : ▏ 0.02 
+192.168.3.177                       : ▏ 0.01 
+192.168.3.204                       : ▏ 0.01 
+fe80::a62b:b0ff:fede:53e            : ▏ 0.00 
+10.39.0.2                           : ▏ 0.00 
+fe80::c80:88d:da15:2c80             : ▏ 0.00 
+fe80::18e2:2c02:a3c8:a236           : ▏ 0.00 
+fe80::87a:a36c:7b82:3276            : ▏ 0.00 
+fde9:5b1a:a899::1                   : ▏ 0.00 
+fe80::422:5da:4950:c32e             : ▏ 0.00 
+192.168.3.4                         : ▏ 0.00 
+fe80::59c3:75c0:18f:a2c7            : ▏ 0.00 
+fde9:5b1a:a899:0:4045:c047:e551:851b: ▏ 0.00 
+fde9:5b1a:a899::bd8                 : ▏ 0.00 
+fe80::921b:eff:fe59:4358            : ▏ 0.00 
+fde9:5b1a:a899:0:d8ac:c2ce:1e4f:6356: ▏ 0.00 
+fe80::4b1b:b7d5:c1e9:e6b8           : ▏ 0.00 
+fde9:5b1a:a899:0:a439:2f6f:967b:2b39: ▏ 0.00 
+fe80::e524:3b5d:b2e3:6849           : ▏ 0.00 
+fe80::e985:ee19:5b1:a910            : ▏ 0.00 
+fe80::eb0e:e33:fac:6513             : ▏ 0.00 
+fe80::681a:adbf:6066:39cb           : ▏ 0.00 
+fe80::7147:202b:4efd:b81c           : ▏ 0.00 
+fe80::103c:94ea:5fbe:2b25           : ▏ 0.00 
+fde9:5b1a:a899:0:8d38:657a:384d:f65b: ▏ 0.00 
+fde9:5b1a:a899:0:8461:1aa5:f5a6:15ec: ▏ 0.00 
+10.38.3.16                          : ▏ 0.00 
+
+Output JSON:  PassiveAutodiscovery

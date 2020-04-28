@@ -1,0 +1,363 @@
+Connecting to a database....done
+######################################################################
+Device ID:  1
+  IP: 192.168.1.100
+  Last communication:  Thu Apr  9 04:24:53 2020
+  MAC: 00:0e:c6:e1:ce:b9,  Asix Electronics Corp ,  TW
+  Labels:
+    [ Windows ] -  SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows
+    [ DHCP Client ] -  DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can send emails)
+  DHCP:
+     192.168.1.1  in  Thu Apr  9 04:23:23 2020
+     192.168.1.1  in  Thu Apr  9 04:23:14 2020
+  Local Dependencies:
+    ->  192.168.1.111   provides  [ WEB Server ] - number of packets:  840
+    ->  192.168.1.255   requires  [ Windows ] - number of packets:  192
+    ->  192.168.1.1   requires  [ ssdp ] - number of packets:  13
+    ->  192.168.1.111   requires  [ 0 ] - number of packets:  8
+    ->  192.168.1.1   provides  [ DHCP Server ] - number of packets:  3
+    ->  192.168.1.255   requires  [ Windows ] - number of packets:  1
+
+HTTP       : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 68.18
+SMB-NetBIOS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 31.33
+DHCP       : ▏ 0.49 
+
+  Global Dependencies:
+    ->  90.182.119.78   provides  [ WEB Server ]  Domain:  78.gcache.iol.cz   - number of packets:  177605
+    ->  13.32.114.8   provides  [ WEB Server ]  Domain:  server-13-32-114-8.prg50.r.cloudfront.net   - number of packets:  43387
+    ->  95.216.163.111   provides  [ WEB Server ]  Domain:  dl4.cdn.filezilla-project.org   - number of packets:  8898
+    ->  173.194.150.233   provides  [ WEB Server ] - number of packets:  6480
+    ->  104.17.167.73   provides  [ WEB Server ] - number of packets:  3463
+    ->  172.217.23.246   provides  [ WEB Server ]  Domain:  prg03s06-in-f22.1e100.net   - number of packets:  3337
+    ->  104.27.143.70   provides  [ WEB Server ] - number of packets:  3177
+    ->  13.32.105.58   provides  [ WEB Server ]  Domain:  server-13-32-105-58.prg50.r.cloudfront.net   - number of packets:  1462
+    ->  216.58.201.110   provides  [ WEB Server ]  Domain:  prg03s02-in-f110.1e100.net   - number of packets:  1203
+    ->  172.217.23.238   provides  [ WEB Server ]  Domain:  prg03s06-in-f14.1e100.net   - number of packets:  1192
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 99.68
+IMAPS: ▏ 0.12 
+DNS  : ▏ 0.08 
+FTP  : ▏ 0.06 
+HTTP : ▏ 0.04 
+ESMTP: ▏ 0.02 
+
+######################################################################
+Device ID:  2
+  IP: 192.168.1.105
+  Last communication:  Thu Apr  9 04:24:49 2020
+  MAC: c8:d3:ff:d5:58:d3,  Hewlett Packard ,  US
+  Labels:
+    [ Windows ] -  SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows
+    [ Time Server ] -  NTP (Network Time Protocol) protocol use for time set over network
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.1.101   provides  [ Printer ] - number of packets:  11870
+    ->  192.168.1.101   provides  [ Printer ] - number of packets:  624
+    ->  192.168.1.1   provides  [ DNS Server ] - number of packets:  445
+    ->  192.168.1.1   provides  [ 8013 ] - number of packets:  120
+    ->  192.168.10.85   provides  [ SNMP Agent ] - number of packets:  78
+    ->  192.168.10.222   provides  [ EtherNet-IP-1 ] - number of packets:  45
+    ->  192.168.1.255   requires  [ Windows ] - number of packets:  12
+    ->  192.168.1.1   provides  [ rtip ] - number of packets:  3
+    ->  192.168.1.255   requires  [ Windows ] - number of packets:  1
+
+IPP                    : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 91.01
+Printer_PDP_Data_Stream: ▇▇ 4.78 
+DNS                    : ▇ 3.41 
+SNMP                   : ▏ 0.60 
+SMB-NetBIOS            : ▏ 0.20 
+
+  Global Dependencies:
+    ->  90.182.119.14   provides  [ WEB Server ]  Domain:  14.gcache.iol.cz   - number of packets:  62202
+    ->  90.182.9.69   provides  [ WEB Server ]  Domain:  69.9.broadband15.iol.cz   - number of packets:  13282
+    ->  90.182.9.39   provides  [ WEB Server ]  Domain:  39.9.broadband15.iol.cz   - number of packets:  8219
+    ->  212.47.2.211   provides  [ WEB Server ]  Domain:  ct24.cz   - number of packets:  3328
+    ->  90.182.9.21   provides  [ WEB Server ]  Domain:  21.9.broadband15.iol.cz   - number of packets:  2245
+    ->  212.47.2.223   provides  [ WEB Server ] - number of packets:  1334
+    ->  185.76.8.4   provides  [ WEB Server ]  Domain:  bratislava-1.cdn77.com   - number of packets:  1325
+    ->  77.75.74.133   provides  [ WEB Server ] - number of packets:  1260
+    ->  104.26.5.53   provides  [ WEB Server ] - number of packets:  1022
+    ->  172.217.23.196   provides  [ WEB Server ]  Domain:  prg03s05-in-f196.1e100.net   - number of packets:  958
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 99.94
+HTTP : ▏ 0.06 
+NTP  : ▏ 0.00 
+
+######################################################################
+Device ID:  3
+  IP: 192.168.1.1 < 192.168.10.85 > < 192.168.10.222 > < fe80::ce32:e5ff:fea0:4e0c >
+  Last communication:  Thu Apr  9 04:24:02 2020
+  MAC: cc:32:e5:a0:4e:0c,  TP-Link Tech Co, Ltd ,  CN
+  Labels:
+    [ DNS Server ] -  DNS protocol (Domain Name System) used to translate IP address to domain name (main function)
+    [ DHCP Server ] -  DHCP protocol (Dynamic Host Configuration Protocol-67) using DHCP server for communication with client (END DEVICE)
+    [ Router ] -  Routing network device
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.1.105   requires  [ DNS Server ] - number of packets:  445
+    ->  192.168.1.101   requires  [ DNS Server ] - number of packets:  153
+    ->  192.168.1.105   requires  [ 50321 ] - number of packets:  120
+    ->  192.168.1.100   provides  [ 62233 ] - number of packets:  13
+    ->  192.168.1.106   requires  [ DNS Server ] - number of packets:  12
+    ->  192.168.1.105   requires  [ 0 ] - number of packets:  3
+    ->  192.168.1.100   provides  [ DHCP Client ] - number of packets:  3
+    ->  255.255.255.255   requires  [ DHCP Server ] - number of packets:  1
+
+DNS : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 98.71
+DHCP: ▏ 1.29 
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  4
+  IP: 192.168.1.111
+  Last communication:  Thu Apr  9 04:25:11 2020
+  MAC: 00:16:35:97:ff:40,  Hewlett Packard ,  US
+  Labels:
+    [ WEB Server ] -  HTTP protocol (Hypertext Transfer Protocol) use for Web server (unencrypted comunication) or File Server using HTTP for tranfer data
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.1.100   requires  [ WEB Server ] - number of packets:  840
+    ->  192.168.1.110   requires  [ WEB Server ] - number of packets:  10
+    ->  192.168.1.100   provides  [ 0 ] - number of packets:  8
+
+HTTP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  5
+  IP: 192.168.1.106
+  Last communication:  Thu Apr  9 04:25:04 2020
+  MAC: 1c:c1:de:fb:2d:9b,  Hewlett Packard ,  US
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.1.1   provides  [ DNS Server ] - number of packets:  12
+
+DNS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ->  13.32.105.138   provides  [ WEB Server ]  Domain:  server-13-32-105-138.prg50.r.cloudfront.net   - number of packets:  67
+    ->  34.98.75.36   provides  [ WEB Server ]  Domain:  36.75.98.34.bc.googleusercontent.com   - number of packets:  65
+    ->  195.113.20.2   provides  [ Time Server ] - number of packets:  29
+    ->  37.187.104.44   provides  [ Time Server ] - number of packets:  29
+    ->  195.123.246.77   provides  [ Time Server ] - number of packets:  29
+    ->  162.159.200.1   provides  [ Time Server ] - number of packets:  28
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 53.44
+NTP  : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 46.56
+
+######################################################################
+Device ID:  6
+  IP: 192.168.10.85 < 192.168.1.1 > < 192.168.10.222 > < fe80::ce32:e5ff:fea0:4e0c >
+  Last communication:  Thu Apr  9 04:24:11 2020
+  MAC: cc:32:e5:a0:4e:0c,  TP-Link Tech Co, Ltd ,  CN
+  Labels:
+    [ SNMP Agent ] -  SNMP Manager request the SNMP Agent using protocol SNMP on port 161 (snmp - Simple Network Management Protocol)
+    [ Router ] -  Routing network device
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.1.105   requires  [ SNMP Agent ] - number of packets:  78
+
+SNMP: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  7
+  IP: 192.168.10.222 < 192.168.1.1 > < 192.168.10.85 > < fe80::ce32:e5ff:fea0:4e0c >
+  Last communication:  Thu Apr  9 04:23:35 2020
+  MAC: cc:32:e5:a0:4e:0c,  TP-Link Tech Co, Ltd ,  CN
+  Labels:
+    [ Router ] -  Routing network device
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.1.105   requires  [ 50325 ] - number of packets:  45
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  8
+  IP: 192.168.1.101
+  Last communication:  Thu Apr  9 04:24:20 2020
+  MAC: 20:2b:c1:9a:d8:c4,  Huawei Tech Co, Ltd ,  CN
+  Labels:
+    [ Printer ] -  Printer PDP Data Stream, AppSocket use for communication with printer or printer servers, Hewlett-Packard (HP) JetDirect network printing service
+    [ Printer ] -  IPP protocol (Internet Printing Protocol) use for communication with printer or printer servers
+    [ End Device ] -  PC, Mobile Phone,... (everything that can access web services)
+    [ End Device ] -  PC, Mobile Phone,... (everything that can send emails)
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.1.105   requires  [ Printer ] - number of packets:  11870
+    ->  192.168.1.105   requires  [ Printer ] - number of packets:  624
+    ->  192.168.1.1   provides  [ DNS Server ] - number of packets:  153
+
+IPP                    : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 93.86
+Printer_PDP_Data_Stream: ▇▇ 4.93 
+DNS                    : ▏ 1.21 
+
+  Global Dependencies:
+    ->  90.182.119.82   provides  [ WEB Server ]  Domain:  82.gcache.iol.cz   - number of packets:  7100
+    ->  172.217.23.214   provides  [ WEB Server ]  Domain:  prg03s05-in-f22.1e100.net   - number of packets:  1750
+    ->  74.125.133.109   provides  [ Mail Server ] - number of packets:  1201
+    ->  172.217.23.206   provides  [ WEB Server ]  Domain:  prg03s05-in-f206.1e100.net   - number of packets:  654
+    ->  173.194.76.109   provides  [ Mail Server ] - number of packets:  567
+    ->  172.217.23.195   provides  [ WEB Server ]  Domain:  prg03s05-in-f195.1e100.net   - number of packets:  465
+    ->  212.53.163.78   provides  [ WEB Server ]  Domain:  cz61.grepolis.com   - number of packets:  453
+    ->  52.157.234.37   provides  [ WEB Server ] - number of packets:  442
+    ->  216.58.201.97   provides  [ WEB Server ]  Domain:  prg03s02-in-f97.1e100.net   - number of packets:  229
+    ->  64.233.166.189   provides  [ WEB Server ]  Domain:  wm-in-f189.1e100.net   - number of packets:  211
+
+HTTPS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 85.76
+IMAPS: ▇▇▇▇▇ 9.30 
+SMTPS: ▇▇ 3.85 
+HTTP : ▏ 1.09 
+
+######################################################################
+Device ID:  9
+  IP: 192.168.1.255
+  Last communication:  Thu Apr  9 04:25:03 2020
+  MAC: ff:ff:ff:ff:ff:ff,  Not Find ,  
+  Labels:
+    [ Windows ] -  SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.1.100   provides  [ Windows ] - number of packets:  192
+    ->  192.168.1.110   provides  [ Windows ] - number of packets:  179
+    ->  192.168.1.105   provides  [ Windows ] - number of packets:  12
+    ->  192.168.1.100   provides  [ Windows ] - number of packets:  1
+    ->  192.168.1.105   provides  [ Windows ] - number of packets:  1
+
+SMB-NetBIOS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  10
+  IP: fe80::ce32:e5ff:fea0:4e0c < 192.168.1.1 > < 192.168.10.85 > < 192.168.10.222 >
+  Last communication:  Thu Apr  9 04:20:18 2020
+  MAC: cc:32:e5:a0:4e:0c,  TP-Link Tech Co, Ltd ,  CN
+  Labels:
+    [ Router ] -  Routing network device
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fe80::b904:ba84:e07:cbbd   provides  [ 34560 ] - number of packets:  8
+    ->  fe80::b904:ba84:e07:cbbd   provides  [ DHCP Client ] - number of packets:  7
+
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  11
+  IP: fe80::b904:ba84:e07:cbbd
+  Last communication:  Thu Apr  9 04:20:18 2020
+  MAC: c8:5b:76:ea:0f:66,  Lcfc(HeFei) Electronics Tech Co, Ltd ,  CN
+  Labels:
+    [ DHCP Client ] -  DHCPv6-client protocol using DHCP client (END DEVICE) for requset IPv6 address from DHCP Server
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fe80::ce32:e5ff:fea0:4e0c   requires  [ 0 ] - number of packets:  8
+    ->  fe80::ce32:e5ff:fea0:4e0c   requires  [ DHCP Client ] - number of packets:  7
+
+DHCPv6-client: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 100.00
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  12
+  IP: fe80::304d:f405:aa3b:fa57
+  Last communication:  Thu Apr  9 04:23:26 2020
+  MAC: 38:b1:db:e8:cf:d5,  Hon Hai Precision Ind. Co, Ltd ,  CN
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fe80::5cb9:8b67:fb52:9ab   provides  [ 63679 ] - number of packets:  5
+    ->  fe80::5cb9:8b67:fb52:9ab   requires  [ 0 ] - number of packets:  3
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  13
+  IP: fe80::5cb9:8b67:fb52:9ab
+  Last communication:  Thu Apr  9 04:23:26 2020
+  MAC: 00:0e:c6:e1:ce:b9,  Asix Electronics Corp ,  TW
+  Labels:
+    [ Unknows ] -  
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  fe80::304d:f405:aa3b:fa57   requires  [ llmnr ] - number of packets:  5
+    ->  fe80::304d:f405:aa3b:fa57   provides  [ 34816 ] - number of packets:  3
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Device ID:  14
+  IP: 192.168.1.110
+  Last communication:  Thu Apr  9 04:25:03 2020
+  MAC: 38:b1:db:e8:cf:d5,  Hon Hai Precision Ind. Co, Ltd ,  CN
+  Labels:
+    [ Windows ] -  SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows
+  DHCP:
+    ---
+  Local Dependencies:
+    ->  192.168.1.255   requires  [ Windows ] - number of packets:  179
+    ->  192.168.1.111   provides  [ WEB Server ] - number of packets:  10
+
+SMB-NetBIOS: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 97.28
+HTTP       : ▇ 2.72 
+
+  Global Dependencies:
+    ---
+
+######################################################################
+Graph of local dependencies is safed in file:	Graph_Local.png
+######################################################################
+Global Dependencies for device 192.168.1.100 is safed in file:	192.168.1.100.png
+Global Dependencies for device 192.168.1.105 is safed in file:	192.168.1.105.png
+######################################################################
+  Print Statistic of using network by devices in %:
+
+192.168.1.100            : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 62.93
+192.168.1.105            : ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 29.65
+192.168.1.101            : ▇▇▇▇▇ 6.77 
+192.168.1.111            : ▏ 0.21 
+192.168.1.1              : ▏ 0.18 
+192.168.1.255            : ▏ 0.09 
+192.168.1.106            : ▏ 0.06 
+192.168.1.110            : ▏ 0.05 
+192.168.10.85            : ▏ 0.02 
+192.168.10.222           : ▏ 0.01 
+fe80::ce32:e5ff:fea0:4e0c: ▏ 0.00 
+fe80::b904:ba84:e07:cbbd : ▏ 0.00 
+fe80::304d:f405:aa3b:fa57: ▏ 0.00 
+fe80::5cb9:8b67:fb52:9ab : ▏ 0.00 
+
+Output JSON:  PassiveAutodiscovery
