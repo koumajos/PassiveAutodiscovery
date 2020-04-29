@@ -20,8 +20,8 @@ Ideal Operating system is CentOS 7 or 8
 
         yum install -y bc autoconf automake gcc gcc-c++ libtool libxml2-devel make pkg-config libpcap-devel libidn-devel bison flex
 
- * nenainstaluje se přes yum - libpcap-devel a libidn-devel
-    => nutnost nainstalovat jinak, například:
+  * not all on centos8 will install by yum - libpcap-devel and libidn-devel
+    => must install by hand:
 
   * libpcap-devel:
 
@@ -73,13 +73,13 @@ Ideal Operating system is CentOS 7 or 8
 
 ![Database proposal](https://github.com/koumajos/DeppendencyMapping/blob/master/navrh_databaze.png)
 
-#PassiveAutodiscovery module
+# PassiveAutodiscovery module
 
-##Instalation
+## Instalation
 * git clone https://github.com/koumajos/PassiveAutodiscovery.git
 * pip3 install -r requirements.txt
 
-##Module Scripts description
+## Module Scripts description
 
 ### CreateScript
 Python libraries: 
