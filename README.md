@@ -23,30 +23,30 @@ Ideal Operating system is CentOS 7 or 8
   * not all on centos8 will install by yum - libpcap-devel and libidn-devel
     => must install by hand:
 
-  * libpcap-devel:
+    * libpcap-devel:
 
         https://centos.pkgs.org/8/centos-powertools-x86_64/libpcap-devel-1.9.0-3.el8.x86_64.rpm.html
 
-  * libidn-devel:
+    * libidn-devel:
  
         https://centos.pkgs.org/8/centos-powertools-x86_64/libidn-devel-1.34-5.el8.x86_64.rpm.html
 
   * commands:
         
         cd nemea/
-        
+
         ./bootstrap.sh
-        
+
         ./configure --enable-repobuild --prefix=/usr --bindir=/usr/bin/nemea --sysconfdir=/etc/nemea --libdir=/usr/lib64
-        
+
         make
-        
+
         make install
 
-  * nemea-framework:
+  * install nemea-framework:
         
         cd  nemea/nemea-framework
-        
+
         ./bootstrap.sh
 
         ./configure
@@ -70,6 +70,38 @@ Ideal Operating system is CentOS 7 or 8
         sudo python3 setup.py install
 
 ## Database Inplementation
+  
+  Module use sqlite3 database. Install on CentOS8:
+    * yum install sqlite3
+    
+  Tables filled before running the module by CreateScript.py:
+    * Services
+
+    * Filtres
+
+    * Ports
+
+    * VendorsMAC
+
+    
+    * LocalDevice
+  
+  Tables filled by module from IP flows:
+    * LocalDevice
+
+    * LocalServices
+
+    * Dependencies
+    
+    * Global
+
+    * GlobalServices
+
+    * MAC
+    
+    * Routers
+    
+    * DHCP
 
 ![Database proposal](https://github.com/koumajos/DeppendencyMapping/blob/master/navrh_databaze.png)
 
