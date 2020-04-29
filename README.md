@@ -73,7 +73,15 @@ Ideal Operating system is CentOS 7 or 8
 
 ![Database proposal](https://github.com/koumajos/DeppendencyMapping/blob/master/navrh_databaze.png)
 
-## CreateScript
+#PassiveAutodiscovery module
+
+##Instalation
+* git clone https://github.com/koumajos/PassiveAutodiscovery.git
+* pip3 install -r requirements.txt
+
+##Module Scripts description
+
+### CreateScript
 Python libraries: 
 * sqlite3
 * csv
@@ -84,7 +92,7 @@ Python libraries:
 * argparse
 * from argparse - RawTextHelpFormatter
 
-## PassiveAutodiscovery
+### PassiveAutodiscovery
 Python libraries: 
 * pytrap
 * sys
@@ -98,14 +106,14 @@ Python libraries:
 Python modules:
 * Collector
 
-## Collector
+### Collector
 Python libraries: 
 * sys
 * os
 * ipaddress
 * sqlite3
 
-## Analyzer
+### Analyzer
 Python libraries: 
 * sys
 * os
