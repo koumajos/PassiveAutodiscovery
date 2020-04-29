@@ -76,40 +76,52 @@ Ideal Operating system is CentOS 7 or 8
     
  * Tables filled before running the module by CreateScript.py:
    * Services
+
         Table of protocols that are using by specific type of device. 
 
    * Filtres
+
         Table of protocols and their number of packet for complete communication.
 
    * Ports
+
         Table of protocols from IANA organization.
 
    * VendorsMAC
+
         Table of vendors and their MAC addresses prefixes.
     
  * Tables filled by module from IP flows:
    * LocalDevice
+
         Table of finded "local" devices.
 
    * LocalServices
+
         Table of finded services on finded "local" devices.
 
    * Dependencies
+
         Table of dependencies between finded "local" devices.
     
    * Global
+
         Table of dependencies between finded "local" device and global devices that was by "local" device visited.
 
    * GlobalServices
+
         Table of services on global devices that was visited by some "local" device.
 
    * MAC
+
         Table of mac addresses of finded "local" devices.
     
    * Routers
+
         Table of ip addresses of devices behind mac addresses.
     
    * DHCP
+        
         Table of DHCP records.
 
 ![Database proposal](https://github.com/koumajos/DeppendencyMapping/blob/master/navrh_databaze.png)
