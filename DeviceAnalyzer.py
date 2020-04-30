@@ -34,6 +34,9 @@
             The domain name will be in output (command line/file). [-DNS] 
         Can ignored global dependencies:
             In outub will be only local dependencies. [-o]
+        Can create graphs of dependencies in time.
+            For local dependencies. [-t]
+            For local to gloval dependencies. [-T]
 """
 #libraries for working with OS UNIX files and system
 import sys
@@ -59,9 +62,64 @@ import pandas
 import numpy
 import networkx
 import matplotlib.pyplot as plt
+import matplotlib.ticker as plticker
 #library for arguments of script
 import argparse
 from argparse import RawTextHelpFormatter
+#=======================================================================================================================================
+#=======================================================================================================================================
+def TimeGraph(Dependency, table, cursor, createJSON):
+    """Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.
+
+    Parameters
+    -----------
+    Dependency : sqlite3.fetchone()
+        Record of dependency that may be ploted.
+    table : str
+        Name of table where is record of dependency safed (Dependencies or Global).
+    cursor : sqlite3
+        Cursor to sqlite3 database for execute SQL queries.
+    createJSON : JSON  
+        JSON file loaded in python.    
+    """
+    if table == "Dependencies":
+        cursor.execute("SELECT * FROM DependenciesTime WHERE DependenciesID='{ID}'".format(ID=Dependency[0]))
+        rows = cursor.fetchall()
+    else:
+        cursor.execute("SELECT * FROM GlobalTime WHERE GlobalID='{ID}'".format(ID=Dependency[0]))
+        rows = cursor.fetchall()
+    if not rows:
+        return
+    X = []
+    Y = []
+    Time = rows[0][2]
+    tmpX = 0
+    tmpY = 0
+    for row in rows:
+        if float(row[2]) <= (float(Time) + 60):
+            tmpY = tmpY + row[3]
+        else: 
+            X.append(time.ctime(float(Time)))            
+            Y.append(tmpY)
+            while float(row[2]) > (float(Time) + 60):
+                Time = str(float(Time) + 60)             
+                X.append(time.ctime(float(Time)))            
+                Y.append(0)
+            tmpY = row[3]            
+    plt.rcParams["figure.figsize"] = (20,3)
+    plt.plot(X,Y)
+    plt.setp(plt.gca().xaxis.get_majorticklabels(),rotation=20)
+    loc = plticker.MultipleLocator(base=40) # this locator puts ticks at regular intervals
+    plt.gca().xaxis.set_major_locator(loc)    # naming the x axis 
+    plt.xlabel('Time (in minutes)') 
+    # naming the y axis 
+    plt.ylabel('Number of Packets') 
+    # giving a title to my graph 
+    plt.title("Dependencies between " + Dependency[1] + "(" + str(Dependency[3]) + ") and " + Dependency[2] + "(" + str(Dependency[4]) + ")") 
+    plt.savefig("TimeGraph_" + Dependency[1] + "(" + str(Dependency[3]) + ")_" + Dependency[2] + "(" + str(Dependency[4]) + ")" + ".png")
+    createJSON["Files"].append("TimeGraph_" + Dependency[1] + "(" + str(Dependency[3]) + ")_" + Dependency[2] + "(" + str(Dependency[4]) + ")" + ".png")
+    print("Graph of using dependency in time safe in file: TimeGraph_" + Dependency[1] + "(" + str(Dependency[3]) + ")_" + Dependency[2] + "(" + str(Dependency[4]) + ")" + ".png")    
+    plt.clf()
 #=======================================================================================================================================
 #=======================================================================================================================================
 def plot(data):
@@ -445,7 +503,7 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
             LocalStatistic[st] = Dependency[5]        
 #=======================================================================================================================================
 #=======================================================================================================================================
-def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
+def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON, arguments, JSON):
     """Function for device find in database all local dependencies and set in to output JSON. Also create statistic of local dependencies and statistic of using network by deveices. 
 
     Parameters
@@ -468,9 +526,13 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, curso
         JSON file for device with DeviceID ID loaded in python.        
     """
     cursor.execute("SELECT * FROM Dependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumPackets DESC".format(ipo=IP, ipt=IP) )
-    Dependencies = cursor.fetchall()    
+    Dependencies = cursor.fetchall()
+    tmp = 0
     if Dependencies:    
         for Dependency in Dependencies:
+            if arguments.timeL > tmp:
+                TimeGraph( Dependency, "Dependencies", cursor, JSON)
+                tmp = tmp + 1
             Stats(LocalStatistic, Dependency, cursor, SQLiteConnection)
             #==========================================
             if Dependency[1] == IP:            
@@ -541,7 +603,7 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, curso
             createJSON["LocalDependencies"].append({"IP": "%s" % IPs, "Verb": "%s" % Verbs, "Service": "%s" % Services, "Packets": "%s" % Packets})
 #=======================================================================================================================================
 #=======================================================================================================================================
-def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON):
+def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON, arguments, JSON):
     """Function for device find in database all global dependencies and set in to output JSON. Also create statistic of global dependencies and statistic of using network by deveices. 
 
     Parameters
@@ -565,9 +627,13 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
     """
     cursor.execute("SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumPackets DESC".format(ipo=IP, ipt=IP) )
     GlobalDependencies = cursor.fetchall()
+    tmp = 0    
     if GlobalDependencies:
         promtp = 0    
         for GlobalDependency in GlobalDependencies:
+            if arguments.timeG > tmp:
+                TimeGraph( GlobalDependency, "Global", cursor, JSON)
+                tmp = tmp + 1
             Stats(GlobalStatistic, GlobalDependency, cursor, SQLiteConnection)
             #==========================================
             SrcIP = ipaddress.ip_address(GlobalDependency[1])
@@ -1068,12 +1134,12 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
     DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON)
     #==================================================================    
     LocalStatistic = {}    
-    LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON)
+    LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON, arguments, JSON)
     StatProcent(LocalStatistic, createJSON, 0)
     #==================================================================
     if arguments.onlylocal == False:
         GlobalStatistic = {}    
-        GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON)    
+        GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cursor, SQLiteConnection, createJSON, arguments, JSON)    
         StatProcent(GlobalStatistic, createJSON, 1)    
     #==================================================================
     if arguments.print == True:
@@ -1358,6 +1424,22 @@ def Arguments():
         '-DNS', '--DNS',
         help="Transalte [WEB Servers] IP to domain name and show in output",
         action="store_true"
+    )
+    #=====================================================
+    parser.add_argument(
+        '-t', '--timeL',
+        help="Generate graphs of using dependencies in time for setted number of local dependencies from mostly used. (for workign must be run PassiveAutodiscovery.py wiht parameter -T)",
+        type=int,
+        metavar='NUMBER',
+        default=-1
+    )
+    #=====================================================
+    parser.add_argument(
+        '-T', '--timeG',
+        help="Generate graphs of using dependencies in time for setted number of dependencies of local device with global devices from mostly used. (for workign must be run PassiveAutodiscovery.py wiht parameter -T)",
+        type=int,
+        metavar='NUMBER',
+        default=-1
     )
     #=====================================================
     parser.add_argument(
