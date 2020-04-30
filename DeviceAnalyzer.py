@@ -115,7 +115,7 @@ def TimeGraph(Dependency, table, cursor, createJSON):
     # naming the y axis 
     plt.ylabel('Number of Packets') 
     # giving a title to my graph 
-    plt.title("Dependencies between " + Dependency[1] + "(" + str(Dependency[3]) + ") and " + Dependency[2] + "(" + str(Dependency[4]) + ")") 
+    plt.title("Dependency between " + Dependency[1] + "(" + str(Dependency[3]) + ") and " + Dependency[2] + "(" + str(Dependency[4]) + ")") 
     plt.savefig("TimeGraph_" + Dependency[1] + "(" + str(Dependency[3]) + ")_" + Dependency[2] + "(" + str(Dependency[4]) + ")" + ".png")
     createJSON["Files"].append("TimeGraph_" + Dependency[1] + "(" + str(Dependency[3]) + ")_" + Dependency[2] + "(" + str(Dependency[4]) + ")" + ".png")
     print("Graph of using dependency in time safe in file: TimeGraph_" + Dependency[1] + "(" + str(Dependency[3]) + ")_" + Dependency[2] + "(" + str(Dependency[4]) + ")" + ".png")    
