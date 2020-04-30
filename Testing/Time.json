@@ -1,0 +1,1274 @@
+{
+    "Name": "AnalyzeSingleDevice",
+    "DateAnalyze": "2020-04-30 08:34:22.174518",
+    "Routers": [],
+    "Services": [
+        "DHCP Client",
+        "End Device"
+    ],
+    "IPStatistic": [],
+    "Devices": [
+        {
+            "DeviceID": "XXX",
+            "LastCom": 1582643632.37,
+            "IP": [
+                "192.168.3.150"
+            ],
+            "MAC": "",
+            "RouterMAC": "",
+            "Vendor": "",
+            "Country": "",
+            "Labels": [
+                {
+                    "Label": "DHCP Client",
+                    "Description": "DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server"
+                },
+                {
+                    "Label": "End Device",
+                    "Description": "PC, Mobile Phone,... (everything that can access web services)"
+                },
+                {
+                    "Label": "End Device",
+                    "Description": "PC, Mobile Phone,... (everything that can send emails)"
+                }
+            ],
+            "DHCP": [
+                {
+                    "DHCPServ": "192.168.3.1",
+                    "DHCPTime": "Tue Feb 25 08:27:58 2020"
+                },
+                {
+                    "DHCPServ": "192.168.3.1",
+                    "DHCPTime": "Tue Feb 25 08:27:58 2020"
+                }
+            ],
+            "LocalDependencies": [
+                {
+                    "IP": "192.168.3.3",
+                    "Verb": "provides",
+                    "Service": "DNS Server",
+                    "Packets": "378"
+                },
+                {
+                    "IP": "192.168.3.1",
+                    "Verb": "provides",
+                    "Service": "DHCP Server",
+                    "Packets": "2"
+                }
+            ],
+            "LocalStatistic": [
+                {
+                    "Service": "DNS",
+                    "Procents": "98.95287958115183"
+                },
+                {
+                    "Service": "DHCP",
+                    "Procents": "1.0471204188481675"
+                }
+            ],
+            "GlobalDependencies": [
+                {
+                    "IP": "18.205.45.28",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "58251"
+                },
+                {
+                    "IP": "157.240.30.27",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "41813"
+                },
+                {
+                    "IP": "195.113.214.205",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "34257"
+                },
+                {
+                    "IP": "195.113.214.206",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "26212"
+                },
+                {
+                    "IP": "157.240.30.21",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "23893"
+                },
+                {
+                    "IP": "104.16.249.249",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "22355"
+                },
+                {
+                    "IP": "157.240.30.35",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "13892"
+                },
+                {
+                    "IP": "157.240.30.18",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "13526"
+                },
+                {
+                    "IP": "77.75.78.13",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "13357"
+                },
+                {
+                    "IP": "147.251.14.50",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "7597"
+                },
+                {
+                    "IP": "77.75.75.104",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "7171"
+                },
+                {
+                    "IP": "165.227.247.188",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "7108"
+                },
+                {
+                    "IP": "3.120.198.117",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "5674"
+                },
+                {
+                    "IP": "172.217.23.206",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "5394"
+                },
+                {
+                    "IP": "34.192.86.164",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "4840"
+                },
+                {
+                    "IP": "216.58.201.68",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "3133"
+                },
+                {
+                    "IP": "147.32.232.238",
+                    "Verb": "provides",
+                    "Service": "Mail Server",
+                    "Packets": "2914"
+                },
+                {
+                    "IP": "195.113.144.244",
+                    "Verb": "provides",
+                    "Service": "Mail Server",
+                    "Packets": "2734"
+                },
+                {
+                    "IP": "77.75.74.172",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "2288"
+                },
+                {
+                    "IP": "172.217.23.246",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "1910"
+                },
+                {
+                    "IP": "172.217.23.228",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "1888"
+                },
+                {
+                    "IP": "172.217.23.196",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "1845"
+                },
+                {
+                    "IP": "172.217.23.227",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "1642"
+                },
+                {
+                    "IP": "194.145.183.39",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "1566"
+                },
+                {
+                    "IP": "216.58.201.100",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "1313"
+                },
+                {
+                    "IP": "54.218.156.92",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "1102"
+                },
+                {
+                    "IP": "77.75.76.150",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "975"
+                },
+                {
+                    "IP": "77.75.74.173",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "840"
+                },
+                {
+                    "IP": "13.32.105.65",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "785"
+                },
+                {
+                    "IP": "77.75.76.63",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "772"
+                },
+                {
+                    "IP": "66.102.1.108",
+                    "Verb": "provides",
+                    "Service": "Mail Server",
+                    "Packets": "755"
+                },
+                {
+                    "IP": "216.58.201.106",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "712"
+                },
+                {
+                    "IP": "34.194.146.104",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "635"
+                },
+                {
+                    "IP": "172.217.23.195",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "611"
+                },
+                {
+                    "IP": "151.101.1.69",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "569"
+                },
+                {
+                    "IP": "77.75.78.55",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "551"
+                },
+                {
+                    "IP": "31.13.84.8",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "551"
+                },
+                {
+                    "IP": "77.75.77.68",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "538"
+                },
+                {
+                    "IP": "77.75.76.55",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "536"
+                },
+                {
+                    "IP": "108.177.15.109",
+                    "Verb": "provides",
+                    "Service": "Mail Server",
+                    "Packets": "519"
+                },
+                {
+                    "IP": "77.75.75.172",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "518"
+                },
+                {
+                    "IP": "176.9.146.200",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "483"
+                },
+                {
+                    "IP": "216.58.201.99",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "451"
+                },
+                {
+                    "IP": "81.95.98.222",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "437"
+                },
+                {
+                    "IP": "52.40.103.85",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "432"
+                },
+                {
+                    "IP": "13.32.105.128",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "430"
+                },
+                {
+                    "IP": "172.217.23.193",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "422"
+                },
+                {
+                    "IP": "52.35.202.182",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "415"
+                },
+                {
+                    "IP": "77.75.77.122",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "388"
+                },
+                {
+                    "IP": "77.75.74.176",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "388"
+                },
+                {
+                    "IP": "140.82.114.25",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "374"
+                },
+                {
+                    "IP": "77.75.75.102",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "371"
+                },
+                {
+                    "IP": "77.75.78.2",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "354"
+                },
+                {
+                    "IP": "192.0.73.2",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "354"
+                },
+                {
+                    "IP": "185.66.190.10",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "334"
+                },
+                {
+                    "IP": "140.82.113.25",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "333"
+                },
+                {
+                    "IP": "216.58.201.78",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "320"
+                },
+                {
+                    "IP": "74.125.133.108",
+                    "Verb": "provides",
+                    "Service": "Mail Server",
+                    "Packets": "315"
+                },
+                {
+                    "IP": "77.75.77.212",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "297"
+                },
+                {
+                    "IP": "77.75.75.103",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "291"
+                },
+                {
+                    "IP": "52.5.192.99",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "285"
+                },
+                {
+                    "IP": "151.101.193.69",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "270"
+                },
+                {
+                    "IP": "172.217.23.234",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "268"
+                },
+                {
+                    "IP": "140.82.114.26",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "260"
+                },
+                {
+                    "IP": "104.26.1.240",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "260"
+                },
+                {
+                    "IP": "192.30.253.124",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "248"
+                },
+                {
+                    "IP": "172.217.23.238",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "245"
+                },
+                {
+                    "IP": "34.208.106.24",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "236"
+                },
+                {
+                    "IP": "3.123.74.105",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "234"
+                },
+                {
+                    "IP": "77.75.75.106",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "231"
+                },
+                {
+                    "IP": "52.54.22.79",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "214"
+                },
+                {
+                    "IP": "54.93.41.251",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "211"
+                },
+                {
+                    "IP": "216.58.201.74",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "209"
+                },
+                {
+                    "IP": "52.11.117.239",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "206"
+                },
+                {
+                    "IP": "34.212.242.166",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "204"
+                },
+                {
+                    "IP": "77.75.74.131",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "199"
+                },
+                {
+                    "IP": "13.224.189.153",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "198"
+                },
+                {
+                    "IP": "151.101.129.69",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "194"
+                },
+                {
+                    "IP": "52.10.235.189",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "188"
+                },
+                {
+                    "IP": "192.30.253.125",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "180"
+                },
+                {
+                    "IP": "77.75.74.139",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "179"
+                },
+                {
+                    "IP": "172.217.23.227",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "164"
+                },
+                {
+                    "IP": "157.240.30.37",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "149"
+                },
+                {
+                    "IP": "52.32.130.141",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "148"
+                },
+                {
+                    "IP": "74.125.140.102",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "146"
+                },
+                {
+                    "IP": "13.32.105.97",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "145"
+                },
+                {
+                    "IP": "77.75.74.138",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "144"
+                },
+                {
+                    "IP": "34.203.110.202",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "143"
+                },
+                {
+                    "IP": "216.58.201.67",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "142"
+                },
+                {
+                    "IP": "172.217.23.202",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "134"
+                },
+                {
+                    "IP": "209.132.181.16",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "132"
+                },
+                {
+                    "IP": "35.165.119.189",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "131"
+                },
+                {
+                    "IP": "140.211.169.206",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "129"
+                },
+                {
+                    "IP": "140.82.113.26",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "125"
+                },
+                {
+                    "IP": "34.227.76.72",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "123"
+                },
+                {
+                    "IP": "52.36.226.141",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "121"
+                },
+                {
+                    "IP": "77.75.78.146",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "116"
+                },
+                {
+                    "IP": "77.75.74.132",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "116"
+                },
+                {
+                    "IP": "77.75.77.77",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "112"
+                },
+                {
+                    "IP": "13.250.126.156",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "110"
+                },
+                {
+                    "IP": "31.13.84.36",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "105"
+                },
+                {
+                    "IP": "77.75.74.134",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "97"
+                },
+                {
+                    "IP": "18.185.78.15",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "94"
+                },
+                {
+                    "IP": "13.225.73.57",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "91"
+                },
+                {
+                    "IP": "151.101.65.69",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "87"
+                },
+                {
+                    "IP": "216.58.201.110",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "84"
+                },
+                {
+                    "IP": "77.75.79.57",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "81"
+                },
+                {
+                    "IP": "54.69.196.86",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "80"
+                },
+                {
+                    "IP": "77.75.76.146",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "78"
+                },
+                {
+                    "IP": "46.4.115.44",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "74"
+                },
+                {
+                    "IP": "52.24.14.176",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "74"
+                },
+                {
+                    "IP": "209.132.181.16",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "72"
+                },
+                {
+                    "IP": "140.211.169.196",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "71"
+                },
+                {
+                    "IP": "3.213.186.114",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "71"
+                },
+                {
+                    "IP": "209.132.190.2",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "69"
+                },
+                {
+                    "IP": "77.78.119.106",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "69"
+                },
+                {
+                    "IP": "99.86.243.14",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "68"
+                },
+                {
+                    "IP": "13.224.194.71",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "67"
+                },
+                {
+                    "IP": "52.43.193.8",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "66"
+                },
+                {
+                    "IP": "152.19.134.142",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "65"
+                },
+                {
+                    "IP": "209.197.3.15",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "64"
+                },
+                {
+                    "IP": "23.64.143.115",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "64"
+                },
+                {
+                    "IP": "216.58.201.67",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "64"
+                },
+                {
+                    "IP": "54.192.230.99",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "64"
+                },
+                {
+                    "IP": "140.211.169.196",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "61"
+                },
+                {
+                    "IP": "209.132.181.15",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "59"
+                },
+                {
+                    "IP": "143.204.202.90",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "59"
+                },
+                {
+                    "IP": "31.216.148.10",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "56"
+                },
+                {
+                    "IP": "216.58.201.97",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "55"
+                },
+                {
+                    "IP": "143.204.101.37",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "55"
+                },
+                {
+                    "IP": "77.75.75.176",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "55"
+                },
+                {
+                    "IP": "209.132.181.15",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "53"
+                },
+                {
+                    "IP": "13.225.73.123",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "53"
+                },
+                {
+                    "IP": "209.132.190.2",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "52"
+                },
+                {
+                    "IP": "8.43.85.67",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "52"
+                },
+                {
+                    "IP": "8.43.85.73",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "51"
+                },
+                {
+                    "IP": "35.161.166.164",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "51"
+                },
+                {
+                    "IP": "13.32.105.16",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "50"
+                },
+                {
+                    "IP": "140.211.169.206",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "50"
+                },
+                {
+                    "IP": "35.160.101.217",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "50"
+                },
+                {
+                    "IP": "104.16.27.34",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "50"
+                },
+                {
+                    "IP": "13.225.73.3",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "50"
+                },
+                {
+                    "IP": "13.225.73.31",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "48"
+                },
+                {
+                    "IP": "88.99.186.151",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "46"
+                },
+                {
+                    "IP": "144.76.153.101",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "46"
+                },
+                {
+                    "IP": "13.35.253.87",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "44"
+                },
+                {
+                    "IP": "77.75.74.133",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "43"
+                },
+                {
+                    "IP": "13.35.253.101",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "43"
+                },
+                {
+                    "IP": "66.102.1.113",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "42"
+                },
+                {
+                    "IP": "77.75.76.27",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "42"
+                },
+                {
+                    "IP": "2.21.74.105",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "41"
+                },
+                {
+                    "IP": "99.86.243.123",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "41"
+                },
+                {
+                    "IP": "99.86.241.154",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "41"
+                },
+                {
+                    "IP": "34.212.75.43",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "40"
+                },
+                {
+                    "IP": "34.98.75.36",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "40"
+                },
+                {
+                    "IP": "134.108.44.54",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "37"
+                },
+                {
+                    "IP": "64.233.167.113",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "35"
+                },
+                {
+                    "IP": "143.204.101.106",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "35"
+                },
+                {
+                    "IP": "52.84.107.89",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "35"
+                },
+                {
+                    "IP": "172.217.2.195",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "34"
+                },
+                {
+                    "IP": "54.187.92.209",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "34"
+                },
+                {
+                    "IP": "172.217.23.225",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "34"
+                },
+                {
+                    "IP": "54.189.213.162",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "34"
+                },
+                {
+                    "IP": "143.204.202.13",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "34"
+                },
+                {
+                    "IP": "143.204.101.31",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "33"
+                },
+                {
+                    "IP": "67.219.144.68",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "33"
+                },
+                {
+                    "IP": "13.32.118.86",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "32"
+                },
+                {
+                    "IP": "52.33.55.70",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "32"
+                },
+                {
+                    "IP": "158.69.195.211",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "32"
+                },
+                {
+                    "IP": "152.19.134.198",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "32"
+                },
+                {
+                    "IP": "35.163.131.59",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "32"
+                },
+                {
+                    "IP": "52.26.57.93",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "32"
+                },
+                {
+                    "IP": "172.217.22.227",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "31"
+                },
+                {
+                    "IP": "13.35.253.33",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "31"
+                },
+                {
+                    "IP": "52.32.56.96",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "31"
+                },
+                {
+                    "IP": "143.204.101.13",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "31"
+                },
+                {
+                    "IP": "51.68.189.21",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "31"
+                },
+                {
+                    "IP": "52.21.17.220",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "30"
+                },
+                {
+                    "IP": "143.204.93.160",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "30"
+                },
+                {
+                    "IP": "51.15.112.174",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "30"
+                },
+                {
+                    "IP": "52.24.111.232",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "29"
+                },
+                {
+                    "IP": "88.86.121.51",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "28"
+                },
+                {
+                    "IP": "13.225.85.153",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "28"
+                },
+                {
+                    "IP": "13.32.105.188",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "26"
+                },
+                {
+                    "IP": "34.223.119.50",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "25"
+                },
+                {
+                    "IP": "52.27.184.130",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "25"
+                },
+                {
+                    "IP": "172.217.23.238",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "24"
+                },
+                {
+                    "IP": "13.32.121.183",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "23"
+                },
+                {
+                    "IP": "192.124.249.22",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "23"
+                },
+                {
+                    "IP": "77.75.75.107",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "22"
+                },
+                {
+                    "IP": "77.75.74.137",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "21"
+                },
+                {
+                    "IP": "77.75.78.69",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "18"
+                },
+                {
+                    "IP": "77.75.75.172",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "16"
+                },
+                {
+                    "IP": "77.75.74.172",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "16"
+                },
+                {
+                    "IP": "85.236.55.6",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "11"
+                },
+                {
+                    "IP": "77.75.74.176",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "8"
+                },
+                {
+                    "IP": "194.145.183.39",
+                    "Verb": "provides",
+                    "Service": "WEB Server",
+                    "Packets": "7"
+                }
+            ],
+            "GlobalStatistic": [
+                {
+                    "Service": "HTTPS",
+                    "Procents": "97.5573803134185"
+                },
+                {
+                    "Service": "IMAPS",
+                    "Procents": "2.150777305242761"
+                },
+                {
+                    "Service": "HTTP",
+                    "Procents": "0.29184238133873036"
+                }
+            ]
+        }
+    ],
+    "Files": [
+        "TimeGraph_192.168.3.150(44840)_18.205.45.28(443).png",
+        "TimeGraph_157.240.30.27(443)_192.168.3.150(55054).png",
+        "TimeGraph_195.113.214.205(443)_192.168.3.150(40680).png"
+    ]
+}
