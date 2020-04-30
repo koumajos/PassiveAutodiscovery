@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="CreateScript module" href="CreateScript.html" />
-    <link rel="prev" title="PassiveAutodiscovery3" href="modules.html" />
+    <link rel="prev" title="Passive Autodiscovery" href="modules.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -110,7 +110,7 @@ The analyze get information from IP flow and add them to sqlite3 database.</p>
 
 <dl class="py function">
 <dt id="Collector.NewDependencies">
-<code class="sig-prename descclassname">Collector.</code><code class="sig-name descname">NewDependencies</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span></em>, <em class="sig-param"><span class="n">SRC_IP</span></em>, <em class="sig-param"><span class="n">DST_IP</span></em>, <em class="sig-param"><span class="n">SRC_PORT</span></em>, <em class="sig-param"><span class="n">DST_PORT</span></em>, <em class="sig-param"><span class="n">PACKETS</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">SQLiteConnection</span></em>, <em class="sig-param"><span class="n">arguments</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Collector.NewDependencies" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Collector.</code><code class="sig-name descname">NewDependencies</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span></em>, <em class="sig-param"><span class="n">SRC_IP</span></em>, <em class="sig-param"><span class="n">DST_IP</span></em>, <em class="sig-param"><span class="n">SRC_PORT</span></em>, <em class="sig-param"><span class="n">DST_PORT</span></em>, <em class="sig-param"><span class="n">TIME</span></em>, <em class="sig-param"><span class="n">PACKETS</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">SQLiteConnection</span></em>, <em class="sig-param"><span class="n">arguments</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Collector.NewDependencies" title="Permalink to this definition">¶</a></dt>
 <dd><p>If dependency (local or global) doesn’t exist, function will add record about it to database. Else function will find the record and update packet number on this dependency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -120,6 +120,7 @@ The analyze get information from IP flow and add them to sqlite3 database.</p>
 <li><p><strong>DST_IP</strong> (<em>str</em>) – Destination IP address of dependency.</p></li>
 <li><p><strong>SRC_PORT</strong> (<em>int</em>) – Source port number of dependency.</p></li>
 <li><p><strong>DST_PORT</strong> (<em>int</em>) – Destination prot of dependency.</p></li>
+<li><p><strong>TIME</strong> (<em>str</em>) – Time of IP flow.</p></li>
 <li><p><strong>PACKETS</strong> (<em>int</em>) – Number of packet carryed in dependency(single IP flow).</p></li>
 <li><p><strong>cursor</strong> (<em>sqlite3</em>) – Cursor to sqlite3 database for execute SQL queries.</p></li>
 <li><p><strong>SQLiteConnection</strong> (<em>sqlite3</em>) – Connection to sqlite3 database.</p></li>
@@ -217,7 +218,7 @@ The analyze get information from IP flow and add them to sqlite3 database.</p>
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">PassiveAutodiscovery3</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Passive Autodiscovery</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Collector module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CreateScript.html">CreateScript module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceAnalyzer.html">DeviceAnalyzer module</a></li>
@@ -230,8 +231,8 @@ The analyze get information from IP flow and add them to sqlite3 database.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="modules.html">PassiveAutodiscovery3</a><ul>
-      <li>Previous: <a href="modules.html" title="previous chapter">PassiveAutodiscovery3</a></li>
+  <li><a href="modules.html">Passive Autodiscovery</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">Passive Autodiscovery</a></li>
       <li>Next: <a href="CreateScript.html" title="next chapter">CreateScript module</a></li>
   </ul></li>
   </ul></li>
