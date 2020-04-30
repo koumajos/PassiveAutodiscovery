@@ -209,6 +209,12 @@ def Arguments():
     )
     #=====================================================
     parser.add_argument(
+        '-T', '--time',
+        help="Safe to database also time records of lcoal and global dependencies",
+        action="store_true"
+    )
+    #=====================================================
+    parser.add_argument(
         '-P', '--PRINT',
         help="Printing information in menu",
         action="store_true"

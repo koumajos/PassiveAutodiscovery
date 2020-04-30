@@ -59,7 +59,7 @@ def Services(IP, PORT, table, cursor, SQLiteConnection, arguments):
 #=================================================================================================================================
 #=================================================================================================================================
 #Dependencies resolved, push into database or update
-def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, cursor, SQLiteConnection, arguments):
+def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, PACKETS, cursor, SQLiteConnection, arguments):
     """If dependency (local or global) doesn't exist, function will add record about it to database. Else function will find the record and update packet number on this dependency.
     
     Parameters
@@ -74,6 +74,8 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, cursor, 
         Source port number of dependency.
     DST_PORT : int
         Destination prot of dependency.
+    TIME : str
+        Time of IP flow.
     PACKETS : int
         Number of packet carryed in dependency(single IP flow).
     cursor : sqlite3
@@ -107,6 +109,15 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, cursor, 
             SQLiteConnection.commit()        
         except sqlite3.IntegrityError:
             print("Error with updating record in table ", table, "with error ", sqlite3.IntegrityError)
+        if arguments.time == True:
+            try:
+                if table == "Dependencies":
+                    cursor.execute("INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) VALUES ('%s', '%s', '%s')" % (rows1[0], TIME, PACKETS) )
+                else:
+                    cursor.execute("INSERT INTO GlobalTime (GlobalID, Time, NumPackets) VALUES ('%s', '%s', '%s')" % (rows1[0], TIME, PACKETS) )                
+                SQLiteConnection.commit()            
+            except sqlite3.IntegrityError:
+                print("Error with inserting with error ", sqlite3.IntegrityError)
         return
     #=================================================================================================================================================================    
     cursor.execute("SELECT * FROM {tb} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target={pt} OR Port_origin={po} OR Port_target={pts} OR Port_origin={pos})".format(tb=table, io=DST_IP, it=SRC_IP, pt=DST_PORT, po=DST_PORT, pts=SRC_PORT, pos=SRC_PORT ) )
@@ -118,7 +129,17 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, cursor, 
             cursor.execute("UPDATE {tb} SET NumPackets={NP} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target='{pt}' OR Port_origin='{po}' OR Port_target='{pts}' OR Port_origin='{pos}')".format(tb=table, io=DST_IP, it=SRC_IP, pt=DST_PORT, po=DST_PORT, pts=SRC_PORT, pos=SRC_PORT, NP=NumPackets ) )
             SQLiteConnection.commit()        
         except sqlite3.IntegrityError:
-            print("Error with updating record in table ", table, "with error ", sqlite3.IntegrityError)    
+            print("Error with updating record in table ", table, "with error ", sqlite3.IntegrityError)
+        if arguments.time == True:
+            try:
+                if table == "Dependencies":
+                    cursor.execute("INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) VALUES ('%s', '%s', '%s')" % (rows2[0], TIME, PACKETS) )
+                else:
+                    cursor.execute("INSERT INTO GlobalTime (GlobalID, Time, NumPackets) VALUES ('%s', '%s', '%s')" % (rows2[0], TIME, PACKETS) )                
+                SQLiteConnection.commit()
+            except sqlite3.IntegrityError:
+                print("Error with inserting with error ", sqlite3.IntegrityError)
+        return               
     #=================================================================================================================================================================    
     else:   #else found a new local or global dependencies
         if arguments.localdependencies == True and table == "Dependencies":
@@ -130,6 +151,17 @@ def NewDependencies(table, SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, cursor, 
             SQLiteConnection.commit()
         except sqlite3.IntegrityError:
             print("Error with inserting into table ", table, "with error ", sqlite3.IntegrityError)
+        if arguments.time == True:
+            cursor.execute("SELECT * FROM {tb} WHERE IP_origin='{io}' AND IP_target='{it}' AND Port_origin='{po}' AND Port_target='{pt}'".format(tb=table, io=SRC_IP, it=DST_IP, po=SRC_PORT, pt=DST_PORT ) )
+            row = cursor.fetchone()
+            try:
+                if table == "Dependencies":
+                    cursor.execute("INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) VALUES ('%s', '%s', '%s')" % (row[0], TIME, PACKETS) )
+                else:
+                    cursor.execute("INSERT INTO GlobalTime (GlobalID, Time, NumPackets) VALUES ('%s', '%s', '%s')" % (row[0], TIME, PACKETS) )                
+                SQLiteConnection.commit()            
+            except sqlite3.IntegrityError:
+                print("Error with inserting with error ", sqlite3.IntegrityError)
 #=================================================================================================================================
 #=================================================================================================================================
 def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
@@ -438,14 +470,14 @@ def collector(rec, SQLiteConnection, cursor, arguments):
             if MACtemplate == True:
                 MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, arguments)                
             #=====================================================================================
-            NewDependencies("Dependencies", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, cursor, SQLiteConnection, arguments)
+            NewDependencies("Dependencies", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.TIME_LAST, rec.PACKETS, cursor, SQLiteConnection, arguments)
             Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, arguments)
             Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, arguments)        
             DHCP(rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.TIME_LAST, cursor, SQLiteConnection)                    
         else:    #Destination Device is in global network
             Services(rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, SQLiteConnection, arguments)
             if arguments.GlobalDependencies == True:
-                NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, cursor, SQLiteConnection, arguments)
+                NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.TIME_LAST, rec.PACKETS, cursor, SQLiteConnection, arguments)
                 Services(rec.DST_IP, rec.DST_PORT, "GlobalServices", cursor, SQLiteConnection, arguments)
             if MACtemplate == True:
                 Routers(rec.DST_IP, rec.DST_MAC, cursor, SQLiteConnection)
@@ -455,7 +487,7 @@ def collector(rec, SQLiteConnection, cursor, arguments):
             #=====================================================================================        
             Services(rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, SQLiteConnection, arguments)
             if arguments.GlobalDependencies == True:
-                NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.PACKETS, cursor, SQLiteConnection, arguments)
+                NewDependencies("Global", rec.SRC_IP, rec.DST_IP, rec.SRC_PORT, rec.DST_PORT, rec.TIME_LAST, rec.PACKETS, cursor, SQLiteConnection, arguments)
                 Services(rec.SRC_IP, rec.SRC_PORT, "GlobalServices", cursor, SQLiteConnection, arguments)
             if MACtemplate == True:
                 MAC(rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, SQLiteConnection, arguments)                

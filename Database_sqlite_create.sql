@@ -83,3 +83,18 @@ CREATE TABLE Filter (
 	Protocol text,
 	MinPackets integer
 );
+
+CREATE TABLE DependenciesTime (
+	ID_DT integer PRIMARY KEY AUTOINCREMENT,
+	DependenciesID integer,
+	Time text,
+	NumPackets integer
+);
+
+CREATE TABLE GlobalTime (
+	ID_GT integer PRIMARY KEY AUTOINCREMENT,
+	GlobalID integer,
+	Time text,
+	NumPackets integer
+);
+
