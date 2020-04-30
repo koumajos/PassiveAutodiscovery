@@ -1078,6 +1078,25 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
             print("    ", i, "\t\t\t", j, "%", file = sample)     
 #=======================================================================================================================================
 #=======================================================================================================================================
+def PrintJSON(JSON, arguments):
+    """Print safed analyze from JSON file. Into file or command line.
+
+    Parameters
+    -----------
+    JSON : JSON
+        JSON file loaded in python.        
+    arguments : argparse
+        Setted arguments of the script.
+    """
+    if arguments.print == True:
+        for Dev in JSON["Devices"]:
+            PrintDeviceFromJSON(Dev, arguments)
+    if arguments.file != "":
+        sample = open("%s.txt" % arguments.file, 'w')
+        for Dev in JSON["Devices"]:
+            PrintDeviceToFileFromJSON(Dev, arguments, sample) 
+#=======================================================================================================================================
+#=======================================================================================================================================
 def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPStatistic, GL, arguments, sample):    
     """Analyze a device and output of it add to JSON document.
 
@@ -1421,8 +1440,16 @@ def Arguments():
     )
     #=====================================================
     parser.add_argument(
+        '-P', '--printJSON',
+        help="print from json file that was created by DeviceAnalyzer script. Need define where print output (command line/file) with parameter [-p], [-f].",
+        type=str,
+        metavar='NAME',
+        default=""
+    )
+    #=====================================================
+    parser.add_argument(
         '-DNS', '--DNS',
-        help="Transalte [WEB Servers] IP to domain name and show in output",
+        help="transalte [WEB Servers] IP to domain name and show in output",
         action="store_true"
     )
     #=====================================================
@@ -1509,6 +1536,13 @@ def Main():
 
     """
     arguments = Arguments()
+    if arguments.printJSON != "":
+        if arguments.print == False and arguments.file == "":
+            print("Need define output method (print to command line or file [-p], [-f])")
+            sys.exit() 
+        JSON = read_json(arguments.json)
+        PrintJSON(JSON, arguments)
+        sys.exit()    
     SQLiteConnection = ConnectToDatabase(arguments)
     if arguments.device != "":
         AnalyzeSingleDevice(SQLiteConnection, arguments)
