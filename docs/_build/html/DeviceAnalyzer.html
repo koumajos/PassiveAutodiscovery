@@ -70,6 +70,9 @@ Set the number of global dependencies. [-G]</p>
 </dd>
 <dt>Can ignored global dependencies:</dt><dd><p>In outub will be only local dependencies. [-o]</p>
 </dd>
+<dt>Can create graphs of dependencies in time.</dt><dd><p>For local dependencies. [-t]
+For local to gloval dependencies. [-T]</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -187,7 +190,7 @@ Set the number of global dependencies. [-G]</p>
 
 <dl class="py function">
 <dt id="DeviceAnalyzer.GLOBALDEPENDENCIES">
-<code class="sig-prename descclassname">DeviceAnalyzer.</code><code class="sig-name descname">GLOBALDEPENDENCIES</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DeviceID</span></em>, <em class="sig-param"><span class="n">IP</span></em>, <em class="sig-param"><span class="n">DeviceIP</span></em>, <em class="sig-param"><span class="n">GlobalStatistic</span></em>, <em class="sig-param"><span class="n">IPStatistic</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">SQLiteConnection</span></em>, <em class="sig-param"><span class="n">createJSON</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DeviceAnalyzer.GLOBALDEPENDENCIES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">DeviceAnalyzer.</code><code class="sig-name descname">GLOBALDEPENDENCIES</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DeviceID</span></em>, <em class="sig-param"><span class="n">IP</span></em>, <em class="sig-param"><span class="n">DeviceIP</span></em>, <em class="sig-param"><span class="n">GlobalStatistic</span></em>, <em class="sig-param"><span class="n">IPStatistic</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">SQLiteConnection</span></em>, <em class="sig-param"><span class="n">createJSON</span></em>, <em class="sig-param"><span class="n">arguments</span></em>, <em class="sig-param"><span class="n">JSON</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DeviceAnalyzer.GLOBALDEPENDENCIES" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function for device find in database all global dependencies and set in to output JSON. Also create statistic of global dependencies and statistic of using network by deveices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -286,7 +289,7 @@ Set the number of global dependencies. [-G]</p>
 
 <dl class="py function">
 <dt id="DeviceAnalyzer.LOCALDEPENDENCIES">
-<code class="sig-prename descclassname">DeviceAnalyzer.</code><code class="sig-name descname">LOCALDEPENDENCIES</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DeviceID</span></em>, <em class="sig-param"><span class="n">IP</span></em>, <em class="sig-param"><span class="n">DeviceIP</span></em>, <em class="sig-param"><span class="n">LocalStatistic</span></em>, <em class="sig-param"><span class="n">IPStatistic</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">SQLiteConnection</span></em>, <em class="sig-param"><span class="n">createJSON</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DeviceAnalyzer.LOCALDEPENDENCIES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">DeviceAnalyzer.</code><code class="sig-name descname">LOCALDEPENDENCIES</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DeviceID</span></em>, <em class="sig-param"><span class="n">IP</span></em>, <em class="sig-param"><span class="n">DeviceIP</span></em>, <em class="sig-param"><span class="n">LocalStatistic</span></em>, <em class="sig-param"><span class="n">IPStatistic</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">SQLiteConnection</span></em>, <em class="sig-param"><span class="n">createJSON</span></em>, <em class="sig-param"><span class="n">arguments</span></em>, <em class="sig-param"><span class="n">JSON</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DeviceAnalyzer.LOCALDEPENDENCIES" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function for device find in database all local dependencies and set in to output JSON. Also create statistic of local dependencies and statistic of using network by deveices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -388,6 +391,22 @@ Set the number of global dependencies. [-G]</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="DeviceAnalyzer.TimeGraph">
+<code class="sig-prename descclassname">DeviceAnalyzer.</code><code class="sig-name descname">TimeGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Dependency</span></em>, <em class="sig-param"><span class="n">table</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">createJSON</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DeviceAnalyzer.TimeGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Dependency</strong> (<em>sqlite3.fetchone</em><em>(</em><em>)</em>) – Record of dependency that may be ploted.</p></li>
+<li><p><strong>table</strong> (<em>str</em>) – Name of table where is record of dependency safed (Dependencies or Global).</p></li>
+<li><p><strong>cursor</strong> (<em>sqlite3</em>) – Cursor to sqlite3 database for execute SQL queries.</p></li>
+<li><p><strong>createJSON</strong> (<em>JSON</em>) – JSON file loaded in python.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="DeviceAnalyzer.plot">
 <code class="sig-prename descclassname">DeviceAnalyzer.</code><code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DeviceAnalyzer.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the statistical graph of using network (by protocols or devices) in %. Only for output in command line.</p>
@@ -450,7 +469,7 @@ Set the number of global dependencies. [-G]</p>
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">PassiveAutodiscovery3</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Passive Autodiscovery</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="Collector.html">Collector module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CreateScript.html">CreateScript module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">DeviceAnalyzer module</a></li>
@@ -463,7 +482,7 @@ Set the number of global dependencies. [-G]</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="modules.html">PassiveAutodiscovery3</a><ul>
+  <li><a href="modules.html">Passive Autodiscovery</a><ul>
       <li>Previous: <a href="CreateScript.html" title="previous chapter">CreateScript module</a></li>
       <li>Next: <a href="PassiveAutodiscovery.html" title="next chapter">PassiveAutodiscovery module</a></li>
   </ul></li>
