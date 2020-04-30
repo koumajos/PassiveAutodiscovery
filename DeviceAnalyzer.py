@@ -108,7 +108,7 @@ def TimeGraph(Dependency, table, cursor, createJSON):
             tmpY = row[3]            
     plt.rcParams["figure.figsize"] = (20,3)
     plt.plot(X,Y)
-    plt.setp(plt.gca().xaxis.get_majorticklabels(),rotation=20)
+    plt.setp(plt.gca().xaxis.get_majorticklabels(),rotation=0)
     loc = plticker.MultipleLocator(base=40) # this locator puts ticks at regular intervals
     plt.gca().xaxis.set_major_locator(loc)    # naming the x axis 
     plt.xlabel('Time (in minutes)') 
