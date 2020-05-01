@@ -39,6 +39,27 @@ from argparse import RawTextHelpFormatter
 import Collector
 #=================================================================================================================================
 #=================================================================================================================================
+def CheckStr(STR, DOT):
+    """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
+
+    Parameters
+    --------
+    STR : str 
+        String of file name.
+    DOT : str
+        String of file suffix.
+    Returns
+    --------
+    Boolean : boolean
+        True if STR have suffix DOT.
+        False if STR havn't suffix DOT.
+    """
+    x = STR.split(DOT)
+    if x[-1] == '':
+        return True
+    return False
+#=================================================================================================================================
+#=================================================================================================================================
 def move_cursor(x,y):
     """Move cursor in actualization prints to X, Y coordinates.
         
@@ -358,9 +379,13 @@ def SafeRAMDatabase(SQLiteConnection, arguments):
         Setted arguments of module.    
     """
     try:    #connect to a database
-        if os.path.exists(arguments.database + ".db"):
-            os.remove(arguments.database + ".db")        
-        SQLiteConnectionBackUP = sqlite3.connect(arguments.database + ".db")
+        if CheckStr(arguments.database, ".db") == True:
+            FILE = arguments.database
+        else:
+            FILE = arguments.database + ".db"       
+        if os.path.exists(FILE):
+            os.remove(FILE)        
+        SQLiteConnectionBackUP = sqlite3.connect(FILE)
         print("Exporting data from RAM memory to file", arguments.database, ".db...", end='')    
         with SQLiteConnectionBackUP:
             for line in SQLiteConnection.iterdump():
@@ -388,10 +413,14 @@ def ConnectToDatabase(arguments):
         The cursor to the created database to execute SQL queries.
     """
     try:    #connect to a database
-        if not os.path.exists(arguments.database + ".db"):
-            print("can't connect to ", arguments.database + ".db")
+        if CheckStr(arguments.database, ".db") == True:
+            FILE = arguments.database
+        else:
+            FILE = arguments.database + ".db"       
+        if not os.path.exists(FILE):
+            print("can't connect to ", FILE)
             sys.exit()      #if file not exists end the entire module
-        SQLiteConnection = sqlite3.connect(arguments.database + ".db")
+        SQLiteConnection = sqlite3.connect(FILE)
         cursor = SQLiteConnection.cursor()
     except sqlite3.Error as error:
         print("Can't connect to a database:  ", error)

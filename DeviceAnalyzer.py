@@ -66,6 +66,27 @@ import matplotlib.ticker as plticker
 #library for arguments of script
 import argparse
 from argparse import RawTextHelpFormatter
+#===============================================================================================
+#===============================================================================================
+def CheckStr(STR, DOT):
+    """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
+
+    Parameters
+    --------
+    STR : str 
+        String of file name.
+    DOT : str
+        String of file suffix.
+    Returns
+    --------
+    Boolean : boolean
+        True if STR have suffix DOT.
+        False if STR havn't suffix DOT.
+    """
+    x = STR.split(DOT)
+    if x[-1] == '':
+        return True
+    return False
 #=======================================================================================================================================
 #=======================================================================================================================================
 def TimeGraph(Dependency, table, cursor, createJSON):
@@ -160,7 +181,11 @@ def read_json(filename):
     data : JSON
         JSON format in python.
     """
-    with open("%s.json" % filename, "r") as jsonFile:
+    if CheckStr(filename, ".json") == True:
+        FILE = filename
+    else:
+        FILE = filename + ".json"
+    with open(FILE, "r") as jsonFile:
         data = json.load(jsonFile)
     return data
 #=======================================================================================================================================
@@ -175,7 +200,11 @@ def write_json(data, filename):
     filename : str
         Name of the output JSON document file.
     """
-    with open("%s.json" % filename,'w') as f: 
+    if CheckStr(filename, ".json") == True:
+        FILE = filename
+    else:
+        FILE = filename + ".json"
+    with open(FILE,'w') as f: 
         json.dump(data, f, indent=4) 
 #=======================================================================================================================================
 #=======================================================================================================================================
@@ -561,20 +590,20 @@ def LOCALDEPENDENCIES(DeviceID, IP, DeviceIP, LocalStatistic, IPStatistic, curso
                 if SrcIP == DeviceIP:
                     IPs = Dependency[2]                    
                     if ServiceS[1] == "DHCP Client":
-                        Services = "DHCP Server"
+                        Services = "DHCP Server(67)"
                     else:
                         Verbs = "requires"
-                        Services = ServiceS[1]
+                        Services = ServiceS[1] + "(" + str(Dependency[3]) + ")"
                 else:               
                     IPs = Dependency[1]                    
-                    Services = ServiceS[1]
+                    Services = ServiceS[1] + "(" + str(Dependency[3]) + ")"
             elif ServiceD:
                 if SrcIP == DeviceIP:
                     IPs = Dependency[2]                    
                 else:               
                     IPs = Dependency[1]                    
                     Verbs = "requires"
-                Services = ServiceD[1]
+                Services = ServiceD[1] + "(" + str(Dependency[4]) + ")"
             else:
                 if SrcIP == DeviceIP:
                     IPs = Dependency[2]                    
@@ -670,7 +699,7 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
                 else:               
                     IPs = GlobalDependency[1]
                 if promtp < 15:
-                    Services = ServiceS[1]            
+                    Services = ServiceS[1] + "(" + str(GlobalDependency[3]) + ")"            
                     if ServiceS[1] == "WEB Server" and SrcIP == DeviceIP:
                         try:               
                             sck = socket.gethostbyaddr(GlobalDependency[2])
@@ -686,7 +715,7 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
                     else:
                         None
                 else:
-                    Services = ServiceS[1]
+                    Services = ServiceS[1] + "(" + str(GlobalDependency[3]) + ")"
             elif ServiceD:
                 if SrcIP == DeviceIP:
                     IPs = GlobalDependency[2]
@@ -694,7 +723,7 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
                     IPs = GlobalDependency[1]
                     Verbs = "requires"
                 if promtp < 15:
-                    Services = ServiceD[1]
+                    Services = ServiceD[1] + "(" + str(GlobalDependency[4]) + ")"
                     if ServiceD[1] == "WEB Server" and SrcIP == DeviceIP:
                         try:                    
                             sck = socket.gethostbyaddr(GlobalDependency[2])
@@ -710,7 +739,7 @@ def GLOBALDEPENDENCIES(DeviceID, IP, DeviceIP, GlobalStatistic, IPStatistic, cur
                     else:
                         None
                 else:
-                    Services = ServiceD[1]
+                    Services = ServiceD[1] + "(" + str(GlobalDependency[4]) + ")"
             else:
                 if SrcIP == DeviceIP:
                     IPs = GlobalDependency[2]       
@@ -1092,7 +1121,11 @@ def PrintJSON(JSON, arguments):
         for Dev in JSON["Devices"]:
             PrintDeviceFromJSON(Dev, arguments)
     if arguments.file != "":
-        sample = open("%s.txt" % arguments.file, 'w')
+        if CheckStr(arguments.file, ".txt") == True:
+            FILE = arguments.file
+        else:
+            FILE = arguments.file + ".txt"       
+        sample = open(FILE, 'w')
         for Dev in JSON["Devices"]:
             PrintDeviceToFileFromJSON(Dev, arguments, sample) 
 #=======================================================================================================================================
@@ -1205,7 +1238,11 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
         GL = False
     #==================================================================    
     if arguments.file != "":
-        sample = open("%s.txt" % arguments.file, 'w')
+        if CheckStr(arguments.file, ".txt") == True:
+            FILE = arguments.file
+        else:
+            FILE = arguments.file + ".txt"       
+        sample = open(FILE, 'w')
     else:
         sample = "" 
     NET = ipaddress.ip_network(arguments.network)
@@ -1280,7 +1317,11 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
     JSON = read_json(arguments.json)
     IPStatistic = {}
     if arguments.file != "":
-        sample = open("%s.txt" % arguments.file, 'w')
+        if CheckStr(arguments.file, ".txt") == True:
+            FILE = arguments.file
+        else:
+            FILE = arguments.file + ".txt"       
+        sample = open(FILE, 'w')
     else:
         sample = "" 
     AnalyzeLocalDevice("XXX", device[0], device[1], cursor, SQLiteConnection, JSON, IPStatistic, True, arguments, sample)
@@ -1326,7 +1367,11 @@ def DoAnalyze(SQLiteConnection, arguments):
         GL = False
     #==================================================================    
     if arguments.file != "":
-        sample = open("%s.txt" % arguments.file, 'w')
+        if CheckStr(arguments.file, ".txt") == True:
+            FILE = arguments.file
+        else:
+            FILE = arguments.file + ".txt"       
+        sample = open(FILE, 'w')
     else:
         sample = "" 
     cursor.execute("SELECT * FROM LocalDevice")
@@ -1520,11 +1565,15 @@ def ConnectToDatabase(arguments):
     """
     try:    #connect to a database
         print("Connecting to a database....", end='')
-        if not os.path.exists(arguments.database + ".db"):
+        if CheckStr(arguments.database, ".db") == True:
+            FILE = arguments.database
+        else:
+            FILE = arguments.database + ".db"       
+        if not os.path.exists(FILE):
             print("")
-            print("can't connect to ", arguments.database + ".db")
+            print("can't connect to ", FILE)
             sys.exit()
-        SQLiteConnection = sqlite3.connect(arguments.database + ".db")
+        SQLiteConnection = sqlite3.connect(FILE)
         print("done")
     except sqlite3.Error as error:
         print("Can't connect to a database:  ", error)

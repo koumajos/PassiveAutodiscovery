@@ -27,6 +27,27 @@ urlP = "https://www.iana.org/assignments/service-names-port-numbers/service-name
 urlV = "https://macaddress.io/database/macaddress.io-db.csv"
 #===============================================================================================
 #===============================================================================================
+def CheckStr(STR, DOT):
+    """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
+
+    Parameters
+    --------
+    STR : str 
+        String of file name.
+    DOT : str
+        String of file suffix.
+    Returns
+    --------
+    Boolean : boolean
+        True if STR have suffix DOT.
+        False if STR havn't suffix DOT.
+    """
+    x = STR.split(DOT)
+    if x[-1] == '':
+        return True
+    return False
+#===============================================================================================
+#===============================================================================================
 def CreateDB(FILE):
     """Create sqlite3 database file and then created scructure of tables in it
     
@@ -160,8 +181,12 @@ def Main():
     )
     arguments = parser.parse_args()
     #===============================================================================================
+    #name of sqlite3 database file that will be create    
+    if CheckStr(arguments.database, ".db") == True:
+        FILE = arguments.database
+    else:
+        FILE = arguments.database + ".db"       
     #create sqlite3 database
-    FILE = arguments.database + ".db"       #name of sqlite3 database file that will be create
     SQLiteConnection, cursor = CreateDB(FILE)
     #===============================================================================================
     #fill sqlite3 database with initial data
