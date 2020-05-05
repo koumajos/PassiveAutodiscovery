@@ -77,6 +77,21 @@ For local to gloval dependencies. [-T]</p>
 </dd>
 </dl>
 <dl class="py function">
+<dt id="DeviceAnalyzer.ActivityGraph">
+<code class="sig-prename descclassname">DeviceAnalyzer.</code><code class="sig-name descname">ActivityGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Device</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">createJSON</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DeviceAnalyzer.ActivityGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Device</strong> (<em>str</em>) – Name of device to analyze.</p></li>
+<li><p><strong>cursor</strong> (<em>sqlite3</em>) – Cursor to sqlite3 database for execute SQL queries.</p></li>
+<li><p><strong>createJSON</strong> (<em>JSON</em>) – JSON file loaded in python.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="DeviceAnalyzer.AnalyzeLocalDevice">
 <code class="sig-prename descclassname">DeviceAnalyzer.</code><code class="sig-name descname">AnalyzeLocalDevice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DeviceID</span></em>, <em class="sig-param"><span class="n">IP</span></em>, <em class="sig-param"><span class="n">TIME</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">SQLiteConnection</span></em>, <em class="sig-param"><span class="n">JSON</span></em>, <em class="sig-param"><span class="n">IPStatistic</span></em>, <em class="sig-param"><span class="n">GL</span></em>, <em class="sig-param"><span class="n">arguments</span></em>, <em class="sig-param"><span class="n">sample</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DeviceAnalyzer.AnalyzeLocalDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyze a device and output of it add to JSON document.</p>
