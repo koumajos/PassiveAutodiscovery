@@ -89,6 +89,63 @@ def CheckStr(STR, DOT):
     return False
 #=======================================================================================================================================
 #=======================================================================================================================================
+def ActivityGraph(Device, cursor, createJSON):
+    """Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.
+
+    Parameters
+    -----------
+    Device : str
+        Name of device to analyze.
+    cursor : sqlite3
+        Cursor to sqlite3 database for execute SQL queries.
+    createJSON : JSON  
+        JSON file loaded in python.    
+    """
+    X = []
+    Y = []
+    cursor.execute("SELECT * FROM Dependencies WHERE (IP_origin='{dev}' OR IP_target='{dev}')".format(dev=Device))
+    devrows = cursor.fetchall()
+    for devrow in devrows:    
+        cursor.execute("SELECT * FROM DependenciesTime WHERE DependenciesID='{ID}'".format(ID=devrow[0]))
+        rows = cursor.fetchall()
+        for row in rows:
+            Time = float(row[2])
+            if time.ctime((Time - (Time % 60))) in X:
+                tmp = X.index(time.ctime((Time - (Time % 60))))
+                Y[tmp] = Y[tmp] + row[3]
+            else:
+                X.append(time.ctime((Time - (Time % 60))))            
+                Y.append(row[3])            
+    
+    cursor.execute("SELECT * FROM Global WHERE (IP_origin='{dev}' OR IP_target='{dev}')".format(dev=Device))
+    devrows = cursor.fetchall()
+    for devrow in devrows:    
+        cursor.execute("SELECT * FROM GlobalTime WHERE GlobalID='{ID}'".format(ID=devrow[0]))
+        rows = cursor.fetchall()
+        for row in rows:
+            Time = float(row[2])
+            if time.ctime((Time - (Time % 60))) in X:
+                tmp = X.index(time.ctime((Time - (Time % 60))))
+                Y[tmp] = Y[tmp] + row[3]
+            else:
+                X.append(time.ctime((Time - (Time % 60))))            
+                Y.append(row[3])            
+    plt.rcParams["figure.figsize"] = (20,3)
+    plt.plot(X,Y)
+    plt.setp(plt.gca().xaxis.get_majorticklabels(),rotation=0)
+    loc = plticker.MultipleLocator(base=40) # this locator puts ticks at regular intervals
+    plt.gca().xaxis.set_major_locator(loc)    # naming the x axis 
+    plt.xlabel('Time (in minutes)') 
+    # naming the y axis 
+    plt.ylabel('Number of Packets') 
+    # giving a title to my graph 
+    plt.title("Active of device " + Device) 
+    plt.savefig("ActiveOfDevice_" + Device + ".png")
+    createJSON["Files"].append("ActiveOfDevice_" + Device + ".png")
+    print("Graph of activity of device " + Device + " in time safe in file: ActiveOfDevice_" + Device + ".png")    
+    plt.clf()
+#=======================================================================================================================================
+#=======================================================================================================================================
 def TimeGraph(Dependency, table, cursor, createJSON):
     """Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.
 
@@ -1199,6 +1256,8 @@ def AnalyzeLocalDevice(DeviceID, IP, TIME, cursor, SQLiteConnection, JSON, IPSta
     if arguments.file != "":
         print("Output for device ", IP," printed to file: ", arguments.file)
         PrintDeviceToFileFromJSON(createJSON, arguments, sample)
+    if arguments.activity == True:
+        ActivityGraph(IP, cursor, JSON)
     #==================================================================
     JSON["Devices"].append(createJSON)
 #=======================================================================================================================================
@@ -1512,6 +1571,12 @@ def Arguments():
         type=int,
         metavar='NUMBER',
         default=-1
+    )
+    #=====================================================
+    parser.add_argument(
+        '-A', '--activity',
+        help="print graph of activity device in network over time.",
+        action="store_true"
     )
     #=====================================================
     parser.add_argument(
