@@ -89,6 +89,24 @@ def CheckStr(STR, DOT):
     return False
 #=======================================================================================================================================
 #=======================================================================================================================================
+def bubbleSort(X, Y): 
+    """Bubble sort for sorting Activity data in arrays X and Y.
+
+    Parameters
+    -----------
+    X : array
+        Array of times.
+    Y : array
+        Arrays of packets.
+    """
+    n = len(X) 
+    for i in range(n-1): 
+        for j in range(0, n-i-1): 
+            if X[j] > X[j+1] : 
+                X[j], X[j+1] = X[j+1], X[j]
+                Y[j], Y[j+1] = Y[j+1], Y[j]
+#=======================================================================================================================================
+#=======================================================================================================================================
 def ActivityGraph(Device, cursor, createJSON):
     """Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.
 
@@ -115,8 +133,9 @@ def ActivityGraph(Device, cursor, createJSON):
                 Y[tmp] = Y[tmp] + row[3]
             else:
                 X.append(time.ctime((Time - (Time % 60))))            
-                Y.append(row[3])            
-    
+                Y.append(row[3])
+                
+            
     cursor.execute("SELECT * FROM Global WHERE (IP_origin='{dev}' OR IP_target='{dev}')".format(dev=Device))
     devrows = cursor.fetchall()
     for devrow in devrows:    
@@ -129,7 +148,10 @@ def ActivityGraph(Device, cursor, createJSON):
                 Y[tmp] = Y[tmp] + row[3]
             else:
                 X.append(time.ctime((Time - (Time % 60))))            
-                Y.append(row[3])            
+                Y.append(row[3])
+
+    bubbleSort(X, Y)
+            
     plt.rcParams["figure.figsize"] = (20,3)
     plt.plot(X,Y)
     plt.setp(plt.gca().xaxis.get_majorticklabels(),rotation=0)
