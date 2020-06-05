@@ -342,7 +342,7 @@ def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
     networkx.draw(G, pos, with_labels=True)
     plt.axis('off')
     plt.savefig("Graph_Local_IPv4.png")
-    createJSON["Files"].append("Graph_Local_IPv4.png")    
+    JSON["Files"].append("Graph_Local_IPv4.png")    
     #=================================
     plt.figure("Map of Local Dependencies IPv6", figsize=(20, 10), dpi=80, facecolor='w', edgecolor='k')    
     H = networkx.Graph()        
@@ -356,7 +356,7 @@ def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
     networkx.draw(H, pos, with_labels=True)
     plt.axis('off')
     plt.savefig("Graph_Local_IPv6.png")    
-    createJSON["Files"].append("Graph_Local_IPv6.png")    
+    JSON["Files"].append("Graph_Local_IPv6.png")    
 #=======================================================================================================================================
 #=======================================================================================================================================
 def GraphGlobalDependencies(cursor, SQLiteConnection, JSON):
@@ -388,7 +388,7 @@ def GraphGlobalDependencies(cursor, SQLiteConnection, JSON):
         networkx.draw(H, pos, with_labels=True)
         plt.axis('off')
         plt.savefig("Graph_Global_%s.png" % device[0])
-        createJSON["Files"].append("Graph_Global_%s.png" % device[0])    
+        JSON["Files"].append("Graph_Global_%s.png" % device[0])    
 #=======================================================================================================================================
 #=======================================================================================================================================
 def GraphLocalToGlobal(cursor, SQLiteConnection, JSON):
