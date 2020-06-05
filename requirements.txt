@@ -1,1 +1,10 @@
-sqlite3 csv urllib argparse ipaddress re json datetime tempfile pandas numphy networkx matplotlib colorama
+python-csv 
+argparse 
+ipaddress 
+datetime  
+pandas 
+numpy 
+networkx 
+matplotlib 
+colorama
+termgraph
