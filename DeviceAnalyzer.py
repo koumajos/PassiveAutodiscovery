@@ -1022,7 +1022,7 @@ def PrintDeviceFromJSON(JSON, arguments):
         print("    ---")
     if arguments.GlobalNumber == -1:
         for i in JSON["GlobalDependencies"]:
-            if arguments.DNS == True and i["Service"] == "WEB Server":
+            if arguments.DNS == True:
                 try:
                     domain = socket.gethostbyaddr(i["IP"])
                     if i["Verb"] == "provides":
@@ -1040,7 +1040,7 @@ def PrintDeviceFromJSON(JSON, arguments):
         tmp = 0
         for i in JSON["GlobalDependencies"]:
             if tmp < arguments.GlobalNumber:        
-                if arguments.DNS == True and i["Service"] == "WEB Server":
+                if arguments.DNS == True:
                     try:
                         domain = socket.gethostbyaddr(i["IP"])
                         if i["Verb"] == "provides":
@@ -1115,7 +1115,7 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
     if not JSON["Labels"]:
         print("    ---", file = sample)
     for i in JSON["Labels"]:
-        if arguments.DNS == True and i["Label"] == "WEB Server":
+        if arguments.DNS == True:
             try:
                 domain = socket.gethostbyaddr(i)
                 print("    [", i["Label"], "] - DomainName:", domain, file = sample)  
@@ -1166,7 +1166,7 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
         print("    ---", file = sample)    
     if arguments.GlobalNumber == -1:
         for i in JSON["GlobalDependencies"]:
-            if arguments.DNS == True and i["Service"] == "WEB Server":
+            if arguments.DNS == True:
                 try:
                     domain = socket.gethostbyaddr(i["IP"])
                     print("    -> ", i["IP"], " ", i["Verb"], " [", i["Service"], "]  Domain: ", domain[0],"  - number of packets: ", i["Packets"], file = sample)    
@@ -1178,7 +1178,7 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
         tmp = 0
         for i in JSON["GlobalDependencies"]:
             if tmp < arguments.GlobalNumber:        
-                if arguments.DNS == True and i["Service"] == "WEB Server":
+                if arguments.DNS == True:
                     try:
                         domain = socket.gethostbyaddr(i["IP"])
                         if i["Verb"] == "provides":
