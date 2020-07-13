@@ -928,26 +928,31 @@ def LOCALDEPENDENCIES(
             IPs = ""
             Verbs = "provides"
             Services = ""
+            Port = 0
             Packets = Dependency[5]
             # ==========================================
             if ServiceS:
                 if SrcIP == DeviceIP:
                     IPs = Dependency[2]
                     if ServiceS[1] == "DHCP Client":
-                        Services = "DHCP Server(67)"
+                        Services = "DHCP Server"
+                        Port = 67
                     else:
                         Verbs = "requires"
-                        Services = ServiceS[1] + "(" + str(Dependency[3]) + ")"
+                        Services = ServiceS[1]
+                        Port = Dependency[3]
                 else:
                     IPs = Dependency[1]
-                    Services = ServiceS[1] + "(" + str(Dependency[3]) + ")"
+                    Services = ServiceS[1]
+                    Port = Dependency[3]
             elif ServiceD:
                 if SrcIP == DeviceIP:
                     IPs = Dependency[2]
                 else:
                     IPs = Dependency[1]
                     Verbs = "requires"
-                Services = ServiceD[1] + "(" + str(Dependency[4]) + ")"
+                Services = ServiceD[1]
+                Port = Dependency[4]
             else:
                 if SrcIP == DeviceIP:
                     IPs = Dependency[2]
@@ -959,11 +964,11 @@ def LOCALDEPENDENCIES(
                     PortD = cursor.fetchone()
                     if PortD:
                         if not PortD[1] == "":
-                            Services = PortD[1]
+                            Port = PortD[1]
                         else:
-                            Services = PortD[2]
+                            Port = PortD[2]
                     else:
-                        Services = Dependency[4]
+                        Port = Dependency[4]
                 else:
                     IPs = Dependency[1]
                     Verbs = "requires"
@@ -975,17 +980,18 @@ def LOCALDEPENDENCIES(
                     PortS = cursor.fetchone()
                     if PortS:
                         if not PortS[1] == "":
-                            Services = PortS[1]
+                            Port = PortS[1]
                         else:
-                            Services = PortS[2]
+                            Port = PortS[2]
                     else:
-                        Services = Dependency[3]
+                        Port = Dependency[3]
             # ========================================================
             createJSON["LocalDependencies"].append(
                 {
                     "IP": "%s" % IPs,
                     "Verb": "%s" % Verbs,
                     "Service": "%s" % Services,
+                    "Port": "%s" % Port,
                     "Packets": "%s" % Packets,
                 }
             )
@@ -1074,6 +1080,7 @@ def GLOBALDEPENDENCIES(
             IPs = ""
             Verbs = "provides"
             Services = ""
+            Port = 0
             Packets = GlobalDependency[5]
             Domain = ""
             # ========================================================
@@ -1087,7 +1094,8 @@ def GLOBALDEPENDENCIES(
                 else:
                     IPs = GlobalDependency[1]
                 if promtp < 15:
-                    Services = ServiceS[1] + "(" + str(GlobalDependency[3]) + ")"
+                    Services = ServiceS[1]
+                    Port = GlobalDependency[3]
                     if ServiceS[1] == "WEB Server" and SrcIP == DeviceIP:
                         try:
                             sck = socket.gethostbyaddr(GlobalDependency[2])
@@ -1103,7 +1111,8 @@ def GLOBALDEPENDENCIES(
                     else:
                         None
                 else:
-                    Services = ServiceS[1] + "(" + str(GlobalDependency[3]) + ")"
+                    Services = ServiceS[1]
+                    Port = GlobalDependency[3]
             elif ServiceD:
                 if SrcIP == DeviceIP:
                     IPs = GlobalDependency[2]
@@ -1111,7 +1120,8 @@ def GLOBALDEPENDENCIES(
                     IPs = GlobalDependency[1]
                     Verbs = "requires"
                 if promtp < 15:
-                    Services = ServiceD[1] + "(" + str(GlobalDependency[4]) + ")"
+                    Services = ServiceD[1]
+                    Port = GlobalDependency[4]
                     if ServiceD[1] == "WEB Server" and SrcIP == DeviceIP:
                         try:
                             sck = socket.gethostbyaddr(GlobalDependency[2])
@@ -1127,7 +1137,8 @@ def GLOBALDEPENDENCIES(
                     else:
                         None
                 else:
-                    Services = ServiceD[1] + "(" + str(GlobalDependency[4]) + ")"
+                    Services = ServiceD[1]
+                    Port = GlobalDependency[4]
             else:
                 if SrcIP == DeviceIP:
                     IPs = GlobalDependency[2]
@@ -1138,9 +1149,9 @@ def GLOBALDEPENDENCIES(
                     )
                     PortD = cursor.fetchone()
                     if PortD:
-                        Services = PortD[1]
+                        Port = PortD[1]
                     else:
-                        Services = GlobalDependency[4]
+                        Port = GlobalDependency[4]
                 else:
                     IPs = GlobalDependency[1]
                     Verbs = "requires"
@@ -1151,15 +1162,16 @@ def GLOBALDEPENDENCIES(
                     )
                     PortS = cursor.fetchone()
                     if PortS:
-                        Services = PortS[1]
+                        Port = PortS[1]
                     else:
-                        Services = GlobalDependency[3]
+                        Port = GlobalDependency[3]
             # ========================================================
             createJSON["GlobalDependencies"].append(
                 {
                     "IP": "%s" % IPs,
                     "Verb": "%s" % Verbs,
                     "Service": "%s" % Services,
+                    "Port": "%s" % Port,
                     "Packets": "%s" % Packets,
                 }
             )
@@ -1333,7 +1345,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                         i["Verb"],
                         " [",
                         i["Service"],
-                        "] - number of packets: ",
+                        "(",
+                        i["Port"],
+                        ")] - number of packets: ",
                         i["Packets"],
                     )
                 else:
@@ -1344,7 +1358,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                         i["Verb"],
                         " [",
                         i["Service"],
-                        "] - number of packets: ",
+                        "(",
+                        i["Port"],
+                        ")] - number of packets: ",
                         i["Packets"],
                     )
                 tmp = tmp + 1
@@ -1360,7 +1376,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                     i["Verb"],
                     " [",
                     i["Service"],
-                    "] - number of packets: ",
+                    "(",
+                    i["Port"],
+                    ")] - number of packets: ",
                     i["Packets"],
                 )
             else:
@@ -1371,7 +1389,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                     i["Verb"],
                     " [",
                     i["Service"],
-                    "] - number of packets: ",
+                    "(",
+                    i["Port"],
+                    ")] - number of packets: ",
                     i["Packets"],
                 )
     # =================================================================================
@@ -1399,7 +1419,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                             i["Verb"],
                             " [",
                             i["Service"],
-                            "]  Domain: ",
+                            "(",
+                            i["Port"],
+                            ")]  Domain: ",
                             domain[0],
                             "  - number of packets: ",
                             i["Packets"],
@@ -1412,7 +1434,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                             i["Verb"],
                             " [",
                             i["Service"],
-                            "]  Domain: ",
+                            "(",
+                            i["Port"],
+                            ")]  Domain: ",
                             domain[0],
                             "  - number of packets: ",
                             i["Packets"],
@@ -1426,7 +1450,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                             i["Verb"],
                             " [",
                             i["Service"],
-                            "] - number of packets: ",
+                            "(",
+                            i["Port"],
+                            ")] - number of packets: ",
                             i["Packets"],
                         )
                     else:
@@ -1437,7 +1463,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                             i["Verb"],
                             " [",
                             i["Service"],
-                            "] - number of packets: ",
+                            "(",
+                            i["Port"],
+                            ")] - number of packets: ",
                             i["Packets"],
                         )
             else:
@@ -1448,7 +1476,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                     i["Verb"],
                     " [",
                     i["Service"],
-                    "] - number of packets: ",
+                    "(",
+                    i["Port"],
+                    ")] - number of packets: ",
                     i["Packets"],
                 )
     else:
@@ -1466,7 +1496,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                                 i["Verb"],
                                 " [",
                                 i["Service"],
-                                "]  Domain: ",
+                                "(",
+                                i["Port"],
+                                ")]  Domain: ",
                                 domain[0],
                                 "  - number of packets: ",
                                 i["Packets"],
@@ -1479,7 +1511,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                                 i["Verb"],
                                 " [",
                                 i["Service"],
-                                "]  Domain: ",
+                                "(",
+                                i["Port"],
+                                ")]  Domain: ",
                                 domain[0],
                                 "  - number of packets: ",
                                 i["Packets"],
@@ -1493,7 +1527,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                                 i["Verb"],
                                 " [",
                                 i["Service"],
-                                "] - number of packets: ",
+                                "(",
+                                i["Port"],
+                                ")] - number of packets: ",
                                 i["Packets"],
                             )
                         else:
@@ -1504,7 +1540,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                                 i["Verb"],
                                 " [",
                                 i["Service"],
-                                "] - number of packets: ",
+                                "(",
+                                i["Port"],
+                                ")] - number of packets: ",
                                 i["Packets"],
                             )
                 else:
@@ -1516,7 +1554,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                             i["Verb"],
                             " [",
                             i["Service"],
-                            "] - number of packets: ",
+                            "(",
+                            i["Port"],
+                            ")] - number of packets: ",
                             i["Packets"],
                         )
                     else:
@@ -1527,7 +1567,9 @@ def PrintDeviceFromJSON(JSON, arguments):
                             i["Verb"],
                             " [",
                             i["Service"],
-                            "] - number of packets: ",
+                            "(",
+                            i["Port"],
+                            ")] - number of packets: ",
                             i["Packets"],
                         )
                 tmp = tmp + 1
@@ -1628,7 +1670,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                         i["Verb"],
                         " [",
                         i["Service"],
-                        "] - number of packets: ",
+                        "(",
+                        i["Port"],
+                        ")] - number of packets: ",
                         i["Packets"],
                         file=sample,
                     )
@@ -1640,7 +1684,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                         i["Verb"],
                         " [",
                         i["Service"],
-                        "] - number of packets: ",
+                        "(",
+                        i["Port"],
+                        ")] - number of packets: ",
                         i["Packets"],
                         file=sample,
                     )
@@ -1657,7 +1703,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                     i["Verb"],
                     " [",
                     i["Service"],
-                    "] - number of packets: ",
+                    "(",
+                    i["Port"],
+                    ")] - number of packets: ",
                     i["Packets"],
                     file=sample,
                 )
@@ -1669,7 +1717,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                     i["Verb"],
                     " [",
                     i["Service"],
-                    "] - number of packets: ",
+                    "(",
+                    i["Port"],
+                    ")] - number of packets: ",
                     i["Packets"],
                     file=sample,
                 )
@@ -1699,7 +1749,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                         i["Verb"],
                         " [",
                         i["Service"],
-                        "]  Domain: ",
+                        "(",
+                        i["Port"],
+                        ")]  Domain: ",
                         domain[0],
                         "  - number of packets: ",
                         i["Packets"],
@@ -1713,7 +1765,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                         i["Verb"],
                         " [",
                         i["Service"],
-                        "] - number of packets: ",
+                        "(",
+                        i["Port"],
+                        ")] - number of packets: ",
                         i["Packets"],
                         file=sample,
                     )
@@ -1725,7 +1779,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                     i["Verb"],
                     " [",
                     i["Service"],
-                    "] - number of packets: ",
+                    "(",
+                    i["Port"],
+                    ")] - number of packets: ",
                     i["Packets"],
                     file=sample,
                 )
@@ -1744,7 +1800,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                                 i["Verb"],
                                 " [",
                                 i["Service"],
-                                "]  Domain: ",
+                                "(",
+                                i["Port"],
+                                ")]  Domain: ",
                                 domain[0],
                                 "  - number of packets: ",
                                 i["Packets"],
@@ -1758,7 +1816,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                                 i["Verb"],
                                 " [",
                                 i["Service"],
-                                "]  Domain: ",
+                                "(",
+                                i["Port"],
+                                ")]  Domain: ",
                                 domain[0],
                                 "  - number of packets: ",
                                 i["Packets"],
@@ -1773,7 +1833,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                                 i["Verb"],
                                 " [",
                                 i["Service"],
-                                "] - number of packets: ",
+                                "(",
+                                i["Port"],
+                                ")] - number of packets: ",
                                 i["Packets"],
                                 file=sample,
                             )
@@ -1785,7 +1847,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                                 i["Verb"],
                                 " [",
                                 i["Service"],
-                                "] - number of packets: ",
+                                "(",
+                                i["Port"],
+                                ")] - number of packets: ",
                                 i["Packets"],
                                 file=sample,
                             )
@@ -1798,7 +1862,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                             i["Verb"],
                             " [",
                             i["Service"],
-                            "] - number of packets: ",
+                            "(",
+                            i["Port"],
+                            ")] - number of packets: ",
                             i["Packets"],
                             file=sample,
                         )
@@ -1810,7 +1876,9 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                             i["Verb"],
                             " [",
                             i["Service"],
-                            "] - number of packets: ",
+                            "(",
+                            i["Port"],
+                            ")] - number of packets: ",
                             i["Packets"],
                             file=sample,
                         )
