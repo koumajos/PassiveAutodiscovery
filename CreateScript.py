@@ -30,8 +30,6 @@
         This software is provided as is'', and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the company or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
 
 
-
-
 """
 # libraries for working with sqlite3 database
 import sqlite3
@@ -45,17 +43,15 @@ import sys
 import urllib
 import urllib.request
 
-# libraries for arguments os scripts
+# libraries for arg os scripts
 import argparse
 from argparse import RawTextHelpFormatter
 
-# ===============================================================================================
-# url of (un)official web databse of inital data fro sqlite3 database
 urlP = "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv"
 urlV = "https://macaddress.io/database/macaddress.io-db.csv"
-# ===============================================================================================
-# ===============================================================================================
-def CheckStr(STR, DOT):
+
+
+def check_str(string, dot):
     """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
 
     Parameters
@@ -70,50 +66,47 @@ def CheckStr(STR, DOT):
         True if STR have suffix DOT.
         False if STR havn't suffix DOT.
     """
-    x = STR.split(DOT)
-    if x[-1] == "":
+    spl = string.split(dot)
+    if spl[-1] == "":
         return True
     return False
 
 
-# ===============================================================================================
-# ===============================================================================================
-def CreateDB(FILE, arg):
+def create_db(file, arg):
     """Create sqlite3 database file and then created scructure of tables in it
     
     Parameters
     --------
-    FILE : str 
+    file : str 
         The database file to create.
 
     Returns
     --------
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         The connection to created sqlite3 database.
     cursor : sqlite3
         The cursor for execute SQL queries in created sqlite3 database.
     """
     try:
         print("Connecting to database....", end="")
-        if os.path.exists(FILE):  # if database file exist:
+        if os.path.exists(file):  # if database file exist:
             if arg.y:
-                os.remove(FILE)
+                os.remove(file)
             else:
-                print("")
                 print(
-                    "Database already exists. Do you want do delete it and create new? [yes] - ",
+                    "\nDatabase already exists. Do you want do delete it and create new? [yes] - ",
                     end="",
                 )
                 if input() == "yes":  # choose if:
                     print("Removing old database and create new one....", end="")
-                    os.remove(FILE)  # remove file and continue
+                    os.remove(file)  # remove file and continue
                 else:
                     print("Exiting script....")
                     sys.exit()  # exit
-        SQLiteConnection = sqlite3.connect(
-            FILE
+        sqlite_connection = sqlite3.connect(
+            file
         )  # create ne connection to new sqlite database file
-        cursor = SQLiteConnection.cursor()
+        cursor = sqlite_connection.cursor()
         print("done")
         with open("Database_sqlite_create.sql") as sqlite_file:  # open the sql file
             sql_script = sqlite_file.read()
@@ -122,15 +115,13 @@ def CreateDB(FILE, arg):
             sql_script
         )  # and execute it for create sql scructure in database
         print("done")
-        return SQLiteConnection, cursor
+        return sqlite_connection, cursor
         # return connectiona nd cursor for work with database
     except sqlite3.Error as error:
         print("Error while executing sqlite script", error)
 
 
-# ===============================================================================================
-# ===============================================================================================
-def DownloadData(name, arg):
+def download_data(name, arg):
     """Download initial data for sqlite3 database and open it
     
     Parameters
@@ -171,29 +162,29 @@ def DownloadData(name, arg):
     return reader
 
 
-# ===============================================================================================
-# ===============================================================================================
-def InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF):
+def inser_data(
+    sqlite_connection, cursor, read_ports, read_mac, read_services, read_filter
+):
     """Insert initial data to tables
     
     Parameters
     -----------
-    SQLiteConnection : sqlite3 
+    sqlite_connection : sqlite3 
         The connection to the sqlite3 database.
     cursor : sqlite3
         The cursor at the sqlite3 database for execute SQL queries.
-    readerP : csv
+    read_ports : csv
         The opened file that is fill with initial Ports table data
-    readerM : csv
+    read_mac : csv
         The opened file that is fill with initial VendorsMAC table data
-    readerS : csv
+    read_services : csv
         The opened file that is fill with initial Services table data
-    readerF : csv
+    read_filter : csv
         The opened file that is fill with initial Filter table data
     """
     try:
         print("Inserting data to table Ports....", end="")
-        for row in readerP:
+        for row in read_ports:
             to_db = [row[0], row[1], row[2], row[3]]
             cursor.execute(
                 "INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);",
@@ -201,7 +192,7 @@ def InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF):
             )
         print("done")
         print("Inserting data to table VendorsMAC....", end="")
-        for row in readerM:
+        for row in read_mac:
             to_db = [row[0], row[1], row[2], row[4], row[5]]
             cursor.execute(
                 "INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);",
@@ -209,7 +200,7 @@ def InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF):
             )
         print("done")
         print("Inserting Services data to table....", end="")
-        for row in readerS:
+        for row in read_services:
             to_db = [row[0], row[1], row[2], row[3]]
             cursor.execute(
                 "INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);",
@@ -217,27 +208,24 @@ def InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF):
             )
         print("done")
         print("Inserting Filter data to table....", end="")
-        for row in readerF:
+        for row in read_filter:
             to_db = [row[0], row[1], row[2], row[3]]
             cursor.execute(
                 "INSERT INTO Filter (ID_Filter, PortNumber, Protocol, MinPackets) VALUES (?, ?, ?, ?);",
                 to_db,
             )
         print("done")
-        SQLiteConnection.commit()
+        sqlite_connection.commit()
     except sqlite3.Error as error:
         print("Error while inserting data to sqlite3 database", error)
 
 
-# ===============================================================================================
-# ===============================================================================================
-# main function
-def Main():
-    """Main function of script. Work with other functions to create database, get a initial data and fill the initial data to tables.
-    
+def arguments():
+    """The function loads the script parameters.
+
+    Returns:
+        argparse: Arguments of the script
     """
-    # ===============================================================================================
-    # Arguemnts of python script
     parser = argparse.ArgumentParser(
         description="""Create sqlite3 database from sql file: Database_sqlite_create.sql 
     Database is filled with PassiveAutodiscovery.py NEMEA modul with coaporate Collector.py.
@@ -246,7 +234,6 @@ def Main():
     Usage:""",
         formatter_class=RawTextHelpFormatter,
     )
-    # ===============================================================================================
     parser.add_argument(
         "-d",
         "--database",
@@ -261,33 +248,36 @@ def Main():
     parser.add_argument(
         "-s", help="Skip downloading new data and use archive data", action="store_true"
     )
-    arguments = parser.parse_args()
-    # ===============================================================================================
+    arg = parser.parse_args()
+    return arg
+
+
+def main():
+    """Main function of script. Work with other functions to create database, get a initial data and fill the initial data to tables.
+    
+    """
+    arg = arguments()
     # name of sqlite3 database file that will be create
-    if CheckStr(arguments.database, ".db") == True:
-        FILE = arguments.database
+    if check_str(arg.database, ".db"):
+        file = arg.database
     else:
-        FILE = arguments.database + ".db"
+        file = arg.database + ".db"
     # create sqlite3 database
-    SQLiteConnection, cursor = CreateDB(FILE, arguments)
-    # ===============================================================================================
+    sqlite_connection, cursor = create_db(file, arg)
     # fill sqlite3 database with initial data
-    readerP = DownloadData("Ports", arguments)
-    readerM = DownloadData("VendorsMAC", arguments)
-    readerS = csv.reader(open("Services.csv", "r"), delimiter=",")
-    readerF = csv.reader(open("Filter.csv", "r"), delimiter=",")
-    InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF)
-    # ===============================================================================================
+    read_ports = download_data("Ports", arg)
+    read_mac = download_data("VendorsMAC", arg)
+    read_services = csv.reader(open("Services.csv", "r"), delimiter=",")
+    read_filter = csv.reader(open("Filter.csv", "r"), delimiter=",")
+    inser_data(
+        sqlite_connection, cursor, read_ports, read_mac, read_services, read_filter,
+    )
     # release of used resources
     cursor.close()
-    if SQLiteConnection:
-        SQLiteConnection.close()
+    if sqlite_connection:
+        sqlite_connection.close()
 
 
-# ===============================================================================================
-# ===============================================================================================
 if __name__ == "__main__":
-    Main()
-# ===============================================================================================
-# ===============================================================================================
+    main()
 
