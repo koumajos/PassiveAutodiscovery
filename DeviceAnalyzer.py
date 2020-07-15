@@ -2039,19 +2039,19 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
     if arguments.bipartite == True:
         GraphLocalToGlobal(cursor, SQLiteConnection, JSON)
     # ==================================================================
-    StatPercent(IPStatistic, JSON, 3)
     if arguments.file != "":
         print(
             "######################################################################",
             file=sample,
         )
         print("  Print Statistic of using network by devices in %:", file=sample)
+        StatPercent(IPStatistic, JSON, 3)
         for i, j in IPStatistic.items():
             print("    ", i, "\t\t\t", j, "%", file=sample)
     if arguments.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        StatPercent(IPStatistic, JSON, 2)
+        StatPercent(IPStatistic, JSON, 3)
     # ==================================================================
     if arguments.file != "":
         sample.close()
@@ -2120,19 +2120,6 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
         arguments,
         sample,
     )
-    StatPercent(IPStatistic, JSON, 3)
-    if arguments.file != "":
-        print(
-            "######################################################################",
-            file=sample,
-        )
-        print("  Print Statistic of using network by devices in %:", file=sample)
-        for i, j in IPStatistic.items():
-            print("    ", i, "\t\t\t", j, "%", file=sample)
-    if arguments.print == True:
-        print("######################################################################")
-        print("  Print Statistic of using network by devices in %:")
-        StatPercent(IPStatistic, JSON, 2)
     if arguments.file != "":
         sample.close()
     x = datetime.datetime.now()
@@ -2211,13 +2198,13 @@ def DoAnalyze(SQLiteConnection, arguments):
     if arguments.bipartite == True:
         GraphLocalToGlobal(cursor, SQLiteConnection, JSON)
     # ==================================================================
-    StatPercent(IPStatistic, JSON, 3)
     if arguments.file != "":
         print(
             "######################################################################",
             file=sample,
         )
         print("  Print Statistic of using network by devices in %:", file=sample)
+        StatPercent(IPStatistic, JSON, 3)
         for i, j in IPStatistic.items():
             print("    ", i, "\t\t\t", j, "%", file=sample)
     if arguments.print == True:
