@@ -33,28 +33,24 @@
 
 
 """
-# libraries for working with sqlite3 database
+#libraries for working with sqlite3 database
 import sqlite3
 import csv
-
-# libraries for working with OS UNIX files and system
+#libraries for working with OS UNIX files and system
 import os
 import sys
-
-# libraries for downloading initial data from oficial web databse
-import urllib
+#libraries for downloading initial data from oficial web databse
+import urllib           
 import urllib.request
-
-# libraries for arguments os scripts
-import argparse
+#libraries for arguments os scripts
+import argparse     
 from argparse import RawTextHelpFormatter
-
-# ===============================================================================================
-# url of (un)official web databse of inital data fro sqlite3 database
+#===============================================================================================
+#url of (un)official web databse of inital data fro sqlite3 database
 urlP = "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv"
 urlV = "https://macaddress.io/database/macaddress.io-db.csv"
-# ===============================================================================================
-# ===============================================================================================
+#===============================================================================================
+#===============================================================================================
 def CheckStr(STR, DOT):
     """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
 
@@ -71,14 +67,12 @@ def CheckStr(STR, DOT):
         False if STR havn't suffix DOT.
     """
     x = STR.split(DOT)
-    if x[-1] == "":
+    if x[-1] == '':
         return True
     return False
-
-
-# ===============================================================================================
-# ===============================================================================================
-def CreateDB(FILE, arg):
+#===============================================================================================
+#===============================================================================================
+def CreateDB(FILE):
     """Create sqlite3 database file and then created scructure of tables in it
     
     Parameters
@@ -94,42 +88,29 @@ def CreateDB(FILE, arg):
         The cursor for execute SQL queries in created sqlite3 database.
     """
     try:
-        print("Connecting to database....", end="")
-        if os.path.exists(FILE):  # if database file exist:
-            if arg.y:
-                os.remove(FILE)
+        print("Connecting to database....", end = '')
+        if os.path.exists(FILE):        #if database file exist:
+            print("")
+            print("Database already exists. Do you want do delete it and create new? [yes] - ", end = '')
+            if(input() == "yes"):       #choose if:
+                print("Removing old database and create new one....", end = '')
+                os.remove(FILE)         #remove file and continue
             else:
-                print("")
-                print(
-                    "Database already exists. Do you want do delete it and create new? [yes] - ",
-                    end="",
-                )
-                if input() == "yes":  # choose if:
-                    print("Removing old database and create new one....", end="")
-                    os.remove(FILE)  # remove file and continue
-                else:
-                    print("Exiting script....")
-                    sys.exit()  # exit
-        SQLiteConnection = sqlite3.connect(
-            FILE
-        )  # create ne connection to new sqlite database file
+                print("Exiting script....")
+                sys.exit()              #exit
+        SQLiteConnection = sqlite3.connect(FILE)        #create ne connection to new sqlite database file
         cursor = SQLiteConnection.cursor()
         print("done")
-        with open("Database_sqlite_create.sql") as sqlite_file:  # open the sql file
+        with open('Database_sqlite_create.sql') as sqlite_file:     #open the sql file
             sql_script = sqlite_file.read()
-        print("Creating Database schema....", end="")
-        cursor.executescript(
-            sql_script
-        )  # and execute it for create sql scructure in database
+        print("Creating Database schema....", end = '')
+        cursor.executescript(sql_script)        #and execute it for create sql scructure in database
         print("done")
-        return SQLiteConnection, cursor
-        # return connectiona nd cursor for work with database
+        return SQLiteConnection, cursor;        #return connectiona nd cursor for work with database
     except sqlite3.Error as error:
         print("Error while executing sqlite script", error)
-
-
-# ===============================================================================================
-# ===============================================================================================
+#===============================================================================================
+#===============================================================================================
 def DownloadData(name):
     """Download initial data for sqlite3 database and open it
     
@@ -143,23 +124,21 @@ def DownloadData(name):
     reader : csv
         The opened data taht have been downloaded.
     """
-    try:  # try download the file from url, if can't download or connect, use the archive local file (can be deprecated)
-        if name == "Ports":
-            print("Downloading Transport Layer Ports data....", end="")
+    try:        #try download the file from url, if can't download or connect, use the archive local file (can be deprecated)
+        if name == "Ports":        
+            print("Downloading Transport Layer Ports data....", end='')
             urllib.request.urlretrieve(urlP, name + "_url.csv")
         else:
-            print("Downloading Vendors of MAC address data....", end="")
-            urllib.request.urlretrieve(urlV, name + "_url.csv")
+            print("Downloading Vendors of MAC address data....", end='')
+            urllib.request.urlretrieve(urlV, name + "_url.csv")                    
         print("done")
-        reader = csv.reader(open(name + "_url.csv", "r"), delimiter=",")
+        reader = csv.reader(open(name + "_url.csv",'r'), delimiter=',')
     except:
         print("Download failed, open local archive file...")
-        reader = csv.reader(open(name + ".csv", "r"), delimiter=",")
+        reader = csv.reader(open(name + ".csv",'r'), delimiter=',')
     return reader
-
-
-# ===============================================================================================
-# ===============================================================================================
+#===============================================================================================
+#===============================================================================================
 def InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF):
     """Insert initial data to tables
     
@@ -179,99 +158,75 @@ def InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF):
         The opened file that is fill with initial Filter table data
     """
     try:
-        print("Inserting data to table Ports....", end="")
+        print("Inserting data to table Ports....", end='')
         for row in readerP:
             to_db = [row[0], row[1], row[2], row[3]]
-            cursor.execute(
-                "INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);",
-                to_db,
-            )
+            cursor.execute("INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);", to_db)
         print("done")
-        print("Inserting data to table VendorsMAC....", end="")
+        print("Inserting data to table VendorsMAC....", end='')
         for row in readerM:
             to_db = [row[0], row[1], row[2], row[4], row[5]]
-            cursor.execute(
-                "INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);",
-                to_db,
-            )
+            cursor.execute("INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);", to_db)
         print("done")
-        print("Inserting Services data to table....", end="")
+        print("Inserting Services data to table....", end='')
         for row in readerS:
             to_db = [row[0], row[1], row[2], row[3]]
-            cursor.execute(
-                "INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);",
-                to_db,
-            )
+            cursor.execute("INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);", to_db)
         print("done")
-        print("Inserting Filter data to table....", end="")
+        print("Inserting Filter data to table....", end='')
         for row in readerF:
             to_db = [row[0], row[1], row[2], row[3]]
-            cursor.execute(
-                "INSERT INTO Filter (ID_Filter, PortNumber, Protocol, MinPackets) VALUES (?, ?, ?, ?);",
-                to_db,
-            )
+            cursor.execute("INSERT INTO Filter (ID_Filter, PortNumber, Protocol, MinPackets) VALUES (?, ?, ?, ?);", to_db)
         print("done")
-        SQLiteConnection.commit()
+        SQLiteConnection.commit()        
     except sqlite3.Error as error:
         print("Error while inserting data to sqlite3 database", error)
-
-
-# ===============================================================================================
-# ===============================================================================================
-# main function
+#===============================================================================================
+#===============================================================================================
+#main function
 def Main():
     """Main function of script. Work with other functions to create database, get a initial data and fill the initial data to tables.
     
     """
-    # ===============================================================================================
-    # Arguemnts of python script
-    parser = argparse.ArgumentParser(
-        description="""Create sqlite3 database from sql file: Database_sqlite_create.sql 
+    #===============================================================================================
+    #Arguemnts of python script
+    parser = argparse.ArgumentParser( description="""Create sqlite3 database from sql file: Database_sqlite_create.sql 
     Database is filled with PassiveAutodiscovery.py NEMEA modul with coaporate Collector.py.
     Then analyze with DeviceAnalyzer.py.
 
-    Usage:""",
-        formatter_class=RawTextHelpFormatter,
-    )
-    # ===============================================================================================
+    Usage:""", formatter_class=RawTextHelpFormatter)
+    #===============================================================================================
     parser.add_argument(
-        "-d",
-        "--database",
+        '-d', '--database',
         help="Set name of the database without . part,  default is Database",
         type=str,
-        metavar="NAME",
-        default="Database",
-    )
-    parser.add_argument(
-        "-y", help="Consent to overwrite exists database", action="store_true"
+        metavar='NAME',
+        default="Database"
     )
     arguments = parser.parse_args()
-    # ===============================================================================================
-    # name of sqlite3 database file that will be create
+    #===============================================================================================
+    #name of sqlite3 database file that will be create    
     if CheckStr(arguments.database, ".db") == True:
         FILE = arguments.database
     else:
-        FILE = arguments.database + ".db"
-    # create sqlite3 database
-    SQLiteConnection, cursor = CreateDB(FILE, arguments)
-    # ===============================================================================================
-    # fill sqlite3 database with initial data
+        FILE = arguments.database + ".db"       
+    #create sqlite3 database
+    SQLiteConnection, cursor = CreateDB(FILE)
+    #===============================================================================================
+    #fill sqlite3 database with initial data
     readerP = DownloadData("Ports")
     readerM = DownloadData("VendorsMAC")
-    readerS = csv.reader(open("Services.csv", "r"), delimiter=",")
-    readerF = csv.reader(open("Filter.csv", "r"), delimiter=",")
+    readerS = csv.reader(open('Services.csv','r'), delimiter=',')    
+    readerF = csv.reader(open('Filter.csv','r'), delimiter=',')
     InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF)
-    # ===============================================================================================
-    # release of used resources
+    #===============================================================================================
+    #release of used resources
     cursor.close()
-    if SQLiteConnection:
+    if(SQLiteConnection):
         SQLiteConnection.close()
-
-
-# ===============================================================================================
-# ===============================================================================================
+#===============================================================================================
+#===============================================================================================
 if __name__ == "__main__":
     Main()
-# ===============================================================================================
-# ===============================================================================================
-
+#===============================================================================================
+#===============================================================================================
