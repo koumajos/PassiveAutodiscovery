@@ -130,7 +130,7 @@ def CreateDB(FILE, arg):
 
 # ===============================================================================================
 # ===============================================================================================
-def DownloadData(name, arg):
+def DownloadData(name):
     """Download initial data for sqlite3 database and open it
     
     Parameters
@@ -143,9 +143,6 @@ def DownloadData(name, arg):
     reader : csv
         The opened data taht have been downloaded.
     """
-    if arg.s:
-        reader = csv.reader(open(name + ".csv", "r"), delimiter=",")
-        return reader
     try:  # try download the file from url, if can't download or connect, use the archive local file (can be deprecated)
         if name == "Ports":
             print("Downloading Transport Layer Ports data....", end="")
@@ -248,9 +245,6 @@ def Main():
     parser.add_argument(
         "-y", help="Consent to overwrite exists database", action="store_true"
     )
-    parser.add_argument(
-        "-s", help="Skip downloading new data and use archive data", action="store_true"
-    )
     arguments = parser.parse_args()
     # ===============================================================================================
     # name of sqlite3 database file that will be create
@@ -262,8 +256,8 @@ def Main():
     SQLiteConnection, cursor = CreateDB(FILE, arguments)
     # ===============================================================================================
     # fill sqlite3 database with initial data
-    readerP = DownloadData("Ports", arguments)
-    readerM = DownloadData("VendorsMAC", arguments)
+    readerP = DownloadData("Ports")
+    readerM = DownloadData("VendorsMAC")
     readerS = csv.reader(open("Services.csv", "r"), delimiter=",")
     readerF = csv.reader(open("Filter.csv", "r"), delimiter=",")
     InserData(SQLiteConnection, cursor, readerP, readerM, readerS, readerF)
