@@ -51,22 +51,22 @@ url_ports = "https://www.iana.org/assignments/service-names-port-numbers/service
 url_mac = "https://macaddress.io/database/macaddress.io-db.csv"
 
 
-def check_str(string, suffix):
+def check_str(string, dot):
     """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
 
     Parameters
     --------
-    string : str 
+    STR : str 
         String of file name.
-    suffix : str
+    DOT : str
         String of file suffix.
     Returns
     --------
     Boolean : boolean
-        True if string have suffix DOT.
-        False if string havn't suffix DOT.
+        True if STR have suffix DOT.
+        False if STR havn't suffix DOT.
     """
-    spl = string.split(suffix)
+    spl = string.split(dot)
     if spl[-1] == "":
         return True
     return False
