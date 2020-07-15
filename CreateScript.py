@@ -47,8 +47,8 @@ import urllib.request
 import argparse
 from argparse import RawTextHelpFormatter
 
-url_ports = "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv"
-url_mac = "https://macaddress.io/database/macaddress.io-db.csv"
+URL_PORTS = "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv"
+URL_MAC = "https://macaddress.io/database/macaddress.io-db.csv"
 
 
 def check_str(string, suffix):
