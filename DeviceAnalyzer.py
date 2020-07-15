@@ -100,8 +100,7 @@ import matplotlib.ticker as plticker
 import argparse
 from argparse import RawTextHelpFormatter
 
-# ===============================================================================================
-# ===============================================================================================
+
 def CheckStr(STR, DOT):
     """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
 
@@ -123,8 +122,6 @@ def CheckStr(STR, DOT):
     return False
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def bubbleSort(X, Y):
     """Bubble sort for sorting Activity data in arrays X and Y.
 
@@ -143,8 +140,6 @@ def bubbleSort(X, Y):
                 Y[j], Y[j + 1] = Y[j + 1], Y[j]
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def ActivityGraph(Device, cursor, createJSON):
     """Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.
 
@@ -227,8 +222,6 @@ def ActivityGraph(Device, cursor, createJSON):
     plt.clf()
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def TimeGraph(Dependency, table, cursor, createJSON):
     """Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.
 
@@ -334,8 +327,6 @@ def TimeGraph(Dependency, table, cursor, createJSON):
     plt.clf()
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def plot(data):
     """Plot the statistical graph of using network (by protocols or devices) in %. Only for output in command line.
 
@@ -362,8 +353,6 @@ def plot(data):
         sys.argv = original_argv
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def read_json(filename):
     """Read JSON document from file to prom data.
 
@@ -385,8 +374,6 @@ def read_json(filename):
     return data
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def write_json(data, filename):
     """Write JSON in python to JSON document file. 
 
@@ -405,8 +392,6 @@ def write_json(data, filename):
         json.dump(data, f, indent=4)
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
     """Function create graph of local dependencies for IP address version 4 and IP address version 6. Then safe it to file named Graph_Local_[ip verison].
 
@@ -477,8 +462,6 @@ def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
     JSON["Files"].append("Graph_Local_IPv6.png")
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def GraphGlobalDependencies(cursor, SQLiteConnection, JSON):
     """Function create graph of global dependencies for each device. Then safe them to files named Graph_Global_[IP address].
 
@@ -522,8 +505,6 @@ def GraphGlobalDependencies(cursor, SQLiteConnection, JSON):
         JSON["Files"].append("Graph_Global_%s.png" % device[0])
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def GraphLocalToGlobal(cursor, SQLiteConnection, JSON):
     """Function create graph of dependencies between local and global device, where global is only if two or more local device have communication with. Then safe them to files named Graph_GlobalsToLocals_[number]. (Graph are for visibility safe to more files by small number of devices)
 
@@ -583,8 +564,6 @@ def GraphLocalToGlobal(cursor, SQLiteConnection, JSON):
                         # return
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
     """Find if for device IP is in database MAC address record in table MAC or table Routers. If in table MAC, the device with IP has this MAC address. If in Router, the device with IP has this MAC address or is behind router with this MAC address (Ussualy cant resolve this by program).
 
@@ -612,6 +591,7 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
         createJSON["MAC"] = row[2]
         mac = [row[2][i : i + 8] for i in range(0, len(row[2]), 8)][0]
     elif Router:
+        # TODO router device with IP from local segment must have safe MAC in createJSON["MAC"]
         createJSON["RouterMAC"] = Router[1]
         mac = [Router[1][i : i + 8] for i in range(0, len(Router[1]), 8)][0]
     else:
@@ -628,8 +608,6 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
             createJSON["Vendor"] = "Not Find"
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
     """Find all labels (of roles/services) for device in database table LocalServices. Also create new label out of dependencies like [End Device].
 
@@ -776,8 +754,6 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
         createJSON["Labels"].append({"Label": "Unknows", "Description": ""})
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
     """Funkcion finds for device all record of DHCP comunicationa nd set it to output.
 
@@ -808,8 +784,6 @@ def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
             )
 
 
-# ======================================================================================================================================
-# =======================================================================================================================================
 def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
     """Function find if source or destination port of dependency isn't some services in network. If yes, then the packet number carry the dependendy add in LocalStatistic to the services. (this create with cyclus counter of packet by protocol in network) 
     
@@ -847,8 +821,6 @@ def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
             LocalStatistic[st] = Dependency[5]
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def LOCALDEPENDENCIES(
     DeviceID,
     IP,
@@ -963,10 +935,8 @@ def LOCALDEPENDENCIES(
                     )
                     PortD = cursor.fetchone()
                     if PortD:
-                        if not PortD[1] == "":
-                            Port = PortD[1]
-                        else:
-                            Port = PortD[2]
+                        Services = PortD[1]
+                        Port = Dependency[4]
                     else:
                         Port = Dependency[4]
                 else:
@@ -979,10 +949,8 @@ def LOCALDEPENDENCIES(
                     )
                     PortS = cursor.fetchone()
                     if PortS:
-                        if not PortS[1] == "":
-                            Port = PortS[1]
-                        else:
-                            Port = PortS[2]
+                        Services = PortS[1]
+                        Port = Dependency[3]
                     else:
                         Port = Dependency[3]
             # ========================================================
@@ -997,8 +965,6 @@ def LOCALDEPENDENCIES(
             )
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def GLOBALDEPENDENCIES(
     DeviceID,
     IP,
@@ -1149,7 +1115,8 @@ def GLOBALDEPENDENCIES(
                     )
                     PortD = cursor.fetchone()
                     if PortD:
-                        Port = PortD[1]
+                        Services = PortD[1]
+                        Port = GlobalDependency[4]
                     else:
                         Port = GlobalDependency[4]
                 else:
@@ -1162,7 +1129,8 @@ def GLOBALDEPENDENCIES(
                     )
                     PortS = cursor.fetchone()
                     if PortS:
-                        Port = PortS[1]
+                        Services = PortS[1]
+                        Port = GlobalDependency[3]
                     else:
                         Port = GlobalDependency[3]
             # ========================================================
@@ -1177,8 +1145,6 @@ def GLOBALDEPENDENCIES(
             )
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def StatPercent(Statistic, createJSON, TMP):
     """Function receive dictionary. The dictionarz number of packets calculate and create from it Percents.
 
@@ -1218,8 +1184,6 @@ def StatPercent(Statistic, createJSON, TMP):
         plot(Statistic.items())
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def IPAddress(IP, cursor, createJSON):
     """Function finds in database all IP address of the device (more then one only when device used both version of IP address or change IP address while monitoring network (DHCP)).
 
@@ -1262,8 +1226,6 @@ def IPAddress(IP, cursor, createJSON):
                     createJSON["DeviceBehindRouter"].append(ip[2])
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def PrintDeviceFromJSON(JSON, arguments):
     """Print device from output JSON document to command line.
 
@@ -1585,8 +1547,6 @@ def PrintDeviceFromJSON(JSON, arguments):
         plot(IPStatistic.items())
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def PrintDeviceToFileFromJSON(JSON, arguments, sample):
     """Print device from output JSON document to file.
 
@@ -1897,8 +1857,6 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
             print("    ", i, "\t\t\t", j, "%", file=sample)
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def PrintJSON(JSON, arguments):
     """Print safed analyze from JSON file. Into file or command line.
 
@@ -1922,8 +1880,6 @@ def PrintJSON(JSON, arguments):
             PrintDeviceToFileFromJSON(Dev, arguments, sample)
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def AnalyzeLocalDevice(
     DeviceID,
     IP,
@@ -2033,8 +1989,6 @@ def AnalyzeLocalDevice(
     JSON["Devices"].append(createJSON)
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def AnalyzeNetwork(SQLiteConnection, arguments):
     """Analyze network subnet from arguments.
 
@@ -2131,8 +2085,6 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
     print("Output JSON: ", arguments.json)
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def AnalyzeSingleDevice(SQLiteConnection, arguments):
     """Analyze single device from arguments. If isn't in database print error and end. Else analyze it.
 
@@ -2209,8 +2161,6 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
     print("Output JSON: ", arguments.json)
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def DoAnalyze(SQLiteConnection, arguments):
     """Analyze all "local" devices from database table LocalDevice.
 
@@ -2302,8 +2252,6 @@ def DoAnalyze(SQLiteConnection, arguments):
     print("Output JSON: ", arguments.json)
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def Arguments():
     """Arguments of the DeviceAnalyzer script.
 
@@ -2466,8 +2414,6 @@ def Arguments():
     return arguments
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def ConnectToDatabase(arguments):
     """Connect to sqlite3 database which analyze.
 
@@ -2497,8 +2443,6 @@ def ConnectToDatabase(arguments):
     return SQLiteConnection
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 def Main():
     """Main function call one of three function by arguments where it is set.
 
@@ -2526,10 +2470,6 @@ def Main():
         SQLiteConnection.close()
 
 
-# =======================================================================================================================================
-# =======================================================================================================================================
 if __name__ == "__main__":
     Main()
-# =======================================================================================================================================
-# =======================================================================================================================================
 
