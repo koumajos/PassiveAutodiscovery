@@ -40,7 +40,6 @@
 
 
 """
-#=================================================================================================================================
 #NEMEA system library for 
 import pytrap
 #libraries for working with OS UNIX files and system
