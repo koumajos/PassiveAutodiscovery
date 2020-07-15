@@ -47,8 +47,8 @@ import urllib.request
 import argparse
 from argparse import RawTextHelpFormatter
 
-url_ports = "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv"
-url_mac = "https://macaddress.io/database/macaddress.io-db.csv"
+urlP = "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv"
+urlV = "https://macaddress.io/database/macaddress.io-db.csv"
 
 
 def check_str(string, dot):
@@ -140,10 +140,10 @@ def download_data(name, arg):
     try:  # try download the file from url, if can't download or connect, use the archive local file (can be deprecated)
         if name == "Ports":
             print("Downloading Transport Layer Ports data....", end="")
-            urllib.request.urlretrieve(url_ports, name + "_url.csv")
+            urllib.request.urlretrieve(urlP, name + "_url.csv")
         else:
             print("Downloading Vendors of MAC address data....", end="")
-            urllib.request.urlretrieve(url_mac, name + "_url.csv")
+            urllib.request.urlretrieve(urlV, name + "_url.csv")
         print("done")
         reader = csv.reader(open(name + "_url.csv", "r"), delimiter=",")
     except:
