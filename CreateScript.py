@@ -135,13 +135,7 @@ def download_data(name, arg):
         The opened data taht have been downloaded.
     """
     if arg.s:
-        if os.path.exists(name + "_url.csv"):
-            reader = csv.reader(open(name + "_url.csv", "r"), delimiter=",")
-        elif os.path.exists(name + ".csv"):
-            reader = csv.reader(open(name + ".csv", "r"), delimiter=",")
-        else:
-            print("Archive file ", name, " doesn't found.")
-            sys.exit()
+        reader = csv.reader(open(name + ".csv", "r"), delimiter=",")
         return reader
     try:  # try download the file from url, if can't download or connect, use the archive local file (can be deprecated)
         if name == "Ports":
@@ -154,11 +148,7 @@ def download_data(name, arg):
         reader = csv.reader(open(name + "_url.csv", "r"), delimiter=",")
     except:
         print("Download failed, open local archive file...")
-        if os.path.exists(name + ".csv"):
-            reader = csv.reader(open(name + ".csv", "r"), delimiter=",")
-        else:
-            print("Archive file ", name, " doesn't found.")
-            sys.exit()
+        reader = csv.reader(open(name + ".csv", "r"), delimiter=",")
     return reader
 
 
