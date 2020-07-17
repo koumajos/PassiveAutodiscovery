@@ -1,2 +1,7 @@
 __pycache__/*
 Test/*
+Ports_url.csv
+VendorsMAC_url.csv
+*.db
+*.json
+!requirements.txt
