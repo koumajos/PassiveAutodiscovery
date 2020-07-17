@@ -1,3 +1,4 @@
+#!/usr/bin/python3.6
 """CreateScript:
 
     This script is part of PassiveAutodiscovery modul for modular monitoring system NEMEA (Network Measurement Analysis).
@@ -30,8 +31,6 @@
 
 
 """
-#!/usr/bin/python3.6
-
 # Standard Library Imports
 import sqlite3
 import csv
@@ -48,7 +47,7 @@ URL_MAC = "https://macaddress.io/database/macaddress.io-db.csv"
 
 
 def check_str(string, suffix):
-    """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
+    """Function check if string have suffix in end of string. Like suffix .txt in text.txt.
 
     Parameters
     --------
@@ -62,10 +61,7 @@ def check_str(string, suffix):
         True if string have suffix DOT.
         False if string havn't suffix DOT.
     """
-    spl = string.split(suffix)
-    if spl[-1] == "":
-        return True
-    return False
+    return string.endswith(suffix)
 
 
 def create_db(file, arg):
