@@ -9,10 +9,6 @@
 
     Collector function collector is call from PassiveAutodiscovery module.
 
-
-
-
-
     Copyright (C) 2020 CESNET
 
 
@@ -28,9 +24,6 @@
         ALTERNATIVELY, provided that this notice is retained in full, this product may be distributed under the terms of the GNU General Public License (GPL) version 2 or later, in which case the provisions of the GPL apply INSTEAD OF those given above. 
 
         This software is provided as is'', and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the company or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
-
-
-
 
 """
 # Standard Library Imports
@@ -82,6 +75,21 @@ def service_label(ip, port, table, cursor, sglite_connection, arguments):
 
 
 def insert_time(table, cursor, sglite_connection, rows, time, num_packets):
+    """Insert data to table DependeciesTime or GlobalTime
+    
+    Parameters
+    -----------
+    table : str
+        Table where record about dependency may be safed. ("Dependencies" - for dependencies between "local" devices, "Global" - for dependencies between "local" device and global device)    
+    cursor : sqlite3
+        Cursor to sqlite3 database for execute SQL queries.
+    sglite_connection : sqlite3
+        Connection to sqlite3 database.
+    time : str
+        Time of IP flow.
+    num_packets : int
+        Number of packet carryed in dependency(single IP flow).
+    """
     try:
         if table == "Dependencies":
             cursor.execute(
@@ -228,8 +236,6 @@ def new_dependency(
             insert_time(table, cursor, sglite_connection, rows, time, num_packets)
 
 
-# =================================================================================================================================
-# =================================================================================================================================
 def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, sglite_connection):
     """If IP flow is DHCP traffic, then safe record of it to table DHCP.
     
