@@ -13,7 +13,7 @@
     Deppendency mapping:
         Module safe all dependencies between "local" devices. Can also safe dependencies between "local" device and "global" devices(devices that aren't "local").
 
-    Module is coaporate with Collector.py script that fill sqlite3 database. 
+    Module is coaporate with collector.py script that fill sqlite3 database. 
     The output from the database (entire analyze) is created by DeviceAnalyzer.py script.   
 
 
@@ -66,7 +66,7 @@ import argparse
 from argparse import RawTextHelpFormatter
 
 # cooperate python script
-import Collector
+import collector
 
 
 def check_str(string, suffix):
@@ -538,7 +538,7 @@ def filter_incomplete_traffic(cursor, arg, rec):
 
 
 def main():
-    """Main function of module. First set initial things (arguemnts, pytrap library, database), then waiting for IP flows on selected IFC interface and call for them Collector.py script to add it to database.
+    """Main function of module. First set initial things (arguemnts, pytrap library, database), then waiting for IP flows on selected IFC interface and call for them collector.py script to add it to database.
         
     """
     arg = arguments()
@@ -578,14 +578,14 @@ def main():
                     old_time, start_time, arg, db_flows + filtered_flows, cursor
                 )
 
-        Collector.collector(rec, sqlite_connection, cursor, arg)
+        collector.collect_flow_data(rec, sqlite_connection, cursor, arg)
 
         db_flows = db_flows + 1
         if arg.DeleteGlobal != 0 and db_flows % 10000 == 0:
-            Collector.DeleteGlobalDependencies(sqlite_connection, arg.DeleteGlobal)
+            collector.DeleteGlobalDependencies(sqlite_connection, arg.DeleteGlobal)
 
     if arg.DeleteGlobal != 0:
-        Collector.DeleteGlobalDependencies(sqlite_connection, arg.DeleteGlobal)
+        collector.DeleteGlobalDependencies(sqlite_connection, arg.DeleteGlobal)
 
     if arg.P:
         old_time = print_act_inf(
