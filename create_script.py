@@ -142,10 +142,10 @@ def download_data(name, arg):
     try:  # try download the file from url, if can't download or connect, use the archive local file (can be deprecated)
         if name == "Ports":
             print("Downloading Transport Layer Ports data....", end="")
-            urllib.request.urlretrieve(url_ports, name + "_url.csv")
+            urllib.request.urlretrieve(URL_PORTS, name + "_url.csv")
         else:
             print("Downloading Vendors of MAC address data....", end="")
-            urllib.request.urlretrieve(url_mac, name + "_url.csv")
+            urllib.request.urlretrieve(URL_MAC, name + "_url.csv")
         print("done")
         reader = csv.reader(open(name + "_url.csv", "r"), delimiter=",")
     except:
@@ -253,14 +253,13 @@ def main():
     
     """
     arg = arguments()
-    # name of sqlite3 database file that will be create
+    file = ""  # name of sqlite3 database file that will be create
     if check_str(arg.database, ".db"):
         file = arg.database
     else:
         file = arg.database + ".db"
-    # create sqlite3 database
-    sqlite_connection, cursor = create_db(file, arg)
-    # fill sqlite3 database with initial data
+    sqlite_connection, cursor = create_db(file, arg)  # create sqlite3 database
+
     read_ports = download_data("Ports", arg)
     read_mac = download_data("VendorsMAC", arg)
     read_services = csv.reader(open("Services.csv", "r"), delimiter=",")
@@ -268,7 +267,7 @@ def main():
     inser_data(
         sqlite_connection, cursor, read_ports, read_mac, read_services, read_filter,
     )
-    # release of used resources
+
     cursor.close()
     if sqlite_connection:
         sqlite_connection.close()
