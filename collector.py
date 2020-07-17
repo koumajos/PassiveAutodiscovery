@@ -236,84 +236,75 @@ def new_dependency(
             insert_time(table, cursor, sglite_connection, rows, time, num_packets)
 
 
-def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, sglite_connection):
+def dhcp(src_ip, dst_ip, src_port, dst_port, time, cursor, sglite_connection):
     """If IP flow is DHCP traffic, then safe record of it to table DHCP.
     
     Parameters
     -----------
-    SRC_IP : str
+    src_ip : str
         Source IP address of dependency.
-    DST_IP : str
+    dst_ip : str
         Destination IP address of dependency.
-    SRC_PORT : int
+    src_port : int
         Source port number of dependency.
-    DST_PORT : int
+    dst_port : int
         Destination prot of dependency.
-    TIME : int
+    time : int
         Unix time of IP flow.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
     sglite_connection : sqlite3
         Connection to sqlite3 database.
     """
-    if (SRC_PORT == 68 and DST_PORT == 67) or (SRC_PORT == 546 and DST_PORT == 547):
+    if (src_port == 68 and dst_port == 67) or (src_port == 546 and dst_port == 547):
         try:
             cursor.execute(
-                "INSERT INTO DHCP (DeviceIP, ServerIP, Time) VALUES ('%s', '%s', '%s')"
-                % (SRC_IP, DST_IP, TIME)
+                f"INSERT INTO DHCP (DeviceIP, ServerIP, Time) "
+                f"VALUES ('{src_ip}', '{dst_ip}', '{time}')"
             )
             sglite_connection.commit()
         except sqlite3.IntegrityError:
-            print("Error with inserting into table DHCP")
-    elif (SRC_PORT == 67 and DST_PORT == 68) or (SRC_PORT == 547 and DST_PORT == 546):
+            print(f"Error with inserting into table DHCP: {sqlite3.IntegrityError}")
+    elif (src_port == 67 and dst_port == 68) or (src_port == 547 and dst_port == 546):
         try:
             cursor.execute(
-                "INSERT INTO DHCP (DeviceIP, ServerIP, Time) VALUES ('%s', '%s', '%s')"
-                % (DST_IP, SRC_IP, TIME)
+                f"INSERT INTO DHCP (DeviceIP, ServerIP, Time) "
+                f"VALUES ('{dst_ip}', 'src_ip', 'time')"
             )
             sglite_connection.commit()
         except sqlite3.IntegrityError:
-            print("Error with inserting into table DHCP")
+            print(f"Error with inserting into table DHCP: {sqlite3.IntegrityError}")
     else:
         return
 
 
-# =================================================================================================================================
-# =================================================================================================================================
-# Add router dependencies to database
-# IP = IP address of device behind router; MAC = mac address of router, cursor and sglite_connection = database connection
-def Routers(IP, MAC, cursor, sglite_connection):
+def add_router(ip, mac, cursor, sglite_connection):
     """Function for adding record to table Routers. The record is MAC address of router and Ip address of device behind him or router himself.
     
     Parameters
     -----------
-    IP : str
+    ip : str
         IP address of device behind router (or IP address of the router).
-    MAC : str
+    mac : str
         MAC address of router.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
     sglite_connection : sqlite3
         Connection to sqlite3 database.
     """
-    cursor.execute("SELECT * FROM Routers WHERE MAC='%s' AND IP='%s'" % (MAC, IP))
+    cursor.execute(f"SELECT * FROM Routers WHERE MAC='{mac}' AND IP='{ip}'")
     row = cursor.fetchone()
     if row:
         return
     else:
         try:
-            cursor.execute(
-                "INSERT INTO Routers (MAC, IP) VALUES ('%s', '%s')" % (MAC, IP)
-            )
+            cursor.execute(f"INSERT INTO Routers (MAC, IP) VALUES ('{mac}', '{ip}')")
             sglite_connection.commit()
         except sqlite3.IntegrityError:
-            print("Error with inserting into table Routers")
+            print(f"Error with inserting into table Routers: {sqlite3.IntegrityError}")
 
 
-# =================================================================================================================================
-# =================================================================================================================================
-# Add MAC
-def MACAdd(IP, MAC, TIME, cursor, sglite_connection, arguments):
+def add_mac(ip, mac, time, cursor, sglite_connection, arguments):
     """
     
     Parameters
@@ -331,31 +322,29 @@ def MACAdd(IP, MAC, TIME, cursor, sglite_connection, arguments):
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
     """
-    if arguments.macdev == True:
-        print("New MAC address: ", IP, " -> ", MAC)
+    if arguments.macdev:
+        print(f"New MAC address: {ip} -> {mac}")
     try:
+        empty_string = ""
         cursor.execute(
-            "INSERT INTO MAC (IP, MAC, FirstUse, LastUse) VALUES ('%s', '%s', '%s', '%s')"
-            % (IP, MAC, TIME, "")
+            f"INSERT INTO MAC (IP, MAC, FirstUse, LastUse) "
+            f"VALUES ('{ip}', '{mac}', '{time}', '{empty_string}')"
         )
         sglite_connection.commit()
     except sqlite3.IntegrityError:
-        print("Error with inserting into table MAC")
+        print(f"Error with inserting into table MAC: {sqlite3.IntegrityError}")
 
 
-# =================================================================================================================================
-# Check if MAC address is in database for this IP address and if no add it to database, if yes do stuffs
-# =================================================================================================================================
-def MAC(IP, MAC, TIME, cursor, sglite_connection, arguments):
+def mac(ip, mac, time, cursor, sglite_connection, arguments):
     """If device is is in local segemnt, the module can rosolve his MAC address and add record of it to table MAC. If it's router and behind it is local subnet (2 or more local device or one global device on this mac address (the same IP version)) add all record of this mac address from table MAC to table Router and add new record from this IP flow.
     
     Parameters
     -----------
-    IP : str
+    ip : str
         IP address of the device.
-    MAC : str
+    mac : str
         MAC address of the device.
-    TIME : int
+    time : int
         Unix time of the IP flow.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
@@ -365,13 +354,13 @@ def MAC(IP, MAC, TIME, cursor, sglite_connection, arguments):
         Setted argument of the PassiveAutodiscovery module.
     """
     # =======If device mac is router, do not continue in MAC code=======
-    cursor.execute("SELECT * FROM Routers WHERE MAC='%s'" % MAC)
+    cursor.execute("SELECT * FROM Routers WHERE MAC='%s'" % mac)
     routers = cursor.fetchall()
     if routers:
-        Routers(IP, MAC, cursor, sglite_connection)
+        add_router(ip, mac, cursor, sglite_connection)
         return
     # ==================================================================
-    cursor.execute("SELECT * FROM MAC WHERE MAC.MAC='%s'" % MAC)
+    cursor.execute("SELECT * FROM MAC WHERE MAC.MAC='%s'" % mac)
     rows = cursor.fetchall()
     if rows:
         tmp = 0
@@ -380,7 +369,7 @@ def MAC(IP, MAC, TIME, cursor, sglite_connection, arguments):
                 row[4] != ""
             ):  # check if it currect recod of MAC address (the old one have in row[4] time of end using)
                 continue
-            newip = ipaddress.ip_address(IP)
+            newip = ipaddress.ip_address(ip)
             oldip = ipaddress.ip_address(row[1])
             if newip == oldip:  # if ip match, end it
                 return
@@ -394,7 +383,7 @@ def MAC(IP, MAC, TIME, cursor, sglite_connection, arguments):
                 # Until I will have change test this on real local network with more local segments, will be this comment (SARS-CoV-2 is responsible for this)
                 # Think of this commented code:
                 tmp = 2
-            #                cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='%s'" % IP)
+            #                cursor.execute("SELECT * FROM DHCP WHERE DeviceIP='%s'" % ip)
             #                DHCProws = cursor.fetchall()
             #                if DHCProws:
             #                    lastrow = DHCProws[0]
@@ -403,17 +392,17 @@ def MAC(IP, MAC, TIME, cursor, sglite_connection, arguments):
             #                            lastrow = DHCProw
             #                        else:
             #                            None
-            #                    if float(TIME) > float(DHCProw[3]) and float(row[3]) < float(DHCProw[3]):
+            #                    if float(time) > float(DHCProw[3]) and float(row[3]) < float(DHCProw[3]):
             #                        try:
-            #                            cursor.execute("UPDATE MAC SET LastUse='%s' WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (TIME, row[1], row[2], row[3]) )
+            #                            cursor.execute("UPDATE MAC SET LastUse='%s' WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (time, row[1], row[2], row[3]) )
             #                            sglite_connection.commit()
             #                        except sqlite3.IntegrityError:
             #                            None
-            #                        MACAdd(IP, MAC, TIME, cursor, sglite_connection, arguments)
+            #                        add_mac(ip, mac, time, cursor, sglite_connection, arguments)
             #                        return
-            #                    elif float(TIME) > float(DHCProw[3]) and float(row[3]) > float(DHCProw[3]):
-            #                        Routers(IP, MAC, cursor, sglite_connection)
-            #                        Routers(row[1], MAC, cursor, sglite_connection)
+            #                    elif float(time) > float(DHCProw[3]) and float(row[3]) > float(DHCProw[3]):
+            #                        add_router(ip, mac, cursor, sglite_connection)
+            #                        add_router(row[1], mac, cursor, sglite_connection)
             #                        try:
             #                            cursor.execute("DELETE FROM MAC WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (row[1], row[2], row[3]) )
             #                            sglite_connection.commit()
@@ -430,23 +419,20 @@ def MAC(IP, MAC, TIME, cursor, sglite_connection, arguments):
                 else:
                     tmp = 1
         if tmp == 1:
-            MACAdd(IP, MAC, TIME, cursor, sglite_connection, arguments)
+            add_mac(ip, mac, time, cursor, sglite_connection, arguments)
             return
     else:
-        MACAdd(IP, MAC, TIME, cursor, sglite_connection, arguments)
+        add_mac(ip, mac, time, cursor, sglite_connection, arguments)
 
 
-# =================================================================================================================================
-# =================================================================================================================================
-# Check if local IP address is in database, if not push it do table LocalDevice
-def NewDevice(IP, TIME, cursor, sglite_connection, arguments):
+def new_device(ip, time, cursor, sglite_connection, arguments):
     """This funcion check if "local" device is in sqlite3 database table LocalDevice. If isn't, add it to table. If is, update last comunication in record of it.
     
     Parameters
     -----------
-    IP : str
+    ip : str
         IP address of the local device.
-    TIME : int
+    time : int
         Unix time of the IP flow.    
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
@@ -455,67 +441,58 @@ def NewDevice(IP, TIME, cursor, sglite_connection, arguments):
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
     """
-    cursor.execute(
-        "SELECT * FROM LocalDevice WHERE LocalDevice.IP='%s'" % IP
-    )  # check if exists
+    cursor.execute(f"SELECT * FROM LocalDevice WHERE LocalDevice.IP='{ip}'")
     row = cursor.fetchone()
     if row:
-        try:  # yes - update time
-            cursor.execute(
-                "UPDATE LocalDevice SET LastCom={LC} WHERE IP='{ip}'".format(
-                    LC=TIME, ip=IP
-                )
-            )
+        # if device exists
+        try:
+            # update time
+            cursor.execute(f"UPDATE LocalDevice SET LastCom={time} WHERE IP='{ip}'")
             sglite_connection.commit()
         except sqlite3.IntegrityError:
             print(
-                "Error with updating value in table LocalDevice with error ",
-                sqlite3.IntegrityError,
+                f"Error with updating value in table LocalDevice with error: {sqlite3.IntegrityError}"
             )
         return
-    else:  # no - add new record
-        if arguments.localdev == True:
-            print("New local device: ", IP)
+    else:
+        # add new record
+        if arguments.localdev:
+            print(f"New local device: {ip}")
         try:
             cursor.execute(
-                "INSERT INTO LocalDevice (IP, LastCom) VALUES ('%s', '%s')" % (IP, TIME)
+                f"INSERT INTO LocalDevice (IP, LastCom) VALUES ('{ip}', '{time}')"
             )
             sglite_connection.commit()
         except sqlite3.IntegrityError:
             print(
-                "Error with inserting into table LocalDevice with error ",
-                sqlite3.IntegrityError,
+                f"Error with inserting into table LocalDevice with error: {sqlite3.IntegrityError}"
             )
 
 
-# =================================================================================================================================
-# =================================================================================================================================
-# deleting small packets dependencies from global
-def DeleteGlobalDependencies(sglite_connection, PacketNumber):
-    """Delete global dependencies from table Global that have number of packer smaller then number PacketNumber.
+def delete_unnecessary_global_dependencies(sglite_connection, num_packets):
+    """Delete global dependencies from table Global that have number of packer smaller then number num_packets
     
     Parameters
     -----------
     sglite_connection : sqlite3
         Connection to sqlite3 database.
-    PacketNumber : int
+    num_packets : int
         Number of packet that is line for delete.
     """
     cursor = sglite_connection.cursor()
     try:
         cursor.execute(
-            "DELETE FROM Global WHERE NumPackets < {number} AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)".format(
-                number=PacketNumber
-            )
+            f"DELETE FROM Global "
+            f"WHERE NumPackets < {num_packets} "
+            f"AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)"
         )
         sglite_connection.commit()
     except sqlite3.IntegrityError:
-        print("Error in deleting rows from Global")
+        print(
+            f"Error in deleting rows from Global with error: {sqlite3.IntegrityError}"
+        )
 
 
-# =================================================================================================================================
-# =================================================================================================================================
-# collector collect information from ipflows and push them into database
 def collect_flow_data(rec, sglite_connection, cursor, arguments):
     """Main function of this script. This function receive IP flow, database proms and arguments. Then work with received IP flow to get information from it and record of it safe (update) in sqlite3 database that received.
     
@@ -532,45 +509,47 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
     """
     # ===============================================================================
     # if mac address is broadcast then ignore this IP flow, also this check if MAC address is in record of IP flows, if isn't this will set not working with it.
-    MACtemplate = True
+    mac_template = True
     try:
         if rec.DST_MAC == "ff:ff:ff:ff:ff:ff" or rec.SRC_MAC == "ff:ff:ff:ff:ff:ff":
             return
     except:
-        MACtemplate = False
+        mac_template = False
     # ===============================================================================
     # IP address from IP flow to format where can be ease work with
-    SrcIP = ipaddress.ip_address(rec.SRC_IP)
-    DstIP = ipaddress.ip_address(rec.DST_IP)
+    src_ipaddress = ipaddress.ip_address(rec.SRC_IP)
+    dst_ipaddress = ipaddress.ip_address(rec.DST_IP)
     # ===============================================================================
     # banned Ip address (broadcast,...)
-    ban1 = ipaddress.ip_address("0.0.0.0")
-    ban2 = ipaddress.ip_address("255.255.255.255")
+    ban_ipaddress_1 = ipaddress.ip_address("0.0.0.0")
+    ban_ipaddress_2 = ipaddress.ip_address("255.255.255.255")
     # ===============================================================================
     # check if IP address isn't banned (multicasts,broadcasts), if yes return
-    if SrcIP.is_multicast or DstIP.is_multicast:
+    if src_ipaddress.is_multicast or dst_ipaddress.is_multicast:
         return
-    if rec.SRC_IP == ban1 or rec.DST_IP == ban1:
+    if rec.SRC_IP == ban_ipaddress_1 or rec.DST_IP == ban_ipaddress_1:
         return
-    if rec.SRC_IP == ban2 or rec.DST_IP == ban2:
+    if rec.SRC_IP == ban_ipaddress_2 or rec.DST_IP == ban_ipaddress_2:
         return
     # ===============================================================================
     src = False  # src is boolean - True if SRC_IP is from setted networks
     dst = False  # dst is boolean - True if SRC_IP is from setted networks
     # chceck if IP addresses isn't broadcasts of setted networks, if yes return
-    for nip in arguments.networks:
-        NIP = ipaddress.ip_network(nip)
-        if SrcIP in NIP:
-            if NIP.version == 4:
-                NIPv4 = ipaddress.IPv4Network(nip)
-                if SrcIP == NIPv4.broadcast_address:
+    for network_ip in arguments.networks:
+        # network_ip is string IP address of network
+        network_ipaddress = ipaddress.ip_network(network_ip)
+        # network_ipaddress is object of ipaddress from python library
+        if src_ipaddress in network_ipaddress:
+            if network_ipaddress.version == 4:
+                network_ipaddress_v4 = ipaddress.IPv4Network(network_ip)
+                if src_ipaddress == network_ipaddress_v4.broadcast_address:
                     return
             src = True
             break
-        elif DstIP in NIP:
-            if NIP.version == 4:
-                NIPv4 = ipaddress.IPv4Network(nip)
-                if DstIP == NIPv4.broadcast_address:
+        elif dst_ipaddress in network_ipaddress:
+            if network_ipaddress.version == 4:
+                network_ipaddress_v4 = ipaddress.IPv4Network(network_ip)
+                if dst_ipaddress == network_ipaddress_v4.broadcast_address:
                     return
             dst = True
             break
@@ -579,11 +558,11 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
     # ===============================================================================
     # Main funciton which call function for safing data to sqlite3 database
     if (
-        SrcIP.is_private and arguments.OnlySetNetworks == False
+        src_ipaddress.is_private and arguments.OnlySetNetworks == False
     ) or src:  # Source Device is in local network
-        NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
-        if MACtemplate == True:
-            MAC(
+        new_device(rec.SRC_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
+        if mac_template == True:
+            mac(
                 rec.SRC_IP,
                 rec.SRC_MAC,
                 rec.TIME_LAST,
@@ -592,11 +571,11 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                 arguments,
             )
         if (
-            DstIP.is_private and arguments.OnlySetNetworks == False
+            dst_ipaddress.is_private and arguments.OnlySetNetworks == False
         ) or dst:  # Destination Device is in local network
-            NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
-            if MACtemplate == True:
-                MAC(
+            new_device(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
+            if mac_template == True:
+                mac(
                     rec.DST_IP,
                     rec.DST_MAC,
                     rec.TIME_LAST,
@@ -633,7 +612,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                 sglite_connection,
                 arguments,
             )
-            DHCP(
+            dhcp(
                 rec.SRC_IP,
                 rec.DST_IP,
                 rec.SRC_PORT,
@@ -672,11 +651,11 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                     sglite_connection,
                     arguments,
                 )
-            if MACtemplate == True:
-                Routers(rec.DST_IP, rec.DST_MAC, cursor, sglite_connection)
+            if mac_template == True:
+                add_router(rec.DST_IP, rec.DST_MAC, cursor, sglite_connection)
     else:  # Source Device is in global network
-        if (DstIP.is_private and arguments.OnlySetNetworks == False) or dst:
-            NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
+        if (dst_ipaddress.is_private and arguments.OnlySetNetworks == False) or dst:
+            new_device(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
             # =====================================================================================
             service_label(
                 rec.DST_IP,
@@ -707,8 +686,8 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                     sglite_connection,
                     arguments,
                 )
-            if MACtemplate == True:
-                MAC(
+            if mac_template == True:
+                mac(
                     rec.DST_IP,
                     rec.DST_MAC,
                     rec.TIME_LAST,
@@ -716,7 +695,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                     sglite_connection,
                     arguments,
                 )
-                Routers(rec.SRC_IP, rec.SRC_MAC, cursor, sglite_connection)
+                add_router(rec.SRC_IP, rec.SRC_MAC, cursor, sglite_connection)
         else:
             return
 

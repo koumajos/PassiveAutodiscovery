@@ -539,10 +539,14 @@ def main():
 
         db_flows = db_flows + 1
         if arg.DeleteGlobal != 0 and db_flows % 10000 == 0:
-            collector.DeleteGlobalDependencies(sqlite_connection, arg.DeleteGlobal)
+            collector.delete_unnecessary_global_dependencies(
+                sqlite_connection, arg.DeleteGlobal
+            )
 
     if arg.DeleteGlobal != 0:
-        collector.DeleteGlobalDependencies(sqlite_connection, arg.DeleteGlobal)
+        collector.delete_unnecessary_global_dependencies(
+            sqlite_connection, arg.DeleteGlobal
+        )
 
     if arg.P:
         old_time = print_act_inf(
