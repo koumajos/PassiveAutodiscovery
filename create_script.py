@@ -1,4 +1,3 @@
-#!/usr/bin/python3.6
 """CreateScript:
 
     This script is part of PassiveAutodiscovery modul for modular monitoring system NEMEA (Network Measurement Analysis).
@@ -31,22 +30,19 @@
 
 
 """
-# libraries for working with sqlite3 database
+#!/usr/bin/python3.6
+
+# Standard Library Imports
 import sqlite3
 import csv
-
-# libraries for working with OS UNIX files and system
 import os
 import sys
-
-# libraries for downloading initial data from oficial web databse
 import urllib
 import urllib.request
-
-# libraries for arg os scripts
 import argparse
 from argparse import RawTextHelpFormatter
 
+# Constants
 URL_PORTS = "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv"
 URL_MAC = "https://macaddress.io/database/macaddress.io-db.csv"
 
