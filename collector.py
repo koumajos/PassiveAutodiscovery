@@ -33,81 +33,64 @@
 
 
 """
-# libraries for working with OS UNIX files and system
+# Standard Library Imports
 import sys
 import os
-
-# library for working with IP addresses
 import ipaddress
-
-# library for working with sqlite3 database
 import sqlite3
 
-# =================================================================================================================================
-# =================================================================================================================================
-# IP = ip address; PORT = transport layer port; table = string of table (local or global services); cursor and SQLiteConnection = sqlite3 database
-def Services(IP, PORT, table, cursor, SQLiteConnection, arguments):
+
+def service_label(ip, port, table, cursor, sglite_connection, arguments):
     """Check if port in IP flow is used by some role of device (services), if yes and if it is NOT in database, put record to sqlite3 database.
     
     Parameters
     -----------
-    IP : str
-        IP address of device that comunicate on protocol with port number PORT.
-    PORT : int
+    ip : str
+        IP address of device that comunicate on protocol with port number port.
+    port : int
         Port number of used protocol.
     table : str
         Name of the table to safe potencial record (if device is  "local": table == LocalServices, if device is "global": table == GlobalServices).
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sglite_connection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
     """
-    cursor.execute(
-        "SELECT * FROM {tb} WHERE PortNumber={pos}".format(tb="Services", pos=PORT)
-    )
+    cursor.execute(f"SELECT * FROM Services WHERE PortNumber={port}")
     row = cursor.fetchone()
     if row:  # if port is services (role of device)
-        cursor.execute(
-            "SELECT * FROM {tb} WHERE IP='{io}' AND PortNumber={pos}".format(
-                tb=table, io=IP, pos=PORT
-            )
-        )
+        cursor.execute(f"SELECT * FROM {table} WHERE IP='{ip}' AND PortNumber={port}")
         rows = cursor.fetchall()
         if rows:  # if port and IP is in database, do nothing (record exists)
             return
         else:  # else push new record to db
-            if arguments.localserv == True and table == "LocalServices":
-                print("New local services: ", IP, " -> ", row[1])
-            if arguments.globalserv == True and table == "GlobalServices":
-                print("New global services: ", IP, " -> ", row[1])
+            if arguments.localserv and table == "LocalServices":
+                print(f"New local services: {ip} -> {row[1]}")
+            if arguments.globalserv and table == "GlobalServices":
+                print(f"New global services: {ip} -> {row[1]}")
             try:
                 cursor.execute(
-                    "INSERT INTO {tb} (PortNumber, IP) VALUES ('{port}', '{ip}')".format(
-                        tb=table, port=PORT, ip=IP
-                    )
+                    f"INSERT INTO {table} (PortNumber, IP) VALUES ('{port}', '{ip}')"
                 )
-                SQLiteConnection.commit()
+                sglite_connection.commit()
             except sqlite3.IntegrityError:
-                print("Error with inserting into table ", table)
+                print(f"Error with inserting into table {table}")
     else:
         return
 
 
-# =================================================================================================================================
-# =================================================================================================================================
-# Dependencies resolved, push into database or update
-def NewDependencies(
+def new_dependency(
     table,
-    SRC_IP,
-    DST_IP,
-    SRC_PORT,
-    DST_PORT,
-    TIME,
-    PACKETS,
+    src_ip,
+    dst_ip,
+    src_port,
+    dst_port,
+    time,
+    num_packets,
     cursor,
-    SQLiteConnection,
+    sglite_connection,
     arguments,
 ):
     """If dependency (local or global) doesn't exist, function will add record about it to database. Else function will find the record and update packet number on this dependency.
@@ -116,197 +99,160 @@ def NewDependencies(
     -----------
     table : str
         Table where record about dependency may be safed. ("Dependencies" - for dependencies between "local" devices, "Global" - for dependencies between "local" device and global device)    
-    SRC_IP : str
+    src_ip : str
         Source IP address of dependency.
-    DST_IP : str
+    dst_ip : str
         Destination IP address of dependency.
-    SRC_PORT : int
+    src_port : int
         Source port number of dependency.
-    DST_PORT : int
+    dst_port : int
         Destination prot of dependency.
-    TIME : str
+    time : str
         Time of IP flow.
-    PACKETS : int
+    num_packets : int
         Number of packet carryed in dependency(single IP flow).
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sglite_connection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
     """
-    if (
-        arguments.UsualyPorts == True
-    ):  # if analyze only "usualy" protocols (protocols in table Services), than check if PORT is one of these protocols
+    if arguments.UsualyPorts:
+        # if analyze only "usualy" protocols (protocols in table Services), than check if PORT is one of these protocols
         try:
             cursor.execute(
-                "SELECT * FROM Services WHERE PortNumber={pts} OR PortNumber={pos}".format(
-                    pts=SRC_PORT, pos=DST_PORT
-                )
+                f"SELECT * FROM Services WHERE PortNumber={src_port} OR PortNumber={dst_port}"
             )
             row = cursor.fetchone()
-            if not row:
+            if row is None:
                 return
         except sqlite3.IntegrityError:
-            print("Error while SELECT ", sqlite3.IntegrityError)
+            print(f"Error while SELECT {sqlite3.IntegrityError}")
             return
     # =================================================================================================================================================================
     try:
         cursor.execute(
-            "SELECT * FROM {tb} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target={pt} OR Port_origin={po} OR Port_target={pts} OR Port_origin={pos})".format(
-                tb=table,
-                io=SRC_IP,
-                it=DST_IP,
-                pt=DST_PORT,
-                po=DST_PORT,
-                pts=SRC_PORT,
-                pos=SRC_PORT,
-            )
+            f"SELECT * FROM {table} "
+            f"WHERE IP_origin='{src_ip}' "
+            f"AND IP_target='{dst_ip}' "
+            f"AND (Port_target={dst_port} OR Port_origin={dst_port} OR Port_target={src_port} OR Port_origin={src_port})"
         )
-        rows1 = cursor.fetchone()
+        rows = cursor.fetchone()
     except sqlite3.IntegrityError:
-        print("Error in SELECT ", sqlite3.IntegrityError)
+        print(f"Error in SELECT {sqlite3.IntegrityError}")
         return
     # =================================================================================================================================================================
-    if rows1:  # if record rows1 is in database, then update PACKETS
-        NumPackets = rows1[5] + PACKETS
+    if rows:  # if record rows1 is in database, then update PACKETS
         try:
             cursor.execute(
-                "UPDATE {tb} SET NumPackets={NP} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target='{pt}' OR Port_origin='{po}' OR Port_target='{pts}' OR Port_origin='{pos}')".format(
-                    tb=table,
-                    io=SRC_IP,
-                    it=DST_IP,
-                    pt=DST_PORT,
-                    po=DST_PORT,
-                    pts=SRC_PORT,
-                    pos=SRC_PORT,
-                    NP=NumPackets,
-                )
+                f"UPDATE {table} SET NumPackets={(rows[5] + num_packets)} "
+                f"WHERE IP_origin='{src_ip}' "
+                f"AND IP_target='{dst_ip}' "
+                f"AND (Port_target='{dst_port}' OR Port_origin='{dst_port}' OR Port_target='{src_port}' OR Port_origin='{src_port}')"
             )
-            SQLiteConnection.commit()
+            sglite_connection.commit()
         except sqlite3.IntegrityError:
             print(
-                "Error with updating record in table ",
-                table,
-                "with error ",
-                sqlite3.IntegrityError,
+                f"Error with updating record in table {table} with error {sqlite3.IntegrityError}"
             )
-        if arguments.time == True:
+        if arguments.time:
             try:
                 if table == "Dependencies":
                     cursor.execute(
-                        "INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) VALUES ('%s', '%s', '%s')"
-                        % (rows1[0], TIME, PACKETS)
+                        f"INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) "
+                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
                     )
                 else:
                     cursor.execute(
-                        "INSERT INTO GlobalTime (GlobalID, Time, NumPackets) VALUES ('%s', '%s', '%s')"
-                        % (rows1[0], TIME, PACKETS)
+                        f"INSERT INTO GlobalTime (GlobalID, Time, NumPackets) "
+                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
                     )
-                SQLiteConnection.commit()
+                sglite_connection.commit()
             except sqlite3.IntegrityError:
-                print("Error with inserting with error ", sqlite3.IntegrityError)
+                print(f"Error with inserting with error {sqlite3.IntegrityError}")
         return
     # =================================================================================================================================================================
     cursor.execute(
-        "SELECT * FROM {tb} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target={pt} OR Port_origin={po} OR Port_target={pts} OR Port_origin={pos})".format(
-            tb=table,
-            io=DST_IP,
-            it=SRC_IP,
-            pt=DST_PORT,
-            po=DST_PORT,
-            pts=SRC_PORT,
-            pos=SRC_PORT,
-        )
+        f"SELECT * FROM {table} "
+        f"WHERE IP_origin='{dst_ip}' "
+        f"AND IP_target='{src_ip}' "
+        f"AND (Port_target={dst_port} OR Port_origin={dst_port} OR Port_target={src_port} OR Port_origin={src_port})"
     )
-    rows2 = cursor.fetchone()
+    rows = cursor.fetchone()
     # =================================================================================================================================================================
-    if rows2:  # if record rows2 is in database, then update PACKETS
-        NumPackets = rows2[5] + PACKETS
+    if rows:  # if record rows2 is in database, then update PACKETS
         try:
             cursor.execute(
-                "UPDATE {tb} SET NumPackets={NP} WHERE IP_origin='{io}' AND IP_target='{it}' AND (Port_target='{pt}' OR Port_origin='{po}' OR Port_target='{pts}' OR Port_origin='{pos}')".format(
-                    tb=table,
-                    io=DST_IP,
-                    it=SRC_IP,
-                    pt=DST_PORT,
-                    po=DST_PORT,
-                    pts=SRC_PORT,
-                    pos=SRC_PORT,
-                    NP=NumPackets,
-                )
+                f"UPDATE {table} SET NumPackets={(rows[5] + num_packets)} "
+                f"WHERE IP_origin='{dst_ip}' "
+                f"AND IP_target='{src_ip}' "
+                f"AND (Port_target='{dst_port}' OR Port_origin='{dst_port}' OR Port_target='{src_port}' OR Port_origin='{src_port}')"
             )
-            SQLiteConnection.commit()
+            sglite_connection.commit()
         except sqlite3.IntegrityError:
             print(
-                "Error with updating record in table ",
-                table,
-                "with error ",
-                sqlite3.IntegrityError,
+                f"Error with updating record in table {table} with error {sqlite3.IntegrityError}"
             )
-        if arguments.time == True:
+        if arguments.time:
             try:
                 if table == "Dependencies":
                     cursor.execute(
-                        "INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) VALUES ('%s', '%s', '%s')"
-                        % (rows2[0], TIME, PACKETS)
+                        f"INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) "
+                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
                     )
                 else:
                     cursor.execute(
-                        "INSERT INTO GlobalTime (GlobalID, Time, NumPackets) VALUES ('%s', '%s', '%s')"
-                        % (rows2[0], TIME, PACKETS)
+                        f"INSERT INTO GlobalTime (GlobalID, Time, NumPackets) "
+                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
                     )
-                SQLiteConnection.commit()
+                sglite_connection.commit()
             except sqlite3.IntegrityError:
-                print("Error with inserting with error ", sqlite3.IntegrityError)
+                print(f"Error with inserting with error {sqlite3.IntegrityError}")
         return
     # =================================================================================================================================================================
     else:  # else found a new local or global dependencies
-        if arguments.localdependencies == True and table == "Dependencies":
-            print("new local dependencies: ", SRC_IP, " -> ", DST_IP)
-        if arguments.globaldependencies == True and table == "Global":
-            print("new global dependencies: ", SRC_IP, " -> ", DST_IP)
+        if arguments.localdependencies and table == "Dependencies":
+            print(f"new local dependencies: {src_ip} -> {dst_ip}")
+        if arguments.globaldependencies and table == "Global":
+            print(f"new global dependencies: {src_ip} -> {dst_ip}")
         try:
+            empty_str = ""
             cursor.execute(
-                "INSERT INTO {tb} (IP_origin, IP_target, Port_origin, Port_target, NumPackets, NumBytes) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')".format(
-                    tb=table
-                )
-                % (SRC_IP, DST_IP, SRC_PORT, DST_PORT, PACKETS, "")
+                f"INSERT INTO {table} (IP_origin, IP_target, Port_origin, Port_target, NumPackets, NumBytes) "
+                f"VALUES ('{src_ip}', '{dst_ip}', '{src_port}', '{dst_port}', '{num_packets}', '{empty_str}')"
             )
-            SQLiteConnection.commit()
+            sglite_connection.commit()
         except sqlite3.IntegrityError:
-            print(
-                "Error with inserting into table ",
-                table,
-                "with error ",
-                sqlite3.IntegrityError,
-            )
-        if arguments.time == True:
+            print(f"Error with inserting with error {sqlite3.IntegrityError}")
+        if arguments.time:
             cursor.execute(
-                "SELECT * FROM {tb} WHERE IP_origin='{io}' AND IP_target='{it}' AND Port_origin='{po}' AND Port_target='{pt}'".format(
-                    tb=table, io=SRC_IP, it=DST_IP, po=SRC_PORT, pt=DST_PORT
-                )
+                f"SELECT * FROM {table} "
+                f"WHERE IP_origin='{src_ip}' "
+                f"AND IP_target='{dst_ip}' "
+                f"AND Port_origin='{src_port}' "
+                f"AND Port_target='{dst_port}'"
             )
-            row = cursor.fetchone()
+            rows = cursor.fetchone()
             try:
                 if table == "Dependencies":
                     cursor.execute(
-                        "INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) VALUES ('%s', '%s', '%s')"
-                        % (row[0], TIME, PACKETS)
+                        f"INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) "
+                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
                     )
                 else:
                     cursor.execute(
-                        "INSERT INTO GlobalTime (GlobalID, Time, NumPackets) VALUES ('%s', '%s', '%s')"
-                        % (row[0], TIME, PACKETS)
+                        f"INSERT INTO GlobalTime (GlobalID, Time, NumPackets) "
+                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
                     )
-                SQLiteConnection.commit()
+                sglite_connection.commit()
             except sqlite3.IntegrityError:
-                print("Error with inserting with error ", sqlite3.IntegrityError)
+                print(f"Error with inserting with error {sqlite3.IntegrityError}")
 
 
 # =================================================================================================================================
 # =================================================================================================================================
-def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
+def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, sglite_connection):
     """If IP flow is DHCP traffic, then safe record of it to table DHCP.
     
     Parameters
@@ -323,7 +269,7 @@ def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
         Unix time of IP flow.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sglite_connection : sqlite3
         Connection to sqlite3 database.
     """
     if (SRC_PORT == 68 and DST_PORT == 67) or (SRC_PORT == 546 and DST_PORT == 547):
@@ -332,7 +278,7 @@ def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
                 "INSERT INTO DHCP (DeviceIP, ServerIP, Time) VALUES ('%s', '%s', '%s')"
                 % (SRC_IP, DST_IP, TIME)
             )
-            SQLiteConnection.commit()
+            sglite_connection.commit()
         except sqlite3.IntegrityError:
             print("Error with inserting into table DHCP")
     elif (SRC_PORT == 67 and DST_PORT == 68) or (SRC_PORT == 547 and DST_PORT == 546):
@@ -341,7 +287,7 @@ def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
                 "INSERT INTO DHCP (DeviceIP, ServerIP, Time) VALUES ('%s', '%s', '%s')"
                 % (DST_IP, SRC_IP, TIME)
             )
-            SQLiteConnection.commit()
+            sglite_connection.commit()
         except sqlite3.IntegrityError:
             print("Error with inserting into table DHCP")
     else:
@@ -351,8 +297,8 @@ def DHCP(SRC_IP, DST_IP, SRC_PORT, DST_PORT, TIME, cursor, SQLiteConnection):
 # =================================================================================================================================
 # =================================================================================================================================
 # Add router dependencies to database
-# IP = IP address of device behind router; MAC = mac address of router, cursor and SQLiteConnection = database connection
-def Routers(IP, MAC, cursor, SQLiteConnection):
+# IP = IP address of device behind router; MAC = mac address of router, cursor and sglite_connection = database connection
+def Routers(IP, MAC, cursor, sglite_connection):
     """Function for adding record to table Routers. The record is MAC address of router and Ip address of device behind him or router himself.
     
     Parameters
@@ -363,7 +309,7 @@ def Routers(IP, MAC, cursor, SQLiteConnection):
         MAC address of router.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sglite_connection : sqlite3
         Connection to sqlite3 database.
     """
     cursor.execute("SELECT * FROM Routers WHERE MAC='%s' AND IP='%s'" % (MAC, IP))
@@ -375,7 +321,7 @@ def Routers(IP, MAC, cursor, SQLiteConnection):
             cursor.execute(
                 "INSERT INTO Routers (MAC, IP) VALUES ('%s', '%s')" % (MAC, IP)
             )
-            SQLiteConnection.commit()
+            sglite_connection.commit()
         except sqlite3.IntegrityError:
             print("Error with inserting into table Routers")
 
@@ -383,7 +329,7 @@ def Routers(IP, MAC, cursor, SQLiteConnection):
 # =================================================================================================================================
 # =================================================================================================================================
 # Add MAC
-def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
+def MACAdd(IP, MAC, TIME, cursor, sglite_connection, arguments):
     """
     
     Parameters
@@ -396,7 +342,7 @@ def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
         Unix time of IP flow where was combiantion IP and MAC used.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sglite_connection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
@@ -408,7 +354,7 @@ def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
             "INSERT INTO MAC (IP, MAC, FirstUse, LastUse) VALUES ('%s', '%s', '%s', '%s')"
             % (IP, MAC, TIME, "")
         )
-        SQLiteConnection.commit()
+        sglite_connection.commit()
     except sqlite3.IntegrityError:
         print("Error with inserting into table MAC")
 
@@ -416,7 +362,7 @@ def MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
 # =================================================================================================================================
 # Check if MAC address is in database for this IP address and if no add it to database, if yes do stuffs
 # =================================================================================================================================
-def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
+def MAC(IP, MAC, TIME, cursor, sglite_connection, arguments):
     """If device is is in local segemnt, the module can rosolve his MAC address and add record of it to table MAC. If it's router and behind it is local subnet (2 or more local device or one global device on this mac address (the same IP version)) add all record of this mac address from table MAC to table Router and add new record from this IP flow.
     
     Parameters
@@ -429,7 +375,7 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
         Unix time of the IP flow.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sglite_connection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
@@ -438,7 +384,7 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
     cursor.execute("SELECT * FROM Routers WHERE MAC='%s'" % MAC)
     routers = cursor.fetchall()
     if routers:
-        Routers(IP, MAC, cursor, SQLiteConnection)
+        Routers(IP, MAC, cursor, sglite_connection)
         return
     # ==================================================================
     cursor.execute("SELECT * FROM MAC WHERE MAC.MAC='%s'" % MAC)
@@ -476,17 +422,17 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
             #                    if float(TIME) > float(DHCProw[3]) and float(row[3]) < float(DHCProw[3]):
             #                        try:
             #                            cursor.execute("UPDATE MAC SET LastUse='%s' WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (TIME, row[1], row[2], row[3]) )
-            #                            SQLiteConnection.commit()
+            #                            sglite_connection.commit()
             #                        except sqlite3.IntegrityError:
             #                            None
-            #                        MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments)
+            #                        MACAdd(IP, MAC, TIME, cursor, sglite_connection, arguments)
             #                        return
             #                    elif float(TIME) > float(DHCProw[3]) and float(row[3]) > float(DHCProw[3]):
-            #                        Routers(IP, MAC, cursor, SQLiteConnection)
-            #                        Routers(row[1], MAC, cursor, SQLiteConnection)
+            #                        Routers(IP, MAC, cursor, sglite_connection)
+            #                        Routers(row[1], MAC, cursor, sglite_connection)
             #                        try:
             #                            cursor.execute("DELETE FROM MAC WHERE MAC.IP='%s' AND MAC.MAC='%s' AND MAC.FirstUse='%s'" % (row[1], row[2], row[3]) )
-            #                            SQLiteConnection.commit()
+            #                            sglite_connection.commit()
             #                        except sqlite3.IntegrityError:
             #                            None
             #                        return
@@ -500,16 +446,16 @@ def MAC(IP, MAC, TIME, cursor, SQLiteConnection, arguments):
                 else:
                     tmp = 1
         if tmp == 1:
-            MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments)
+            MACAdd(IP, MAC, TIME, cursor, sglite_connection, arguments)
             return
     else:
-        MACAdd(IP, MAC, TIME, cursor, SQLiteConnection, arguments)
+        MACAdd(IP, MAC, TIME, cursor, sglite_connection, arguments)
 
 
 # =================================================================================================================================
 # =================================================================================================================================
 # Check if local IP address is in database, if not push it do table LocalDevice
-def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
+def NewDevice(IP, TIME, cursor, sglite_connection, arguments):
     """This funcion check if "local" device is in sqlite3 database table LocalDevice. If isn't, add it to table. If is, update last comunication in record of it.
     
     Parameters
@@ -520,7 +466,7 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
         Unix time of the IP flow.    
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sglite_connection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
@@ -536,7 +482,7 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
                     LC=TIME, ip=IP
                 )
             )
-            SQLiteConnection.commit()
+            sglite_connection.commit()
         except sqlite3.IntegrityError:
             print(
                 "Error with updating value in table LocalDevice with error ",
@@ -550,7 +496,7 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
             cursor.execute(
                 "INSERT INTO LocalDevice (IP, LastCom) VALUES ('%s', '%s')" % (IP, TIME)
             )
-            SQLiteConnection.commit()
+            sglite_connection.commit()
         except sqlite3.IntegrityError:
             print(
                 "Error with inserting into table LocalDevice with error ",
@@ -561,24 +507,24 @@ def NewDevice(IP, TIME, cursor, SQLiteConnection, arguments):
 # =================================================================================================================================
 # =================================================================================================================================
 # deleting small packets dependencies from global
-def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
+def DeleteGlobalDependencies(sglite_connection, PacketNumber):
     """Delete global dependencies from table Global that have number of packer smaller then number PacketNumber.
     
     Parameters
     -----------
-    SQLiteConnection : sqlite3
+    sglite_connection : sqlite3
         Connection to sqlite3 database.
     PacketNumber : int
         Number of packet that is line for delete.
     """
-    cursor = SQLiteConnection.cursor()
+    cursor = sglite_connection.cursor()
     try:
         cursor.execute(
             "DELETE FROM Global WHERE NumPackets < {number} AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)".format(
                 number=PacketNumber
             )
         )
-        SQLiteConnection.commit()
+        sglite_connection.commit()
     except sqlite3.IntegrityError:
         print("Error in deleting rows from Global")
 
@@ -586,7 +532,7 @@ def DeleteGlobalDependencies(SQLiteConnection, PacketNumber):
 # =================================================================================================================================
 # =================================================================================================================================
 # collector collect information from ipflows and push them into database
-def collect_flow_data(rec, SQLiteConnection, cursor, arguments):
+def collect_flow_data(rec, sglite_connection, cursor, arguments):
     """Main function of this script. This function receive IP flow, database proms and arguments. Then work with received IP flow to get information from it and record of it safe (update) in sqlite3 database that received.
     
     Parameters
@@ -595,7 +541,7 @@ def collect_flow_data(rec, SQLiteConnection, cursor, arguments):
         Received IP flow to analyze.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sglite_connection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
@@ -651,31 +597,31 @@ def collect_flow_data(rec, SQLiteConnection, cursor, arguments):
     if (
         SrcIP.is_private and arguments.OnlySetNetworks == False
     ) or src:  # Source Device is in local network
-        NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, SQLiteConnection, arguments)
+        NewDevice(rec.SRC_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
         if MACtemplate == True:
             MAC(
                 rec.SRC_IP,
                 rec.SRC_MAC,
                 rec.TIME_LAST,
                 cursor,
-                SQLiteConnection,
+                sglite_connection,
                 arguments,
             )
         if (
             DstIP.is_private and arguments.OnlySetNetworks == False
         ) or dst:  # Destination Device is in local network
-            NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, arguments)
+            NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
             if MACtemplate == True:
                 MAC(
                     rec.DST_IP,
                     rec.DST_MAC,
                     rec.TIME_LAST,
                     cursor,
-                    SQLiteConnection,
+                    sglite_connection,
                     arguments,
                 )
             # =====================================================================================
-            NewDependencies(
+            new_dependency(
                 "Dependencies",
                 rec.SRC_IP,
                 rec.DST_IP,
@@ -684,23 +630,23 @@ def collect_flow_data(rec, SQLiteConnection, cursor, arguments):
                 rec.TIME_LAST,
                 rec.PACKETS,
                 cursor,
-                SQLiteConnection,
+                sglite_connection,
                 arguments,
             )
-            Services(
+            service_label(
                 rec.SRC_IP,
                 rec.SRC_PORT,
                 "LocalServices",
                 cursor,
-                SQLiteConnection,
+                sglite_connection,
                 arguments,
             )
-            Services(
+            service_label(
                 rec.DST_IP,
                 rec.DST_PORT,
                 "LocalServices",
                 cursor,
-                SQLiteConnection,
+                sglite_connection,
                 arguments,
             )
             DHCP(
@@ -710,19 +656,19 @@ def collect_flow_data(rec, SQLiteConnection, cursor, arguments):
                 rec.DST_PORT,
                 rec.TIME_LAST,
                 cursor,
-                SQLiteConnection,
+                sglite_connection,
             )
         else:  # Destination Device is in global network
-            Services(
+            service_label(
                 rec.SRC_IP,
                 rec.SRC_PORT,
                 "LocalServices",
                 cursor,
-                SQLiteConnection,
+                sglite_connection,
                 arguments,
             )
             if arguments.GlobalDependencies == True:
-                NewDependencies(
+                new_dependency(
                     "Global",
                     rec.SRC_IP,
                     rec.DST_IP,
@@ -731,33 +677,33 @@ def collect_flow_data(rec, SQLiteConnection, cursor, arguments):
                     rec.TIME_LAST,
                     rec.PACKETS,
                     cursor,
-                    SQLiteConnection,
+                    sglite_connection,
                     arguments,
                 )
-                Services(
+                service_label(
                     rec.DST_IP,
                     rec.DST_PORT,
                     "GlobalServices",
                     cursor,
-                    SQLiteConnection,
+                    sglite_connection,
                     arguments,
                 )
             if MACtemplate == True:
-                Routers(rec.DST_IP, rec.DST_MAC, cursor, SQLiteConnection)
+                Routers(rec.DST_IP, rec.DST_MAC, cursor, sglite_connection)
     else:  # Source Device is in global network
         if (DstIP.is_private and arguments.OnlySetNetworks == False) or dst:
-            NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, SQLiteConnection, arguments)
+            NewDevice(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
             # =====================================================================================
-            Services(
+            service_label(
                 rec.DST_IP,
                 rec.DST_PORT,
                 "LocalServices",
                 cursor,
-                SQLiteConnection,
+                sglite_connection,
                 arguments,
             )
             if arguments.GlobalDependencies == True:
-                NewDependencies(
+                new_dependency(
                     "Global",
                     rec.SRC_IP,
                     rec.DST_IP,
@@ -766,15 +712,15 @@ def collect_flow_data(rec, SQLiteConnection, cursor, arguments):
                     rec.TIME_LAST,
                     rec.PACKETS,
                     cursor,
-                    SQLiteConnection,
+                    sglite_connection,
                     arguments,
                 )
-                Services(
+                service_label(
                     rec.SRC_IP,
                     rec.SRC_PORT,
                     "GlobalServices",
                     cursor,
-                    SQLiteConnection,
+                    sglite_connection,
                     arguments,
                 )
             if MACtemplate == True:
@@ -783,10 +729,10 @@ def collect_flow_data(rec, SQLiteConnection, cursor, arguments):
                     rec.DST_MAC,
                     rec.TIME_LAST,
                     cursor,
-                    SQLiteConnection,
+                    sglite_connection,
                     arguments,
                 )
-                Routers(rec.SRC_IP, rec.SRC_MAC, cursor, SQLiteConnection)
+                Routers(rec.SRC_IP, rec.SRC_MAC, cursor, sglite_connection)
         else:
             return
 
