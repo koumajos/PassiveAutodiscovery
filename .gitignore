@@ -4,4 +4,5 @@ Ports_url.csv
 VendorsMAC_url.csv
 *.db
 *.json
+*.txt
 !requirements.txt
