@@ -81,6 +81,23 @@ def service_label(ip, port, table, cursor, sglite_connection, arguments):
         return
 
 
+def insert_time(table, cursor, sglite_connection, rows, time, num_packets):
+    try:
+        if table == "Dependencies":
+            cursor.execute(
+                f"INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) "
+                f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
+            )
+        else:
+            cursor.execute(
+                f"INSERT INTO GlobalTime (GlobalID, Time, NumPackets) "
+                f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
+            )
+            sglite_connection.commit()
+    except sqlite3.IntegrityError:
+        print(f"Error with inserting with error {sqlite3.IntegrityError}")
+
+
 def new_dependency(
     table,
     src_ip,
@@ -157,20 +174,7 @@ def new_dependency(
                 f"Error with updating record in table {table} with error {sqlite3.IntegrityError}"
             )
         if arguments.time:
-            try:
-                if table == "Dependencies":
-                    cursor.execute(
-                        f"INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) "
-                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
-                    )
-                else:
-                    cursor.execute(
-                        f"INSERT INTO GlobalTime (GlobalID, Time, NumPackets) "
-                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
-                    )
-                sglite_connection.commit()
-            except sqlite3.IntegrityError:
-                print(f"Error with inserting with error {sqlite3.IntegrityError}")
+            insert_time(table, cursor, sglite_connection, rows, time, num_packets)
         return
     # =================================================================================================================================================================
     cursor.execute(
@@ -195,20 +199,7 @@ def new_dependency(
                 f"Error with updating record in table {table} with error {sqlite3.IntegrityError}"
             )
         if arguments.time:
-            try:
-                if table == "Dependencies":
-                    cursor.execute(
-                        f"INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) "
-                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
-                    )
-                else:
-                    cursor.execute(
-                        f"INSERT INTO GlobalTime (GlobalID, Time, NumPackets) "
-                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
-                    )
-                sglite_connection.commit()
-            except sqlite3.IntegrityError:
-                print(f"Error with inserting with error {sqlite3.IntegrityError}")
+            insert_time(table, cursor, sglite_connection, rows, time, num_packets)
         return
     # =================================================================================================================================================================
     else:  # else found a new local or global dependencies
@@ -234,20 +225,7 @@ def new_dependency(
                 f"AND Port_target='{dst_port}'"
             )
             rows = cursor.fetchone()
-            try:
-                if table == "Dependencies":
-                    cursor.execute(
-                        f"INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) "
-                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
-                    )
-                else:
-                    cursor.execute(
-                        f"INSERT INTO GlobalTime (GlobalID, Time, NumPackets) "
-                        f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
-                    )
-                sglite_connection.commit()
-            except sqlite3.IntegrityError:
-                print(f"Error with inserting with error {sqlite3.IntegrityError}")
+            insert_time(table, cursor, sglite_connection, rows, time, num_packets)
 
 
 # =================================================================================================================================
