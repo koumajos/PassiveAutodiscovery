@@ -85,7 +85,7 @@ def create_db(file, arg):
     """
     try:
         print("Connecting to database....", end="")
-        if os.path.exists(file):  # if database file exist:
+        if os.path.exists(file):
             if arg.y:
                 os.remove(file)
             else:
@@ -93,28 +93,24 @@ def create_db(file, arg):
                     "\nDatabase already exists. Do you want do delete it and create new? [yes] - ",
                     end="",
                 )
-                if input() == "yes":  # choose if:
+                if input() == "yes":
                     print("Removing old database and create new one....", end="")
-                    os.remove(file)  # remove file and continue
+                    os.remove(file)
                 else:
                     print("Exiting script....")
-                    sys.exit()  # exit
-        sqlite_connection = sqlite3.connect(
-            file
-        )  # create ne connection to new sqlite database file
+                    sys.exit()
+        sqlite_connection = sqlite3.connect(file)
         cursor = sqlite_connection.cursor()
         print("done")
-        with open("Database_sqlite_create.sql") as sqlite_file:  # open the sql file
+        with open("Database_sqlite_create.sql") as sqlite_file:
             sql_script = sqlite_file.read()
         print("Creating Database schema....", end="")
-        cursor.executescript(
-            sql_script
-        )  # and execute it for create sql scructure in database
+        cursor.executescript(sql_script)
         print("done")
         return sqlite_connection, cursor
-        # return connectiona nd cursor for work with database
     except sqlite3.Error as error:
         print("Error while executing sqlite script", error)
+        sys.exit()
 
 
 def download_data(name, arg):
@@ -139,7 +135,7 @@ def download_data(name, arg):
             print("Archive file ", name, " doesn't found.")
             sys.exit()
         return reader
-    try:  # try download the file from url, if can't download or connect, use the archive local file (can be deprecated)
+    try:  # try download the file from url
         if name == "Ports":
             print("Downloading Transport Layer Ports data....", end="")
             urllib.request.urlretrieve(URL_PORTS, name + "_url.csv")
@@ -148,7 +144,7 @@ def download_data(name, arg):
             urllib.request.urlretrieve(URL_MAC, name + "_url.csv")
         print("done")
         reader = csv.reader(open(name + "_url.csv", "r"), delimiter=",")
-    except:
+    except:  # except use the archive local file (can be deprecated)
         print("Download failed, open local archive file...")
         if os.path.exists(name + ".csv"):
             reader = csv.reader(open(name + ".csv", "r"), delimiter=",")
