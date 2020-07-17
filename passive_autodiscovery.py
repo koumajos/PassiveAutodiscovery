@@ -10,7 +10,7 @@
         Finds "local" device from network traffic. (local device = device that is from private subnet 10.0.0.0/8 or 172.16.0.0/16 or 192.168.0.0/24 OR device from subnet that was inserted by user with parameter -N)
     Device Recognition:
         Module recognize the roles of device in network and set to the device labels. This labels marks the roles of device. In the example for device that has role dhcp server fro the network, will module set to device label [DHCP Server].
-    Deppendency mapping:
+    Dependency mapping:
         Module safe all dependencies between "local" devices. Can also safe dependencies between "local" device and "global" devices(devices that aren't "local").
 
     Module is coaporate with collector.py script that fill sqlite3 database. 
