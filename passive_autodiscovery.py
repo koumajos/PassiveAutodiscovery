@@ -17,9 +17,6 @@
     The output from the database (entire analyze) is created by DeviceAnalyzer.py script.   
 
 
-
-
-
     Copyright (C) 2020 CESNET
 
 
@@ -35,59 +32,25 @@
         ALTERNATIVELY, provided that this notice is retained in full, this product may be distributed under the terms of the GNU General Public License (GPL) version 2 or later, in which case the provisions of the GPL apply INSTEAD OF those given above. 
 
         This software is provided as is'', and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the company or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
-
-
-
-
 """
-# NEMEA system library for
-import pytrap
-
-# libraries for working with OS UNIX files and system
+# Standard Library Imports
 import sys
 import os
-
-# libraries for working with sqlite3 database
 import sqlite3
 import csv
-
-# library for work with IP addresses
-import ipaddress
-
-# library for work with UNIX time
 import time
 from datetime import datetime
-
-# library for print actualizate statistics
-import colorama
-
-# libraries for arguments of module
+import ipaddress
 import argparse
 from argparse import RawTextHelpFormatter
 
-# cooperate python script
+# Third Part Imports
+import pytrap
+import colorama
+
+# Local Application Imports
 import collector
-
-
-def check_str(string, suffix):
-    """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
-
-    Parameters
-    --------
-    string : str 
-        String of file name.
-    suffix : str
-        String of file suffix.
-    Returns
-    --------
-    Boolean : boolean
-        True if string have suffix DOT.
-        False if string havn't suffix DOT.
-    """
-    spl = string.split(suffix)
-    if spl[-1] == "":
-        return True
-    return False
+from create_script import check_str
 
 
 def move_cursor(x, y):
@@ -104,9 +67,7 @@ def move_cursor(x, y):
 
 
 def clear():
-    """Clear command line for actualization prints.
-    
-    """
+    """Clear command line for actualization prints."""
     print("\x1b[2J")
 
 
@@ -131,56 +92,51 @@ def print_act_inf(old_time, start_time, arg, num_flows, cursor):
         UNIX time of this print.
     """
     move_cursor(0, 0)  # move cursor at the start of command line
+
     print("PassiveAutodiscovery modul")
-    print("from: ", arg.i, "      to: ", arg.database, ".db")
+
+    if check_str(arg.database, ".db"):
+        print(f"from: {arg.i}      to: {arg.database}")
+    else:
+        print(f"from: {arg.i}      to: {arg.database}.db")
+
     print("Networks: ", end="")  # print analyzed networks
     if arg.networks != "" and arg.OnlySetNetworks == True:
         for i in arg.networks:
             if i != arg.networks[-1]:
-                print(i, ", ", end="")
+                print(f"{i}, ", end="")
             else:
                 print(i)
     elif arg.networks != "":
         for i in arg.networks:
-            print(i, ", ", end="")
+            print(f"{i}, ", end="")
         print("Private networks")
     else:
         print("Private subnets")
     print("")
-    print(
-        "Started time: ", datetime.fromtimestamp(start_time)
-    )  # print when module started
+
+    print(f"Started time: {datetime.fromtimestamp(start_time)}")
     print("")
+
     old_time = time.time()
     print(
-        "Time: "
-        + str(int((old_time - start_time) / 60))
-        + " min"
-        + "      "
-        + "IP flows: "
-        + str(num_flows)
+        f"Time: {str(int((old_time - start_time) / 60))} min      IP flows: {str(num_flows)}"
     )  # print time of running module and number of analyzed ip flows
+
     cursor.execute("SELECT COUNT(*) FROM LocalDevice")
     devices = cursor.fetchone()
     cursor.execute("SELECT COUNT(*) FROM LocalServices")
     services = cursor.fetchone()
     print(
-        "Find Devices: "
-        + str(devices[0])
-        + "      "
-        + "Find Services: "
-        + str(services[0])
+        f"Find Devices: {str(devices[0])}      Find Services: {str(services[0])}"
     )  # print number of findend "local" devices and their services
+
     cursor.execute("SELECT COUNT(*) FROM Dependencies")
     dependencies = cursor.fetchone()
     cursor.execute("SELECT COUNT(*) FROM Global")
     count_global = cursor.fetchone()
     print(
-        "Local Dependencies: "
-        + str(dependencies[0])
-        + "      "
-        + "Global Dependencies: "
-        + str(count_global[0])
+        f"Local Dependencies: {str(dependencies[0])}      Global Dependencies: {str(count_global[0])}"
     )  # pritn number of dependencies
     return old_time
 
@@ -347,7 +303,7 @@ def arguments():
             try:
                 NET = ipaddress.ip_network(net)
             except:
-                print("Badly inserted ip address of network ", net)
+                print(f"Badly inserted ip address of network {net}")
                 sys.exit()
     if arg.P == True:
         colorama.init()
@@ -389,13 +345,14 @@ def ram_database():
         sqlite_connection = sqlite3.connect(":memory:")  # create database in RAM memory
         cursor = sqlite_connection.cursor()
     except sqlite3.Error as error:
-        print("Can't create database in RAM memory: ", error)
+        print(f"Can't create database in RAM memory: {error}")
     try:
         qry = open("Database_sqlite_create.sql", "r").read()
         sqlite3.complete_statement(qry)
         cursor.executescript(qry)  # create schema of the database
     except sqlite3.Error as error:
-        print("Can't create schema database in RAM memory: ", error)
+        print(f"Can't create schema database in RAM memory: {error}")
+
     try:  # fill database with intial data
         try:
             reader = csv.reader(open("Ports_url.csv", "r"), delimiter=",")
@@ -407,7 +364,7 @@ def ram_database():
                 "INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);",
                 to_db,
             )
-        # ===============================================================================================
+
         try:
             reader = csv.reader(open("VendorsMAC_url.csv", "r"), delimiter=",")
         except:
@@ -418,7 +375,7 @@ def ram_database():
                 "INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);",
                 to_db,
             )
-        # ===============================================================================================
+
         reader = csv.reader(open("Services.csv", "r"), delimiter=",")
         for row in reader:
             to_db = [row[0], row[1], row[2], row[3]]
@@ -427,6 +384,7 @@ def ram_database():
                 to_db,
             )
         sqlite_connection.commit()
+
         reader = csv.reader(open("Filter.csv", "r"), delimiter=",")
         for row in reader:
             to_db = [row[0], row[1], row[2], row[3]]
@@ -436,7 +394,7 @@ def ram_database():
             )
         sqlite_connection.commit()
     except sqlite3.Error as error:
-        print("Can't fill the database in RAM memory with initial data: ", error)
+        print(f"Can't fill the database in RAM memory with initial data: {error}")
     return sqlite_connection, cursor
 
 
@@ -451,16 +409,15 @@ def safe_ram_database_to_file(sqlite_connection, arg):
         Setted arg of module.    
     """
     try:  # connect to a database
-        if check_str(arg.database, ".db") == True:
+        if check_str(arg.database, ".db"):
             file = arg.database
         else:
             file = arg.database + ".db"
         if os.path.exists(file):
             os.remove(file)
         sqlite_connection_backup = sqlite3.connect(file)
-        print(
-            "Exporting data from RAM memory to file", file, "...", end="",
-        )
+
+        print(f"Exporting data from RAM memory to file {file}...", end="")
         with sqlite_connection_backup:
             for line in sqlite_connection.iterdump():
                 if line not in ("BEGIN;", "COMMIT;"):
@@ -468,7 +425,7 @@ def safe_ram_database_to_file(sqlite_connection, arg):
         sqlite_connection_backup.commit()
         print("done")
     except sqlite3.Error as error:
-        print("Can't connect to a database:  ", error)
+        print(f"Can't connect to a database:  {error}")
 
 
 def connect_to_database(arg):
@@ -492,12 +449,12 @@ def connect_to_database(arg):
         else:
             file = arg.database + ".db"
         if not os.path.exists(file):
-            print("can't connect to ", file)
+            print(f"can't connect to {file}")
             sys.exit()
         sqlite_connection = sqlite3.connect(file)
         cursor = sqlite_connection.cursor()
     except sqlite3.Error as error:
-        print("Can't connect to a database:  ", error)
+        print(f"Can't connect to a database:  {error}")
     return sqlite_connection, cursor
 
 
@@ -516,7 +473,7 @@ def filter_incomplete_traffic(cursor, arg, rec):
         True if IP flows is incomplete.         
         False if Ip flows isn't incomplete.
     """
-    if arg.FilterIPFlows == False:
+    if arg.FilterIPFlows is False:
         return False
     # ===========================================
     if rec.PROTOCOL == 6 and rec.PACKETS < 3:  # 6 is TCP
@@ -538,16 +495,16 @@ def filter_incomplete_traffic(cursor, arg, rec):
 
 
 def main():
-    """Main function of module. First set initial things (arguemnts, pytrap library, database), then waiting for IP flows on selected IFC interface and call for them collector.py script to add it to database.
-        
+    """Main function of module. First set initial things (arguemnts, pytrap library, database), 
+    then waiting for IP flows on selected IFC interface and call for them collector.py script to add it to database.   
     """
     arg = arguments()
     rec, trap = load_pytrap()
-    if arg.RAM == True:
+    if arg.RAM:
         sqlite_connection, cursor = ram_database()
     else:
         sqlite_connection, cursor = connect_to_database(arg)
-    if arg.P == True:
+    if arg.P:
         start_time = time.time()
         old_time = print_act_inf(start_time, start_time, arg, 0, cursor)
     else:
