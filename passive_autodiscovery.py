@@ -325,7 +325,7 @@ def load_pytrap():
     trap.init(sys.argv)
     # Set the list of required fields in received messages.
     # This list is an output of e.g. flow_meter - basic flow.
-    input_spec = "ipaddr DST_IP,ipaddr SRC_IP,uint64 BYTES,uint64 LINK_BIT_FIELD,time TIME_FIRST,time TIME_LAST,uint32 PACKETS,uint16 DST_PORT,uint16 SRC_PORT,uint8 DIR_BIT_FIELD,uint8 PROTOCOL,uint8 TCP_FLAGS,uint8 TOS,uint8 TTL"
+    input_spec = "ipaddr DST_IP,ipaddr SRC_IP,uint64 BYTES,uint64 LINK_BIT_FIELD,time TIME_FIRST,time TIME_LAST,uint32 PACKETS,uint16 DST_PORT,uint16 SRC_PORT,uint8 DIR_BIT_FIELD,uint8 PROTOCOL,uint8 TCP_FLAGS"
     trap.setRequiredFmt(0, pytrap.FMT_UNIREC, input_spec)
     rec = pytrap.UnirecTemplate(input_spec)
     return rec, trap
