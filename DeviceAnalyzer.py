@@ -591,8 +591,17 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
         createJSON["MAC"] = row[2]
         mac = [row[2][i : i + 8] for i in range(0, len(row[2]), 8)][0]
     elif Router:
-        # TODO router device with IP from local segment must have safe MAC in createJSON["MAC"]
-        createJSON["RouterMAC"] = Router[1]
+        cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1]))
+        rows = cursor.fetchall()
+        cnt_private = 0
+        for row in rows:
+            ip = ipaddress.ip_address(row[2])
+            if ip.is_private:
+                cnt_private += 1
+        if cnt_private > 1:
+            createJSON["RouterMAC"] = Router[1]
+        else:
+            createJSON["MAC"] = Router[1]
         mac = [Router[1][i : i + 8] for i in range(0, len(Router[1]), 8)][0]
     else:
         None
