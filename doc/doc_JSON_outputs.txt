@@ -113,10 +113,12 @@ Details of individual collective parts:
         - "Vendor": VENDOR_NAME
             -- Vendor of network card
             -- Obtained from the first 24 bits of MAC address
+            -- If Vendor can't be resolved from MAC address -> "Vendor": "Not Find: " + tryed_half_of_MAC
 
         - "Country": VENDOR_COUNTRY_SHORTCUT
             -- Country shortcut of vendor
-
+            -- If Country can't be resolved from MAC address -> "Country": "Not Find: " + tryed_half_of_MAC
+            
         - "Labels": [
                         {
                             "Label": LABEL, 
