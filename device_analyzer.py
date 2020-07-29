@@ -1,7 +1,7 @@
 #!/usr/bin/python3.6
-"""DeviceAnalyzer script:
+"""device_analyzer script:
 
-    DeviceAnalyzer script connect to sqlite3 database which is created by CreateScript and filled by PassiveAutodiscovery script. After connect to database, script will analyzed database acccording to setted arguments of script. Only one mandatory output of the script is JSON document with default name PassiveAutodiscovery.
+    device_analyzer script connect to sqlite3 database which is created by CreateScript and filled by PassiveAutodiscovery script. After connect to database, script will analyzed database acccording to setted arguments of script. Only one mandatory output of the script is JSON document with default name PassiveAutodiscovery.
 
     Analyze:
         For all device will script get these information from database:
@@ -33,14 +33,10 @@
         Dependencies and device with label [WEB Server] can be translate to domain name:
             The domain name will be in output (command line/file). [-DNS] 
         Can ignored global dependencies:
-            In outub will be only local dependencies. [-o]
+            In output will be only local dependencies. [-o]
         Can create graphs of dependencies in time.
             For local dependencies. [-t]
             For local to gloval dependencies. [-T]
-
-
-
-
 
     Copyright (C) 2020 CESNET
 
@@ -57,149 +53,103 @@
         ALTERNATIVELY, provided that this notice is retained in full, this product may be distributed under the terms of the GNU General Public License (GPL) version 2 or later, in which case the provisions of the GPL apply INSTEAD OF those given above. 
 
         This software is provided as is'', and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the company or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
-
-
-
-
 """
-# libraries for working with OS UNIX files and system
+# Standard Library Imports
 import sys
 import os
-
-# library for working with IP addresses
 import ipaddress
-
-# library for working with sqlite3 database
 import sqlite3
-
-# library for working with JSON document
 import json
-
-# library for math things
 import math
-
-# library for create network socket (in this script use for DNS queries)
 import socket
-
-# libraries for working with time
 import time
 import datetime
-
-# library for create statistics graphs
-from termgraph import termgraph
 import tempfile
+import argparse
+from argparse import RawTextHelpFormatter
 
-# libraries for create network graphs
+# Third Part Imports
+from termgraph import termgraph
 import pandas
 import numpy
 import networkx
 import matplotlib.pyplot as plt
 import matplotlib.ticker as plticker
 
-# library for arguments of script
-import argparse
-from argparse import RawTextHelpFormatter
+# Local Application Imports
+from create_script import check_str
 
 
-def CheckStr(STR, DOT):
-    """Function check if string have DOT suffix in end of string. Like suffix .txt in text.txt.
-
-    Parameters
-    --------
-    STR : str 
-        String of file name.
-    DOT : str
-        String of file suffix.
-    Returns
-    --------
-    Boolean : boolean
-        True if STR have suffix DOT.
-        False if STR havn't suffix DOT.
-    """
-    x = STR.split(DOT)
-    if x[-1] == "":
-        return True
-    return False
-
-
-def bubbleSort(X, Y):
-    """Bubble sort for sorting Activity data in arrays X and Y.
+def bubble_sort(times, num_packets):
+    """Bubble sort for sorting Activity data in arrays times and num_packets. Function sort array of time times and array num_packets sort by times (time and number of packets must stay on same index after sort)
 
     Parameters
     -----------
-    X : array
+    times : array
         Array of times.
-    Y : array
-        Arrays of packets.
+    num_packets : array
+        Array contains on index i number of packets at time times[i].
     """
-    n = len(X)
+    n = len(times)
     for i in range(n - 1):
         for j in range(0, n - i - 1):
-            if X[j] > X[j + 1]:
-                X[j], X[j + 1] = X[j + 1], X[j]
-                Y[j], Y[j + 1] = Y[j + 1], Y[j]
+            if times[j] > times[j + 1]:
+                times[j], times[j + 1] = times[j + 1], times[j]
+                num_packets[j], num_packets[j + 1] = num_packets[j + 1], num_packets[j]
 
 
-def ActivityGraph(Device, cursor, createJSON):
-    """Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.
+def graph_activity_of_device(device, cursor, device_json):
+    """Plot graph of using dependency in time and safe it to file. Line times is time and line num_packets is number of packets.
 
     Parameters
     -----------
-    Device : str
+    device : str
         Name of device to analyze.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    createJSON : JSON  
+    device_json : JSON  
         JSON file loaded in python.    
     """
-    X = []
-    Y = []
+    times = []
+    num_packets = []
     cursor.execute(
-        "SELECT * FROM Dependencies WHERE (IP_origin='{dev}' OR IP_target='{dev}')".format(
-            dev=Device
-        )
+        f"SELECT * FROM Dependencies WHERE (IP_origin='{device}' OR IP_target='{device}')"
     )
     devrows = cursor.fetchall()
     for devrow in devrows:
         cursor.execute(
-            "SELECT * FROM DependenciesTime WHERE DependenciesID='{ID}'".format(
-                ID=devrow[0]
-            )
+            f"SELECT * FROM DependenciesTime WHERE DependenciesID='{devrow[0]}'"
         )
         rows = cursor.fetchall()
         for row in rows:
-            Time = float(row[2])
-            if time.ctime((Time - (Time % 60))) in X:
-                tmp = X.index(time.ctime((Time - (Time % 60))))
-                Y[tmp] = Y[tmp] + row[3]
+            time = float(row[2])
+            if time.ctime((time - (time % 60))) in times:
+                tmp = times.index(time.ctime((time - (time % 60))))
+                num_packets[tmp] = num_packets[tmp] + row[3]
             else:
-                X.append(time.ctime((Time - (Time % 60))))
-                Y.append(row[3])
+                times.append(time.ctime((time - (time % 60))))
+                num_packets.append(row[3])
 
     cursor.execute(
-        "SELECT * FROM Global WHERE (IP_origin='{dev}' OR IP_target='{dev}')".format(
-            dev=Device
-        )
+        f"SELECT * FROM Global WHERE (IP_origin='{device}' OR IP_target='{device}')"
     )
     devrows = cursor.fetchall()
     for devrow in devrows:
-        cursor.execute(
-            "SELECT * FROM GlobalTime WHERE GlobalID='{ID}'".format(ID=devrow[0])
-        )
+        cursor.execute(f"SELECT * FROM GlobalTime WHERE GlobalID='{devrow[0]}'")
         rows = cursor.fetchall()
         for row in rows:
-            Time = float(row[2])
-            if time.ctime((Time - (Time % 60))) in X:
-                tmp = X.index(time.ctime((Time - (Time % 60))))
-                Y[tmp] = Y[tmp] + row[3]
+            time = float(row[2])
+            if time.ctime((time - (time % 60))) in times:
+                tmp = times.index(time.ctime((time - (time % 60))))
+                num_packets[tmp] = num_packets[tmp] + row[3]
             else:
-                X.append(time.ctime((Time - (Time % 60))))
-                Y.append(row[3])
+                times.append(time.ctime((time - (time % 60))))
+                num_packets.append(row[3])
 
-    bubbleSort(X, Y)
+    bubble_sort(times, num_packets)
 
     plt.rcParams["figure.figsize"] = (20, 3)
-    plt.plot(X, Y)
+    plt.plot_statistics(times, num_packets)
     plt.setp(plt.gca().xaxis.get_majorticklabels(), rotation=0)
     loc = plticker.MultipleLocator(
         base=40
@@ -209,65 +159,59 @@ def ActivityGraph(Device, cursor, createJSON):
     # naming the y axis
     plt.ylabel("Number of Packets")
     # giving a title to my graph
-    plt.title("Active of device " + Device)
-    plt.savefig("ActiveOfDevice_" + Device + ".png")
-    createJSON["Files"].append("ActiveOfDevice_" + Device + ".png")
+    plt.title("Active of device " + device)
+    plt.savefig("ActiveOfDevice_" + device + ".png")
+    device_json["Files"].append("ActiveOfDevice_" + device + ".png")
     print(
-        "Graph of activity of device "
-        + Device
-        + " in time safe in file: ActiveOfDevice_"
-        + Device
-        + ".png"
+        f"Graph of activity of device {device} in time safe in file: ActiveOfDevice_{device}.png"
     )
     plt.clf()
 
 
-def TimeGraph(Dependency, table, cursor, createJSON):
-    """Plot graph of using dependency in time and safe it to file. Line X is time and line Y is number of packets.
+def graph_activity_of_dependency(dependency, table, cursor, device_json):
+    """Plot graph of using dependency in time and safe it to file. Line times is time and line num_packets is number of packets.
 
     Parameters
     -----------
-    Dependency : sqlite3.fetchone()
+    dependency : sqlite3.fetchone()
         Record of dependency that may be ploted.
     table : str
         Name of table where is record of dependency safed (Dependencies or Global).
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    createJSON : JSON  
+    device_json : JSON  
         JSON file loaded in python.    
     """
     if table == "Dependencies":
         cursor.execute(
-            "SELECT * FROM DependenciesTime WHERE DependenciesID='{ID}'".format(
-                ID=Dependency[0]
-            )
+            f"SELECT * FROM DependenciesTime WHERE DependenciesID='{dependency[0]}'"
         )
         rows = cursor.fetchall()
     else:
-        cursor.execute(
-            "SELECT * FROM GlobalTime WHERE GlobalID='{ID}'".format(ID=Dependency[0])
-        )
+        cursor.execute(f"SELECT * FROM GlobalTime WHERE GlobalID='{dependency[0]}'")
         rows = cursor.fetchall()
     if not rows:
         return
-    X = []
-    Y = []
-    Time = rows[0][2]
-    tmpX = 0
-    tmpY = 0
+
+    times = []
+    num_packets = []
+    time = rows[0][2]
+    tmp_packets = 0
+
     for row in rows:
-        if float(row[2]) <= (float(Time) + 60):
-            tmpY = tmpY + row[3]
+        if float(row[2]) <= (float(time) + 60):
+            tmp_packets = tmp_packets + row[3]
         else:
-            X.append(time.ctime(float(Time)))
-            Y.append(tmpY)
-            while float(row[2]) > (float(Time) + 60):
-                Time = str(float(Time) + 60)
-                X.append(time.ctime(float(Time)))
-                Y.append(0)
-            tmpY = row[3]
+            times.append(time.ctime(float(time)))
+            num_packets.append(tmp_packets)
+            while float(row[2]) > (float(time) + 60):
+                time = str(float(time) + 60)
+                times.append(time.ctime(float(time)))
+                num_packets.append(0)
+            tmp_packets = row[3]
+
     plt.rcParams["figure.figsize"] = (20, 3)
-    plt.plot(X, Y)
+    plt.plot_statistics(times, num_packets)
     plt.setp(plt.gca().xaxis.get_majorticklabels(), rotation=0)
     loc = plticker.MultipleLocator(
         base=40
@@ -278,56 +222,21 @@ def TimeGraph(Dependency, table, cursor, createJSON):
     plt.ylabel("Number of Packets")
     # giving a title to my graph
     plt.title(
-        "Dependency between "
-        + Dependency[1]
-        + "("
-        + str(Dependency[3])
-        + ") and "
-        + Dependency[2]
-        + "("
-        + str(Dependency[4])
-        + ")"
+        f"dependency between {dependency[1]}({str(dependency[3])}) and {dependency[2]}({str(dependency[4])})"
     )
     plt.savefig(
-        "TimeGraph_"
-        + Dependency[1]
-        + "("
-        + str(Dependency[3])
-        + ")_"
-        + Dependency[2]
-        + "("
-        + str(Dependency[4])
-        + ")"
-        + ".png"
+        f"TimeGraph_{dependency[1]}({str(dependency[3])})_{dependency[2]}({str(dependency[4])}).png"
     )
-    createJSON["Files"].append(
-        "TimeGraph_"
-        + Dependency[1]
-        + "("
-        + str(Dependency[3])
-        + ")_"
-        + Dependency[2]
-        + "("
-        + str(Dependency[4])
-        + ")"
-        + ".png"
+    device_json["Files"].append(
+        f"TimeGraph_{dependency[1]}({str(dependency[3])})_{dependency[2]}({str(dependency[4])}).png"
     )
     print(
-        "Graph of using dependency in time safe in file: TimeGraph_"
-        + Dependency[1]
-        + "("
-        + str(Dependency[3])
-        + ")_"
-        + Dependency[2]
-        + "("
-        + str(Dependency[4])
-        + ")"
-        + ".png"
+        f"Graph of using dependency in time safe in file: TimeGraph_{dependency[1]}({str(dependency[3])})_{dependency[2]}({str(dependency[4])}).png"
     )
     plt.clf()
 
 
-def plot(data):
+def plot_statistics(data):
     """Plot the statistical graph of using network (by protocols or devices) in %. Only for output in command line.
 
     Parameters
@@ -365,12 +274,10 @@ def read_json(filename):
     data : JSON
         JSON format in python.
     """
-    if CheckStr(filename, ".json") == True:
-        FILE = filename
-    else:
-        FILE = filename + ".json"
-    with open(FILE, "r") as jsonFile:
-        data = json.load(jsonFile)
+    if check_str(filename, ".json") is False:
+        filename = filename + ".json"
+    with open(filename, "r") as file:
+        data = json.load(file)
     return data
 
 
@@ -384,24 +291,22 @@ def write_json(data, filename):
     filename : str
         Name of the output JSON document file.
     """
-    if CheckStr(filename, ".json") == True:
-        FILE = filename
-    else:
-        FILE = filename + ".json"
-    with open(FILE, "w") as f:
-        json.dump(data, f, indent=4)
+    if check_str(filename, ".json") is False:
+        filename = filename + ".json"
+    with open(filename, "w") as file:
+        json.dump(data, file, indent=4)
 
 
-def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
+def graph_of_local_dependencies(cursor, sqlite_connection, json_output):
     """Function create graph of local dependencies for IP address version 4 and IP address version 6. Then safe it to file named Graph_Local_[ip verison].
 
     Parameters
     -----------
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    JSON : JSON
+    json_output : JSON
         JSON file loaded in python.    
     """
     cursor.execute("SELECT * FROM Dependencies")
@@ -418,7 +323,7 @@ def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
         facecolor="w",
         edgecolor="k",
     )
-    G = networkx.Graph()
+    graph_ipv4 = networkx.Graph()
     for row in rows:
         if (
             row[1] == "255.255.255.255"
@@ -429,12 +334,12 @@ def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
             continue
         ipa = ipaddress.ip_address(row[1])
         if ipa.version == 4:
-            G.add_edge(row[1], row[2])
-    pos = networkx.spring_layout(G)
-    networkx.draw(G, pos, with_labels=True)
+            graph_ipv4.add_edge(row[1], row[2])
+    pos = networkx.spring_layout(graph_ipv4)
+    networkx.draw(graph_ipv4, pos, with_labels=True)
     plt.axis("off")
     plt.savefig("Graph_Local_IPv4.png")
-    JSON["Files"].append("Graph_Local_IPv4.png")
+    json_output["Files"].append("Graph_Local_IPv4.png")
     # =================================
     plt.figure(
         "Map of Local Dependencies IPv6",
@@ -443,7 +348,7 @@ def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
         facecolor="w",
         edgecolor="k",
     )
-    H = networkx.Graph()
+    graph_ipv6 = networkx.Graph()
     for row in rows:
         if (
             row[1] == "255.255.255.255"
@@ -454,30 +359,30 @@ def GraphLocalDependencies(cursor, SQLiteConnection, JSON):
             continue
         ipa = ipaddress.ip_address(row[1])
         if ipa.version == 6:
-            H.add_edge(row[1], row[2])
-    pos = networkx.spring_layout(H)
-    networkx.draw(H, pos, with_labels=True)
+            graph_ipv6.add_edge(row[1], row[2])
+    pos = networkx.spring_layout(graph_ipv6)
+    networkx.draw(graph_ipv6, pos, with_labels=True)
     plt.axis("off")
     plt.savefig("Graph_Local_IPv6.png")
-    JSON["Files"].append("Graph_Local_IPv6.png")
+    json_output["Files"].append("Graph_Local_IPv6.png")
 
 
-def GraphGlobalDependencies(cursor, SQLiteConnection, JSON):
+def graph_of_global_dependencies(cursor, sqlite_connection, json_output):
     """Function create graph of global dependencies for each device. Then safe them to files named Graph_Global_[IP address].
 
     Parameters
     -----------
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    JSON : JSON
+    json_output : JSON
         JSON file loaded in python.    
     """
     print("######################################################################")
     cursor.execute("SELECT * FROM LocalDevice")
-    LocalDevices = cursor.fetchall()
-    for device in LocalDevices:
+    local_devices = cursor.fetchall()
+    for device in local_devices:
         cursor.execute(
             "SELECT * FROM Global WHERE IP_origin='{ip}'".format(ip=device[0])
         )
@@ -502,19 +407,19 @@ def GraphGlobalDependencies(cursor, SQLiteConnection, JSON):
         networkx.draw(H, pos, with_labels=True)
         plt.axis("off")
         plt.savefig("Graph_Global_%s.png" % device[0])
-        JSON["Files"].append("Graph_Global_%s.png" % device[0])
+        json_output["Files"].append("Graph_Global_%s.png" % device[0])
 
 
-def GraphLocalToGlobal(cursor, SQLiteConnection, JSON):
+def GraphLocalToGlobal(cursor, sqlite_connection, json_output):
     """Function create graph of dependencies between local and global device, where global is only if two or more local device have communication with. Then safe them to files named Graph_GlobalsToLocals_[number]. (Graph are for visibility safe to more files by small number of devices)
 
     Parameters
     -----------
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    JSON : JSON
+    json_output : JSON
         JSON file loaded in python.    
     """
     print("######################################################################")
@@ -556,7 +461,9 @@ def GraphLocalToGlobal(cursor, SQLiteConnection, JSON):
                         plt.savefig("Graph_GlobalsToLocals_%s.png" % tmp)
                         # plt.show()
                         plt.clf()
-                        JSON["Files"].append("Graph_GlobalsToLocals_%s.png" % tmp)
+                        json_output["Files"].append(
+                            "Graph_GlobalsToLocals_%s.png" % tmp
+                        )
                         tmp = tmp + 1
                         I.clear()
                     except:
@@ -564,7 +471,7 @@ def GraphLocalToGlobal(cursor, SQLiteConnection, JSON):
                         # return
 
 
-def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
+def MAC(DeviceID, IP, cursor, sqlite_connection, device_json):
     """Find if for device IP is in database MAC address record in table MAC or table Routers. If in table MAC, the device with IP has this MAC address. If in Router, the device with IP has this MAC address or is behind router with this MAC address (Ussualy cant resolve this by program).
 
     Parameters
@@ -575,9 +482,9 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
         IP address of device.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    createJSON : JSON
+    device_json : JSON
         JSON file for device with DeviceID ID loaded in python.    
     """
     cursor.execute(
@@ -588,7 +495,7 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
     Router = cursor.fetchone()
     mac = ""
     if row:
-        createJSON["MAC"] = row[2]
+        device_json["MAC"] = row[2]
         mac = [row[2][i : i + 8] for i in range(0, len(row[2]), 8)][0]
     elif Router:
         cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1]))
@@ -599,9 +506,9 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
             if ip.is_private:
                 cnt_private += 1
         if cnt_private > 1:
-            createJSON["RouterMAC"] = Router[1]
+            device_json["RouterMAC"] = Router[1]
         else:
-            createJSON["MAC"] = Router[1]
+            device_json["MAC"] = Router[1]
         mac = [Router[1][i : i + 8] for i in range(0, len(Router[1]), 8)][0]
     else:
         None
@@ -611,13 +518,13 @@ def MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON):
         )
         row = cursor.fetchone()
         if row:
-            createJSON["Vendor"] = row[3]
-            createJSON["Country"] = row[4]
+            device_json["Vendor"] = row[3]
+            device_json["Country"] = row[4]
         else:
-            createJSON["Vendor"] = "Not Find"
+            device_json["Vendor"] = "Not Find"
 
 
-def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
+def LABELS(DeviceID, IP, cursor, sqlite_connection, device_json, json_output, GL):
     """Find all labels (of roles/services) for device in database table LocalServices. Also create new label out of dependencies like [End Device].
 
     Parameters
@@ -628,11 +535,11 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
         IP address of device.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    createJSON : JSON
+    device_json : JSON
         JSON file for device with DeviceID ID loaded in python.    
-    JSON : JSON
+    json_output : JSON
         JSON file for all analyze loaded in python.
     GL : bool
         True if global dependencies exists.
@@ -664,10 +571,10 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
                     continue
             # ==============================================================================================================================
             tmp = 1
-            if Service[1] == "Router" and not IP in JSON["Routers"]:
-                JSON["Routers"].append(IP)
-            if not Service[1] in JSON["Services"]:
-                JSON["Services"].append(Service[1])
+            if Service[1] == "Router" and not IP in json_output["Routers"]:
+                json_output["Routers"].append(IP)
+            if not Service[1] in json_output["Services"]:
+                json_output["Services"].append(Service[1])
             if (
                 Service[1] == "WEB Server"
             ):  # if device is [WEB Server], try transplate IP address to domain name
@@ -678,9 +585,9 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
                             "Label": "%s" % Service[1],
                             "Description": "%s" % domain[0],
                         }
-                        in createJSON["Labels"]
+                        in device_json["Labels"]
                     ):
-                        createJSON["Labels"].append(
+                        device_json["Labels"].append(
                             {
                                 "Label": "%s" % Service[1],
                                 "Description": "%s" % domain[0],
@@ -691,9 +598,9 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
                     None
             if (
                 not {"Label": "%s" % Service[1], "Description": "%s" % Service[3]}
-                in createJSON["Labels"]
+                in device_json["Labels"]
             ):  # add to output only unique labels
-                createJSON["Labels"].append(
+                device_json["Labels"].append(
                     {"Label": "%s" % Service[1], "Description": "%s" % Service[3]}
                 )
     # ============================================================================================================================================================
@@ -706,9 +613,9 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
     WebServer = cursor.fetchone()
     if WebServer:
         tmp = 1
-        if not "End Device" in JSON["Services"]:
-            JSON["Services"].append("End Device")
-        createJSON["Labels"].append(
+        if not "End Device" in json_output["Services"]:
+            json_output["Services"].append("End Device")
+        device_json["Labels"].append(
             {
                 "Label": "End Device",
                 "Description": "PC, Mobile Phone,... (everything that can access web services)",
@@ -722,9 +629,9 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
     MailServer = cursor.fetchone()
     if MailServer:
         tmp = 1
-        if not "End Device" in JSON["Services"]:
-            JSON["Services"].append("End Device")
-        createJSON["Labels"].append(
+        if not "End Device" in json_output["Services"]:
+            json_output["Services"].append("End Device")
+        device_json["Labels"].append(
             {
                 "Label": "End Device",
                 "Description": "PC, Mobile Phone,... (everything that can send emails)",
@@ -750,20 +657,20 @@ def LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL):
             None
         else:
             tmp = 1
-            if not "Router" in JSON["Services"]:
-                JSON["Services"].append("Router")
-            createJSON["Labels"].append(
+            if not "Router" in json_output["Services"]:
+                json_output["Services"].append("Router")
+            device_json["Labels"].append(
                 {"Label": "Router", "Description": "Routing network device"}
             )
-            if not IP in JSON["Routers"]:
-                JSON["Routers"].append(IP)
+            if not IP in json_output["Routers"]:
+                json_output["Routers"].append(IP)
     if tmp == 0:  # if no label was for device find give it label [Unknown]
-        if not "Unknown" in JSON["Services"]:
-            JSON["Services"].append("Unknown")
-        createJSON["Labels"].append({"Label": "Unknows", "Description": ""})
+        if not "Unknown" in json_output["Services"]:
+            json_output["Services"].append("Unknown")
+        device_json["Labels"].append({"Label": "Unknows", "Description": ""})
 
 
-def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
+def DHCP(DeviceID, IP, cursor, sqlite_connection, device_json):
     """Funkcion finds for device all record of DHCP comunicationa nd set it to output.
 
     Parameters
@@ -774,9 +681,9 @@ def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
         IP address of device.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    createJSON : JSON
+    device_json : JSON
         JSON file for device with DeviceID ID loaded in python.        
     """
     cursor.execute(
@@ -785,7 +692,7 @@ def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
     DHCPs = cursor.fetchall()
     if DHCPs:
         for DHCP in DHCPs:
-            createJSON["DHCP"].append(
+            device_json["DHCP"].append(
                 {
                     "DHCPServ": "%s" % DHCP[2],
                     "DHCPTime": "%s" % time.ctime(float(DHCP[3])),
@@ -793,41 +700,41 @@ def DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON):
             )
 
 
-def Stats(LocalStatistic, Dependency, cursor, SQLiteConnection):
+def Stats(LocalStatistic, dependency, cursor, sqlite_connection):
     """Function find if source or destination port of dependency isn't some services in network. If yes, then the packet number carry the dependendy add in LocalStatistic to the services. (this create with cyclus counter of packet by protocol in network) 
     
     Parameters
     -----------
     LocalStatistic : dictionary
         Disctionary of protocols and number packet taht was carry over network by protocols.
-    Dependency : array
+    dependency : array
         The one dependency for count packets and protocols.    
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
     """
     cursor.execute(
-        "SELECT * FROM Services WHERE PortNumber={po}".format(po=Dependency[3])
+        "SELECT * FROM Services WHERE PortNumber={po}".format(po=dependency[3])
     )
     servicestat = cursor.fetchone()
     if servicestat:
         st = servicestat[2].replace(" ", "_")
         if st in LocalStatistic:
-            LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
+            LocalStatistic[st] = LocalStatistic[st] + dependency[5]
         else:
-            LocalStatistic[st] = Dependency[5]
+            LocalStatistic[st] = dependency[5]
     # ==========================================
     cursor.execute(
-        "SELECT * FROM Services WHERE PortNumber={pt}".format(pt=Dependency[4])
+        "SELECT * FROM Services WHERE PortNumber={pt}".format(pt=dependency[4])
     )
     servicestat = cursor.fetchone()
     if servicestat:
         st = servicestat[2].replace(" ", "_")
         if st in LocalStatistic:
-            LocalStatistic[st] = LocalStatistic[st] + Dependency[5]
+            LocalStatistic[st] = LocalStatistic[st] + dependency[5]
         else:
-            LocalStatistic[st] = Dependency[5]
+            LocalStatistic[st] = dependency[5]
 
 
 def LOCALDEPENDENCIES(
@@ -837,10 +744,10 @@ def LOCALDEPENDENCIES(
     LocalStatistic,
     IPStatistic,
     cursor,
-    SQLiteConnection,
-    createJSON,
+    sqlite_connection,
+    device_json,
     arguments,
-    JSON,
+    json_output,
 ):
     """Function for device find in database all local dependencies and set in to output JSON. Also create statistic of local dependencies and statistic of using network by deveices. 
 
@@ -858,9 +765,9 @@ def LOCALDEPENDENCIES(
         Statistic of using network by device.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    createJSON : JSON
+    device_json : JSON
         JSON file for device with DeviceID ID loaded in python.        
     """
     cursor.execute(
@@ -871,37 +778,39 @@ def LOCALDEPENDENCIES(
     Dependencies = cursor.fetchall()
     tmp = 0
     if Dependencies:
-        for Dependency in Dependencies:
+        for dependency in Dependencies:
             if arguments.timeL > tmp:
-                TimeGraph(Dependency, "Dependencies", cursor, JSON)
+                graph_activity_of_dependency(
+                    dependency, "Dependencies", cursor, json_output
+                )
                 tmp = tmp + 1
-            Stats(LocalStatistic, Dependency, cursor, SQLiteConnection)
+            Stats(LocalStatistic, dependency, cursor, sqlite_connection)
             # ==========================================
-            if Dependency[1] == IP:
-                if Dependency[1] in IPStatistic:
-                    IPStatistic[Dependency[1]] = (
-                        IPStatistic[Dependency[1]] + Dependency[5]
+            if dependency[1] == IP:
+                if dependency[1] in IPStatistic:
+                    IPStatistic[dependency[1]] = (
+                        IPStatistic[dependency[1]] + dependency[5]
                     )
                 else:
-                    IPStatistic[Dependency[1]] = Dependency[5]
-            if Dependency[2] == IP:
-                if Dependency[2] in IPStatistic:
-                    IPStatistic[Dependency[2]] = (
-                        IPStatistic[Dependency[2]] + Dependency[5]
+                    IPStatistic[dependency[1]] = dependency[5]
+            if dependency[2] == IP:
+                if dependency[2] in IPStatistic:
+                    IPStatistic[dependency[2]] = (
+                        IPStatistic[dependency[2]] + dependency[5]
                     )
                 else:
-                    IPStatistic[Dependency[2]] = Dependency[5]
+                    IPStatistic[dependency[2]] = dependency[5]
             # ==========================================
-            SrcIP = ipaddress.ip_address(Dependency[1])
+            SrcIP = ipaddress.ip_address(dependency[1])
             cursor.execute(
                 "SELECT * FROM Services WHERE PortNumber='{portS}'".format(
-                    portS=Dependency[3]
+                    portS=dependency[3]
                 )
             )
             ServiceS = cursor.fetchone()
             cursor.execute(
                 "SELECT * FROM Services WHERE PortNumber='{portD}'".format(
-                    portD=Dependency[4]
+                    portD=dependency[4]
                 )
             )
             ServiceD = cursor.fetchone()
@@ -910,60 +819,60 @@ def LOCALDEPENDENCIES(
             Verbs = "provides"
             Services = ""
             Port = 0
-            Packets = Dependency[5]
+            Packets = dependency[5]
             # ==========================================
             if ServiceS:
                 if SrcIP == DeviceIP:
-                    IPs = Dependency[2]
+                    IPs = dependency[2]
                     if ServiceS[1] == "DHCP Client":
                         Services = "DHCP Server"
                         Port = 67
                     else:
                         Verbs = "requires"
                         Services = ServiceS[1]
-                        Port = Dependency[3]
+                        Port = dependency[3]
                 else:
-                    IPs = Dependency[1]
+                    IPs = dependency[1]
                     Services = ServiceS[1]
-                    Port = Dependency[3]
+                    Port = dependency[3]
             elif ServiceD:
                 if SrcIP == DeviceIP:
-                    IPs = Dependency[2]
+                    IPs = dependency[2]
                 else:
-                    IPs = Dependency[1]
+                    IPs = dependency[1]
                     Verbs = "requires"
                 Services = ServiceD[1]
-                Port = Dependency[4]
+                Port = dependency[4]
             else:
                 if SrcIP == DeviceIP:
-                    IPs = Dependency[2]
+                    IPs = dependency[2]
                     cursor.execute(
                         "SELECT * FROM Ports WHERE PortNumber='{portD}'".format(
-                            portD=Dependency[4]
+                            portD=dependency[4]
                         )
                     )
                     PortD = cursor.fetchone()
                     if PortD:
                         Services = PortD[1]
-                        Port = Dependency[4]
+                        Port = dependency[4]
                     else:
-                        Port = Dependency[4]
+                        Port = dependency[4]
                 else:
-                    IPs = Dependency[1]
+                    IPs = dependency[1]
                     Verbs = "requires"
                     cursor.execute(
                         "SELECT * FROM Ports WHERE PortNumber='{portS}'".format(
-                            portS=Dependency[3]
+                            portS=dependency[3]
                         )
                     )
                     PortS = cursor.fetchone()
                     if PortS:
                         Services = PortS[1]
-                        Port = Dependency[3]
+                        Port = dependency[3]
                     else:
-                        Port = Dependency[3]
+                        Port = dependency[3]
             # ========================================================
-            createJSON["LocalDependencies"].append(
+            device_json["LocalDependencies"].append(
                 {
                     "IP": "%s" % IPs,
                     "Verb": "%s" % Verbs,
@@ -981,10 +890,10 @@ def GLOBALDEPENDENCIES(
     GlobalStatistic,
     IPStatistic,
     cursor,
-    SQLiteConnection,
-    createJSON,
+    sqlite_connection,
+    device_json,
     arguments,
-    JSON,
+    json_output,
 ):
     """Function for device find in database all global dependencies and set in to output JSON. Also create statistic of global dependencies and statistic of using network by deveices. 
 
@@ -1002,9 +911,9 @@ def GLOBALDEPENDENCIES(
         Statistic of using network by device.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    createJSON : JSON
+    device_json : JSON
         JSON file for device with DeviceID ID loaded in python.        
     """
     cursor.execute(
@@ -1018,9 +927,11 @@ def GLOBALDEPENDENCIES(
         promtp = 0
         for GlobalDependency in GlobalDependencies:
             if arguments.timeG > tmp:
-                TimeGraph(GlobalDependency, "Global", cursor, JSON)
+                graph_activity_of_dependency(
+                    GlobalDependency, "Global", cursor, json_output
+                )
                 tmp = tmp + 1
-            Stats(GlobalStatistic, GlobalDependency, cursor, SQLiteConnection)
+            Stats(GlobalStatistic, GlobalDependency, cursor, sqlite_connection)
             # ==========================================
             SrcIP = ipaddress.ip_address(GlobalDependency[1])
             # ==========================================
@@ -1143,7 +1054,7 @@ def GLOBALDEPENDENCIES(
                     else:
                         Port = GlobalDependency[3]
             # ========================================================
-            createJSON["GlobalDependencies"].append(
+            device_json["GlobalDependencies"].append(
                 {
                     "IP": "%s" % IPs,
                     "Verb": "%s" % Verbs,
@@ -1154,14 +1065,14 @@ def GLOBALDEPENDENCIES(
             )
 
 
-def StatPercent(Statistic, createJSON, TMP):
+def StatPercent(Statistic, device_json, TMP):
     """Function receive dictionary. The dictionarz number of packets calculate and create from it Percents.
 
     Parameters
     -----------
     Statistic : dictionary
         The dictionary of statistic with protocols/devices and number of packets that was carryed in network by it.
-    createJSON : JSON
+    device_json : JSON
         JSON file for device with DeviceID ID loaded in python.        
     TMP : int
         Magic value represent the type of statistic (Local statistic == 0, Global statistic == 1, Network use statistic == 2).
@@ -1178,22 +1089,22 @@ def StatPercent(Statistic, createJSON, TMP):
     for i, j in Statistic.items():
         Statistic[i] = float(j / tmp * 100)
         if TMP == 0:
-            createJSON["LocalStatistic"].append(
+            device_json["LocalStatistic"].append(
                 {"Service": "%s" % i, "Percents": "%s" % Statistic[i]}
             )
         elif TMP == 1:
-            createJSON["GlobalStatistic"].append(
+            device_json["GlobalStatistic"].append(
                 {"Service": "%s" % i, "Percents": "%s" % Statistic[i]}
             )
         else:
-            createJSON["IPStatistic"].append(
+            device_json["IPStatistic"].append(
                 {"IP": "%s" % i, "Percents": "%s" % Statistic[i]}
             )
     if TMP == 2:
-        plot(Statistic.items())
+        plot_statistics(Statistic.items())
 
 
-def IPAddress(IP, cursor, createJSON):
+def IPAddress(IP, cursor, device_json):
     """Function finds in database all IP address of the device (more then one only when device used both version of IP address or change IP address while monitoring network (DHCP)).
 
     Parameters
@@ -1202,10 +1113,10 @@ def IPAddress(IP, cursor, createJSON):
         IP address of analyzed device.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    createJSON : JSON
+    device_json : JSON
         JSON file for device with DeviceID ID loaded in python.            
     """
-    createJSON["IP"].append(IP)
+    device_json["IP"].append(IP)
     cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP))
     Router = cursor.fetchone()
     if not Router:
@@ -1215,7 +1126,7 @@ def IPAddress(IP, cursor, createJSON):
         IPs = cursor.fetchall()
         for ip in IPs:
             if not ip[1] == IP:
-                createJSON["IP"].append(ip[1])
+                device_json["IP"].append(ip[1])
     else:
         cursor.execute(
             "SELECT DeviceType FROM LocalServices LS JOIN Services S ON LS.PortNumber=S.PortNumber WHERE LS.IP='{ip}' AND S.DeviceType='{device}'".format(
@@ -1232,31 +1143,31 @@ def IPAddress(IP, cursor, createJSON):
             for ip in Routers:
                 ipd = ipaddress.ip_address(ip[2])
                 if ipd.is_private and ip[2] != IP and IPD.version == ipd.version:
-                    createJSON["DeviceBehindRouter"].append(ip[2])
+                    device_json["DeviceBehindRouter"].append(ip[2])
 
 
-def PrintDeviceFromJSON(JSON, arguments):
+def PrintDeviceFromJSON(json_output, arguments):
     """Print device from output JSON document to command line.
 
     Parameters
     -----------
-    JSON : JSON
+    json_output : JSON
         Ouput JSON document.
     arguments : argparse
         Setted arguments of the DeviceAnalyzer script.    
     """
     if (
-        not JSON["LocalDependencies"]
-        and not JSON["GlobalDependencies"]
-        and not JSON["Labels"]
+        not json_output["LocalDependencies"]
+        and not json_output["GlobalDependencies"]
+        and not json_output["Labels"]
     ):
         return
     print("######################################################################")
-    print("Device ID: ", JSON["DeviceID"])
+    print("Device ID: ", json_output["DeviceID"])
     # =================================================================================
     print("  IP: ", end="")
     tmp = 0
-    for i in JSON["IP"]:
+    for i in json_output["IP"]:
         if tmp == 0:
             print(i, end="")
             tmp = i
@@ -1264,28 +1175,28 @@ def PrintDeviceFromJSON(JSON, arguments):
             print(" <", i, ">", end="")
     print("")
     # =================================================================================
-    print("  Last communication: ", time.ctime(float(JSON["LastCom"])))
+    print("  Last communication: ", time.ctime(float(json_output["LastCom"])))
     # =================================================================================
     print("  MAC: ", end="")
-    if JSON["MAC"] == "" and JSON["RouterMAC"] == "":
+    if json_output["MAC"] == "" and json_output["RouterMAC"] == "":
         print("---")
-    elif JSON["RouterMAC"] == "":
-        print(JSON["MAC"], end="")
-        if JSON["Vendor"] != "":
-            print(", ", JSON["Vendor"], ", ", JSON["Country"])
+    elif json_output["RouterMAC"] == "":
+        print(json_output["MAC"], end="")
+        if json_output["Vendor"] != "":
+            print(", ", json_output["Vendor"], ", ", json_output["Country"])
     else:
         print(
             " of router behind this device or this device itself is this router: ",
-            JSON["RouterMAC"],
+            json_output["RouterMAC"],
             end="",
         )
-        if JSON["Vendor"] != "":
-            print(", ", JSON["Vendor"], ", ", JSON["Country"])
+        if json_output["Vendor"] != "":
+            print(", ", json_output["Vendor"], ", ", json_output["Country"])
     # =================================================================================
     print("  Labels:")
-    if not JSON["Labels"]:
+    if not json_output["Labels"]:
         print("    ---")
-    for i in JSON["Labels"]:
+    for i in json_output["Labels"]:
         if arguments.DNS == True and i["Label"] == "WEB Server":
             try:
                 domain = socket.gethostbyaddr(i)
@@ -1296,17 +1207,17 @@ def PrintDeviceFromJSON(JSON, arguments):
             print("    [", i["Label"], "] - ", i["Description"])
     # =================================================================================
     print("  DHCP:")
-    if not JSON["DHCP"]:
+    if not json_output["DHCP"]:
         print("    ---")
-    for i in JSON["DHCP"]:
+    for i in json_output["DHCP"]:
         print("    ", i["DHCPServ"], " in ", i["DHCPTime"])
     # =================================================================================
     print("  Local Dependencies:")
-    if not JSON["LocalDependencies"]:
+    if not json_output["LocalDependencies"]:
         print("    ---")
     if arguments.LocalNumber != -1:
         tmp = 0
-        for i in JSON["LocalDependencies"]:
+        for i in json_output["LocalDependencies"]:
             if tmp < arguments.LocalNumber:
                 if i["Verb"] == "provides":
                     print(
@@ -1338,7 +1249,7 @@ def PrintDeviceFromJSON(JSON, arguments):
             else:
                 break
     else:
-        for i in JSON["LocalDependencies"]:
+        for i in json_output["LocalDependencies"]:
             if i["Verb"] == "provides":
                 print(
                     "    -> ",
@@ -1366,19 +1277,19 @@ def PrintDeviceFromJSON(JSON, arguments):
                     i["Packets"],
                 )
     # =================================================================================
-    if not JSON["LocalStatistic"]:
+    if not json_output["LocalStatistic"]:
         print("")
     else:
         IPStatistic = {}
-        for i in JSON["LocalStatistic"]:
+        for i in json_output["LocalStatistic"]:
             IPStatistic[i["Service"]] = i["Percents"]
-        plot(IPStatistic.items())
+        plot_statistics(IPStatistic.items())
     # =================================================================================
     print("  Global Dependencies:")
-    if not JSON["GlobalDependencies"]:
+    if not json_output["GlobalDependencies"]:
         print("    ---")
     if arguments.GlobalNumber == -1:
-        for i in JSON["GlobalDependencies"]:
+        for i in json_output["GlobalDependencies"]:
             if arguments.DNS == True:
                 try:
                     domain = socket.gethostbyaddr(i["IP"])
@@ -1454,7 +1365,7 @@ def PrintDeviceFromJSON(JSON, arguments):
                 )
     else:
         tmp = 0
-        for i in JSON["GlobalDependencies"]:
+        for i in json_output["GlobalDependencies"]:
             if tmp < arguments.GlobalNumber:
                 if arguments.DNS == True:
                     try:
@@ -1547,38 +1458,38 @@ def PrintDeviceFromJSON(JSON, arguments):
             else:
                 break
     # =================================================================================
-    if not JSON["GlobalStatistic"]:
+    if not json_output["GlobalStatistic"]:
         print("")
     else:
         IPStatistic = {}
-        for i in JSON["GlobalStatistic"]:
+        for i in json_output["GlobalStatistic"]:
             IPStatistic[i["Service"]] = i["Percents"]
-        plot(IPStatistic.items())
+        plot_statistics(IPStatistic.items())
 
 
-def PrintDeviceToFileFromJSON(JSON, arguments, sample):
+def PrintDeviceToFileFromJSON(json_output, arguments, sample):
     """Print device from output JSON document to file.
 
     Parameters
     -----------
-    JSON : JSON
+    json_output : JSON
         Ouput JSON document.
     arguments : argparse
         Setted arguments of the DeviceAnalyzer script.    
     sample : opened file
         Opened output file.
     """
-    if not JSON["LocalDependencies"] and not JSON["GlobalDependencies"]:
+    if not json_output["LocalDependencies"] and not json_output["GlobalDependencies"]:
         return
     print(
         "######################################################################",
         file=sample,
     )
-    print("Device ID: ", JSON["DeviceID"], file=sample)
+    print("Device ID: ", json_output["DeviceID"], file=sample)
     # =================================================================================
     print("  IP: ", end="", file=sample)
     tmp = 0
-    for i in JSON["IP"]:
+    for i in json_output["IP"]:
         if tmp == 0:
             print(i, end="", file=sample)
             tmp = i
@@ -1586,29 +1497,35 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
             print(" <", i, ">", end="", file=sample)
     print("", file=sample)
     # =================================================================================
-    print("  Last communication: ", time.ctime(float(JSON["LastCom"])), file=sample)
+    print(
+        "  Last communication: ", time.ctime(float(json_output["LastCom"])), file=sample
+    )
     # =================================================================================
     print("  MAC: ", end="", file=sample)
-    if JSON["MAC"] == "" and JSON["RouterMAC"] == "":
+    if json_output["MAC"] == "" and json_output["RouterMAC"] == "":
         print("---", file=sample)
-    elif JSON["RouterMAC"] == "":
-        print(JSON["MAC"], end="", file=sample)
-        if JSON["Vendor"] != "":
-            print(", ", JSON["Vendor"], ", ", JSON["Country"], file=sample)
+    elif json_output["RouterMAC"] == "":
+        print(json_output["MAC"], end="", file=sample)
+        if json_output["Vendor"] != "":
+            print(
+                ", ", json_output["Vendor"], ", ", json_output["Country"], file=sample
+            )
     else:
         print(
             " of router behind this device or this device itself is this router: ",
-            JSON["RouterMAC"],
+            json_output["RouterMAC"],
             end="",
             file=sample,
         )
-        if JSON["Vendor"] != "":
-            print(", ", JSON["Vendor"], ", ", JSON["Country"], file=sample)
+        if json_output["Vendor"] != "":
+            print(
+                ", ", json_output["Vendor"], ", ", json_output["Country"], file=sample
+            )
     # =================================================================================
     print("  Labels:", file=sample)
-    if not JSON["Labels"]:
+    if not json_output["Labels"]:
         print("    ---", file=sample)
-    for i in JSON["Labels"]:
+    for i in json_output["Labels"]:
         if arguments.DNS == True:
             try:
                 domain = socket.gethostbyaddr(i)
@@ -1619,17 +1536,17 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
             print("    [", i["Label"], "] - ", i["Description"], file=sample)
     # =================================================================================
     print("  DHCP:", file=sample)
-    if not JSON["DHCP"]:
+    if not json_output["DHCP"]:
         print("    ---", file=sample)
-    for i in JSON["DHCP"]:
+    for i in json_output["DHCP"]:
         print("    ", i["DHCPServ"], " in ", i["DHCPTime"], file=sample)
     # =================================================================================
     print("  Local Dependencies:", file=sample)
-    if not JSON["LocalDependencies"]:
+    if not json_output["LocalDependencies"]:
         print("    ---", file=sample)
     if arguments.LocalNumber != -1:
         tmp = 0
-        for i in JSON["LocalDependencies"]:
+        for i in json_output["LocalDependencies"]:
             if tmp < arguments.LocalNumber:
                 if i["Verb"] == "provides":
                     print(
@@ -1663,7 +1580,7 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
             else:
                 break
     else:
-        for i in JSON["LocalDependencies"]:
+        for i in json_output["LocalDependencies"]:
             if i["Verb"] == "provides":
                 print(
                     "    -> ",
@@ -1693,21 +1610,21 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                     file=sample,
                 )
     # =================================================================================
-    if not JSON["LocalStatistic"]:
+    if not json_output["LocalStatistic"]:
         print("", file=sample)
     else:
         IPStatistic = {}
-        for i in JSON["LocalStatistic"]:
+        for i in json_output["LocalStatistic"]:
             IPStatistic[i["Service"]] = i["Percents"]
         print("  Print Local Statistic:", file=sample)
         for i, j in IPStatistic.items():
             print("    ", i, "\t\t\t", j, "%", file=sample)
     # =================================================================================
     print("  Global Dependencies:", file=sample)
-    if not JSON["GlobalDependencies"]:
+    if not json_output["GlobalDependencies"]:
         print("    ---", file=sample)
     if arguments.GlobalNumber == -1:
-        for i in JSON["GlobalDependencies"]:
+        for i in json_output["GlobalDependencies"]:
             if arguments.DNS == True:
                 try:
                     domain = socket.gethostbyaddr(i["IP"])
@@ -1756,7 +1673,7 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
                 )
     else:
         tmp = 0
-        for i in JSON["GlobalDependencies"]:
+        for i in json_output["GlobalDependencies"]:
             if tmp < arguments.GlobalNumber:
                 if arguments.DNS == True:
                     try:
@@ -1855,37 +1772,37 @@ def PrintDeviceToFileFromJSON(JSON, arguments, sample):
             else:
                 break
     # =================================================================================
-    if not JSON["GlobalStatistic"]:
+    if not json_output["GlobalStatistic"]:
         print("", file=sample)
     else:
         IPStatistic = {}
-        for i in JSON["GlobalStatistic"]:
+        for i in json_output["GlobalStatistic"]:
             IPStatistic[i["Service"]] = i["Percents"]
         print("  Print Global Statistic:", file=sample)
         for i, j in IPStatistic.items():
             print("    ", i, "\t\t\t", j, "%", file=sample)
 
 
-def PrintJSON(JSON, arguments):
+def PrintJSON(json_output, arguments):
     """Print safed analyze from JSON file. Into file or command line.
 
     Parameters
     -----------
-    JSON : JSON
+    json_output : JSON
         JSON file loaded in python.        
     arguments : argparse
         Setted arguments of the script.
     """
     if arguments.print == True:
-        for Dev in JSON["Devices"]:
+        for Dev in json_output["Devices"]:
             PrintDeviceFromJSON(Dev, arguments)
     if arguments.file != "":
-        if CheckStr(arguments.file, ".txt") == True:
+        if check_str(arguments.file, ".txt") == True:
             FILE = arguments.file
         else:
             FILE = arguments.file + ".txt"
         sample = open(FILE, "w")
-        for Dev in JSON["Devices"]:
+        for Dev in json_output["Devices"]:
             PrintDeviceToFileFromJSON(Dev, arguments, sample)
 
 
@@ -1894,8 +1811,8 @@ def AnalyzeLocalDevice(
     IP,
     TIME,
     cursor,
-    SQLiteConnection,
-    JSON,
+    sqlite_connection,
+    json_output,
     IPStatistic,
     GL,
     arguments,
@@ -1913,9 +1830,9 @@ def AnalyzeLocalDevice(
         Time of last comunication.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    JSON : JSON
+    json_output : JSON
         JSON file loaded in python.        
     IPStatistic : dictionary
         Dictionary contains statistic of using network by devices.
@@ -1927,7 +1844,7 @@ def AnalyzeLocalDevice(
         Output file.    
     """
     # ==================================================================
-    createJSON = {
+    device_json = {
         "DeviceID": 0,
         "LastCom": 0,
         "IP": [],
@@ -1943,18 +1860,18 @@ def AnalyzeLocalDevice(
         "GlobalStatistic": [],
     }
     # ==================================================================
-    createJSON["DeviceID"] = DeviceID
+    device_json["DeviceID"] = DeviceID
     # ==================================================================
-    IPAddress(IP, cursor, createJSON)
+    IPAddress(IP, cursor, device_json)
     # ==================================================================
-    createJSON["LastCom"] = float(TIME)
+    device_json["LastCom"] = float(TIME)
     DeviceIP = ipaddress.ip_address(IP)
     # ==================================================================
-    MAC(DeviceID, IP, cursor, SQLiteConnection, createJSON)
+    MAC(DeviceID, IP, cursor, sqlite_connection, device_json)
     # ==================================================================
-    LABELS(DeviceID, IP, cursor, SQLiteConnection, createJSON, JSON, GL)
+    LABELS(DeviceID, IP, cursor, sqlite_connection, device_json, json_output, GL)
     # ==================================================================
-    DHCP(DeviceID, IP, cursor, SQLiteConnection, createJSON)
+    DHCP(DeviceID, IP, cursor, sqlite_connection, device_json)
     # ==================================================================
     LocalStatistic = {}
     LOCALDEPENDENCIES(
@@ -1964,12 +1881,12 @@ def AnalyzeLocalDevice(
         LocalStatistic,
         IPStatistic,
         cursor,
-        SQLiteConnection,
-        createJSON,
+        sqlite_connection,
+        device_json,
         arguments,
-        JSON,
+        json_output,
     )
-    StatPercent(LocalStatistic, createJSON, 0)
+    StatPercent(LocalStatistic, device_json, 0)
     # ==================================================================
     if arguments.onlylocal == False:
         GlobalStatistic = {}
@@ -1980,36 +1897,36 @@ def AnalyzeLocalDevice(
             GlobalStatistic,
             IPStatistic,
             cursor,
-            SQLiteConnection,
-            createJSON,
+            sqlite_connection,
+            device_json,
             arguments,
-            JSON,
+            json_output,
         )
-        StatPercent(GlobalStatistic, createJSON, 1)
+        StatPercent(GlobalStatistic, device_json, 1)
     # ==================================================================
     if arguments.print == True:
-        PrintDeviceFromJSON(createJSON, arguments)
+        PrintDeviceFromJSON(device_json, arguments)
     if arguments.file != "":
         print("Output for device ", IP, " printed to file: ", arguments.file)
-        PrintDeviceToFileFromJSON(createJSON, arguments, sample)
+        PrintDeviceToFileFromJSON(device_json, arguments, sample)
     if arguments.activity == True:
-        ActivityGraph(IP, cursor, JSON)
+        graph_activity_of_device(IP, cursor, json_output)
     # ==================================================================
-    JSON["Devices"].append(createJSON)
+    json_output["Devices"].append(device_json)
 
 
-def AnalyzeNetwork(SQLiteConnection, arguments):
+def AnalyzeNetwork(sqlite_connection, arguments):
     """Analyze network subnet from arguments.
 
     Parameters
     -----------
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse
         Setted arguments of the script.
     """
     # ==================================================================
-    JSON = {
+    json_output = {
         "Name": "AnalyzeNetwork",
         "Network": "",
         "DateAnalyze": "",
@@ -2020,11 +1937,11 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
         "Devices": [],
         "Files": [],
     }
-    write_json(JSON, arguments.json)
-    JSON = read_json(arguments.json)
+    write_json(json_output, arguments.json)
+    json_output = read_json(arguments.json)
     # ==================================================================
     IPStatistic = {}
-    cursor = SQLiteConnection.cursor()
+    cursor = sqlite_connection.cursor()
     DeviceID = 1
     # ==================================================================
     GL = True
@@ -2034,7 +1951,7 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
         GL = False
     # ==================================================================
     if arguments.file != "":
-        if CheckStr(arguments.file, ".txt") == True:
+        if check_str(arguments.file, ".txt") == True:
             FILE = arguments.file
         else:
             FILE = arguments.file + ".txt"
@@ -2054,8 +1971,8 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
                 LocalDevice[0],
                 LocalDevice[1],
                 cursor,
-                SQLiteConnection,
-                JSON,
+                sqlite_connection,
+                json_output,
                 IPStatistic,
                 GL,
                 arguments,
@@ -2064,13 +1981,13 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
             DeviceID = DeviceID + 1
     # ==================================================================
     if arguments.localgraph == True:
-        GraphLocalDependencies(cursor, SQLiteConnection, JSON)
+        graph_of_local_dependencies(cursor, sqlite_connection, json_output)
     if arguments.globalgraph == True:
-        GraphGlobalDependencies(cursor, SQLiteConnection, JSON)
+        graph_of_global_dependencies(cursor, sqlite_connection, json_output)
     if arguments.bipartite == True:
-        GraphLocalToGlobal(cursor, SQLiteConnection, JSON)
+        GraphLocalToGlobal(cursor, sqlite_connection, json_output)
     # ==================================================================
-    StatPercent(IPStatistic, JSON, 3)
+    StatPercent(IPStatistic, json_output, 3)
     if arguments.file != "":
         print(
             "######################################################################",
@@ -2082,24 +1999,24 @@ def AnalyzeNetwork(SQLiteConnection, arguments):
     if arguments.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        StatPercent(IPStatistic, JSON, 2)
+        StatPercent(IPStatistic, json_output, 2)
     # ==================================================================
     if arguments.file != "":
         sample.close()
     x = datetime.datetime.now()
-    JSON["Network"] = arguments.network
-    JSON["DateAnalyze"] = str(x)
-    JSON["NumberDevice"] = DeviceID - 1
-    write_json(JSON, arguments.json)
-    print("Output JSON: ", arguments.json)
+    json_output["Network"] = arguments.network
+    json_output["DateAnalyze"] = str(x)
+    json_output["NumberDevice"] = DeviceID - 1
+    write_json(json_output, arguments.json)
+    print("Output json_output: ", arguments.json)
 
 
-def AnalyzeSingleDevice(SQLiteConnection, arguments):
+def AnalyzeSingleDevice(sqlite_connection, arguments):
     """Analyze single device from arguments. If isn't in database print error and end. Else analyze it.
 
     Parameters
     -----------
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse
         Setted arguments of the script.
@@ -2109,7 +2026,7 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
     except:
         print("ERROR: Entered value isn't IP address")
         sys.exit()
-    cursor = SQLiteConnection.cursor()
+    cursor = sqlite_connection.cursor()
     cursor.execute(
         "SELECT * FROM LocalDevice WHERE IP='{ip}'".format(ip=arguments.device)
     )
@@ -2117,7 +2034,7 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
     if not device:
         print("ERROR: Entered IP address isn't in database")
         sys.exit()
-    JSON = {
+    json_output = {
         "Name": "AnalyzeSingleDevice",
         "DateAnalyze": "",
         "Routers": [],
@@ -2126,11 +2043,11 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
         "Devices": [],
         "Files": [],
     }
-    write_json(JSON, arguments.json)
-    JSON = read_json(arguments.json)
+    write_json(json_output, arguments.json)
+    json_output = read_json(arguments.json)
     IPStatistic = {}
     if arguments.file != "":
-        if CheckStr(arguments.file, ".txt") == True:
+        if check_str(arguments.file, ".txt") == True:
             FILE = arguments.file
         else:
             FILE = arguments.file + ".txt"
@@ -2142,14 +2059,14 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
         device[0],
         device[1],
         cursor,
-        SQLiteConnection,
-        JSON,
+        sqlite_connection,
+        json_output,
         IPStatistic,
         True,
         arguments,
         sample,
     )
-    StatPercent(IPStatistic, JSON, 3)
+    StatPercent(IPStatistic, json_output, 3)
     if arguments.file != "":
         print(
             "######################################################################",
@@ -2161,27 +2078,27 @@ def AnalyzeSingleDevice(SQLiteConnection, arguments):
     if arguments.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        StatPercent(IPStatistic, JSON, 2)
+        StatPercent(IPStatistic, json_output, 2)
     if arguments.file != "":
         sample.close()
     x = datetime.datetime.now()
-    JSON["DateAnalyze"] = str(x)
-    write_json(JSON, arguments.json)
-    print("Output JSON: ", arguments.json)
+    json_output["DateAnalyze"] = str(x)
+    write_json(json_output, arguments.json)
+    print("Output json_output: ", arguments.json)
 
 
-def DoAnalyze(SQLiteConnection, arguments):
+def DoAnalyze(sqlite_connection, arguments):
     """Analyze all "local" devices from database table LocalDevice.
 
     Parameters
     -----------
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database.
     arguments : argparse
         Setted arguments of the script.
     """
     # ==================================================================
-    JSON = {
+    json_output = {
         "Name": "PassiveAutodiscovery",
         "DateAnalyze": "",
         "NumberDevice": 0,
@@ -2191,11 +2108,11 @@ def DoAnalyze(SQLiteConnection, arguments):
         "Devices": [],
         "Files": [],
     }
-    write_json(JSON, arguments.json)
-    JSON = read_json(arguments.json)
+    write_json(json_output, arguments.json)
+    json_output = read_json(arguments.json)
     # ==================================================================
     IPStatistic = {}
-    cursor = SQLiteConnection.cursor()
+    cursor = sqlite_connection.cursor()
     DeviceID = 1
     # ==================================================================
     GL = True
@@ -2205,7 +2122,7 @@ def DoAnalyze(SQLiteConnection, arguments):
         GL = False
     # ==================================================================
     if arguments.file != "":
-        if CheckStr(arguments.file, ".txt") == True:
+        if check_str(arguments.file, ".txt") == True:
             FILE = arguments.file
         else:
             FILE = arguments.file + ".txt"
@@ -2222,8 +2139,8 @@ def DoAnalyze(SQLiteConnection, arguments):
             LocalDevice[0],
             LocalDevice[1],
             cursor,
-            SQLiteConnection,
-            JSON,
+            sqlite_connection,
+            json_output,
             IPStatistic,
             GL,
             arguments,
@@ -2232,13 +2149,13 @@ def DoAnalyze(SQLiteConnection, arguments):
         DeviceID = DeviceID + 1
     # ==================================================================
     if arguments.localgraph == True:
-        GraphLocalDependencies(cursor, SQLiteConnection, JSON)
+        graph_of_local_dependencies(cursor, sqlite_connection, json_output)
     if arguments.globalgraph == True:
-        GraphGlobalDependencies(cursor, SQLiteConnection, JSON)
+        graph_of_global_dependencies(cursor, sqlite_connection, json_output)
     if arguments.bipartite == True:
-        GraphLocalToGlobal(cursor, SQLiteConnection, JSON)
+        GraphLocalToGlobal(cursor, sqlite_connection, json_output)
     # ==================================================================
-    StatPercent(IPStatistic, JSON, 3)
+    StatPercent(IPStatistic, json_output, 3)
     if arguments.file != "":
         print(
             "######################################################################",
@@ -2250,15 +2167,15 @@ def DoAnalyze(SQLiteConnection, arguments):
     if arguments.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        StatPercent(IPStatistic, JSON, 3)
+        StatPercent(IPStatistic, json_output, 3)
     # ==================================================================
     if arguments.file != "":
         sample.close()
     x = datetime.datetime.now()
-    JSON["DateAnalyze"] = str(x)
-    JSON["NumberDevice"] = DeviceID - 1
-    write_json(JSON, arguments.json)
-    print("Output JSON: ", arguments.json)
+    json_output["DateAnalyze"] = str(x)
+    json_output["NumberDevice"] = DeviceID - 1
+    write_json(json_output, arguments.json)
+    print("Output json_output: ", arguments.json)
 
 
 def Arguments():
@@ -2432,12 +2349,12 @@ def ConnectToDatabase(arguments):
         Setted arguments of the script.
     Returns
     --------
-    SQLiteConnection : sqlite3
+    sqlite_connection : sqlite3
         Connection to sqlite3 database with name from arguments.
     """
     try:  # connect to a database
         print("Connecting to a database....", end="")
-        if CheckStr(arguments.database, ".db") == True:
+        if check_str(arguments.database, ".db") == True:
             FILE = arguments.database
         else:
             FILE = arguments.database + ".db"
@@ -2445,11 +2362,11 @@ def ConnectToDatabase(arguments):
             print("")
             print("can't connect to ", FILE)
             sys.exit()
-        SQLiteConnection = sqlite3.connect(FILE)
+        sqlite_connection = sqlite3.connect(FILE)
         print("done")
     except sqlite3.Error as error:
         print("Can't connect to a database:  ", error)
-    return SQLiteConnection
+    return sqlite_connection
 
 
 def Main():
@@ -2463,20 +2380,20 @@ def Main():
                 "Need define output method (print to command line or file [-p], [-f])"
             )
             sys.exit()
-        JSON = read_json(arguments.json)
-        PrintJSON(JSON, arguments)
+        json_output = read_json(arguments.json)
+        PrintJSON(json_output, arguments)
         sys.exit()
-    SQLiteConnection = ConnectToDatabase(arguments)
+    sqlite_connection = ConnectToDatabase(arguments)
     if arguments.device != "":
-        AnalyzeSingleDevice(SQLiteConnection, arguments)
+        AnalyzeSingleDevice(sqlite_connection, arguments)
     elif arguments.network != "":
-        AnalyzeNetwork(SQLiteConnection, arguments)
+        AnalyzeNetwork(sqlite_connection, arguments)
     else:
-        DoAnalyze(SQLiteConnection, arguments)
+        DoAnalyze(sqlite_connection, arguments)
     # =====================================================
     # Close database connection
-    if SQLiteConnection:
-        SQLiteConnection.close()
+    if sqlite_connection:
+        sqlite_connection.close()
 
 
 if __name__ == "__main__":
