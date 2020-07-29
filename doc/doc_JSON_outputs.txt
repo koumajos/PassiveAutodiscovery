@@ -1,0 +1,501 @@
+Documentation of output JSON documents from DeviceAnalyzer.py
+--------------------------------------------------------------
+The main output are JSON documents in three different (but similar) formats for different parameters settings of the DeviceAnalyzer.py script.
+
+The parameters determining the script JSON output are:
+    1. -D DEVICE, --device DEVICE 
+        (DEVICE == IP Address of device, example: -D 192.168.1.1)
+        JSON document contains information about the inserted device
+
+
+    2. -N NETWORK, --network NETWORK  
+        (NETWORK == IP Address of network, example: -N 192.168.1.0/24)
+        JSON document contains information about devices from the inserted network
+
+
+    3. Without previous parameters = default setting 
+        JSON document contains information about all devices that were detected during the measurement
+
+Differences in JSON documents:
+        1. -D DEVICE
+                    {   
+                        "Name": "AnalyzeSingleDevice",
+                        "DateAnalyze": "",
+                        "Routers": [],                    
+                        "Services": [],                    
+                        "IPStatistics”: [],
+                        "Devices": [],
+                        "Files": []
+                    }
+                (“Devices”: contains only one device, that was inserted to parameter -D)
+
+        2. -N NETWORK
+                    {   
+                        "Name": "AnalyzeNetwork",
+                        "Network": "",
+                        "DateAnalyze": "",
+                        "NumberDevice": 0,
+                        "Routers": [],                    
+                        "Services": [],                    
+                        "IPStatistic": [],
+                        "Devices": [],
+                        "Files": []
+                    }
+
+                ("Network" - IP Address of network (example: 192.168.0.0/24))
+
+        3. Default setting (without previous parameter)
+                    {   
+                        "Name": "PassiveAutodiscovery",
+                        "DateAnalyze": "",
+                        "NumberDevice": 0,
+                        "Routers": [],                    
+                        "Services": [],                    
+                        "IPStatistic": [],
+                        "Devices": [],
+                        "Files": []
+                    }    
+    
+Details of individual collective parts:
+    "DateAnalyze": "YYYY-MM-DD HH:MM:SS.ssssss"
+        - Format of time analysis
+
+    "NumberDevice": NUMBER
+
+    “Routers”: [IP, ]
+        - Array of IP Addresses (strings), that modul recognized as routers
+        - Examples: 192.168.1.1, fde9:5b1a:a899:0:8d38:657a:384d:f65b
+
+    "Services": [SERVICE, ]
+        - Array of services or roles (strings), that modul find on devices (unique)
+        - Examples: DNS Server, DHCP Server, Router
+
+    "IPStatistic": [
+        {
+            "IP": IP, 
+            "Percents": PERCENTS
+        },
+             ]
+        - key “IP” is IP address of device 
+        - key “Percents” is percent of network usage by device given to devices that was found by module in measurements
+
+    "Devices": [  {  
+                        "DeviceID": 0,
+                        "LastCom": 0,
+                        "IP": [],
+                        "MAC": "",
+                        "RouterMAC": "",
+                        "Vendor": "",
+                        "Country": "",
+                        "Labels": [],
+                        "DHCP": [],
+                        "LocalDependencies": [],                    
+                        "LocalStatistic": [],
+                        "GlobalDependencies": [],                    
+                        "GlobalStatistic": []    },  ]
+
+        - "DeviceID": NUMBER   
+            -- ID of device in database
+
+        - "LastCom": "YYYY-MM-DD HH:MM:SS.ssssss" 
+            -- Time of last communication by device in measurements
+
+        - "IP": [ IP, ]
+            -- Array of IP address that this device using in measurements 
+            -- First IP address communicated with the following dependencies, dhcp records and statistics
+
+        - "MAC": MAC_ADDRESS
+            -- MAC address of device
+
+        - "RouterMAC": MAC_ADDRESS
+            -- If device is behind router this record contains his MAC address (“MAC” and “RouterMAC” cannot be filled in at the same time)
+
+        - "Vendor": VENDOR_NAME
+            -- Vendor of network card
+            -- Obtained from the first 24 bits of MAC address
+
+        - "Country": VENDOR_COUNTRY_SHORTCUT
+            -- Country shortcut of vendor
+
+        - "Labels": [
+                        {
+                            "Label": LABEL, 
+                            "Description": DESCRIPTION
+                        },
+                    ]
+            -- key “Label” is service or role of device
+            -- key “Description” contains additional information about the label (protocol and what it is mostly used for)
+
+        - "DHCP": [
+        {
+            "DHCPServ": SERVER, 
+            "DHCPTime": TIME
+        },
+       ]
+            -- key "DHCPServ" is IP address of DHCP server, that communicate with device
+            -- key "DHCPTime" is string contains when communication was
+
+        - "LocalDependencies": [
+                {
+                    "IP": IP_Address, 
+                    "Verb": VERB, 
+                    "Service": SERVICE,
+                    “Port”: PORT,
+                    "Packets": PACKETS
+                },
+             ]
+            -- key “IP” is IP address of device
+            -- key “Verb” contains information if device with IP provide or require the services (requires, provides)
+            -- key "Service" contains service ( example WEB Server ) or protocol name with port ( example ssh ) or “”
+                (if exists “service” than use first format, else if exist protocol than use second, else use port number)
+            -- key “Port” contains port number of protocol on transport layer of TCP/IP model (example: 22 ; 67 ; 443)
+
+        - "LocalStatistic": [‘
+            {
+                "Service": SERVICE, 
+                "Percents": PERCENTS
+            },
+          ]
+            -- key "Service" is service that was requires/provides by device from/for local device
+            -- key "Percents" is percent of service compared to all services
+
+        - "GlobalDependencies": [{"IP": IP_Address, "Verb": VERB, "Service": SERVICE, Packets": PACKETS}, ]
+            -- same format like "LocalDependencies"
+
+        - "GlobalStatistic": [{"Service": SERVICE, "Percents": PERCENTS},]
+            -- same format like "LocalStatistic"
+
+
+    "Files": [ STRING,  ]
+        - string contain name of file
+        - files in format:
+            -- "ActiveOfDevice_" + DEVICE_IP_ADDRESS + ".png"
+                --- activity graph of device in measurements
+
+            -- "TimeGraph_" + SRC_IP + "(" + SRC_PORT + ")_" + DST_IP + "(" + DST_PORT + ")" + ".png"
+                --- activity graph of dependency in measurements
+
+            -- "Graph_Local_IPv4.png"
+                --- graph of dependencies between devices with IPv4 addresses
+
+            -- "Graph_Local_IPv6.png"
+                --- graph of dependencies between devices with IPv6 addresses
+
+            -- "Graph_Global_" + IP_ADDRESS + ".png"
+                --- graph of global dependencies for single device with IP (graph type star)
+
+            -- "Graph_GlobalsToLocals_" + NUMBER + ".png"
+                --- graph of dependencies between global and local devices where global device is in graph only if two or more local device have dependency with him, and local device is in graph only if has dependency with one or more global devices that are included in graph
+                        (bipartite graph -> local devices one partite and global devices second)
+                --- for overview, the graph is divided into several graphs, and NUMBER is serial number of the graph
+
+Examples:                    
+    1. -D DEVICE
+        {
+            "Name": "AnalyzeSingleDevice",
+            "DateAnalyze": "2020-07-07 12:40:48.474474",
+            "Routers": [],
+            "Services": [
+                "End Device"
+            ],
+            "IPStatistic": [],
+            "Devices": [
+                {
+                    "DeviceID": "XXX",
+                    "LastCom": 1582643620.236,
+                    "IP": [ "192.168.3.5" ],
+                    "MAC": "",
+                    "RouterMAC": "",
+                    "Vendor": "",
+                    "Country": "",
+                    "Labels": [
+                            {
+                            "Label": "End Device",
+                            "Description": "PC, Mobile Phone,... (everything that can access web services)”
+                        }
+                    ],
+                    "DHCP": [],
+                    "LocalDependencies": [
+                    {
+                        "IP": "192.168.3.150",
+                       "Verb": "provides",
+                        "Service": "crestron-cip",
+                        "Packets": "28957”
+                    }
+                    ],
+                    "LocalStatistic": [],
+                    "GlobalDependencies": [
+                    {
+                      "IP": "147.32.127.196",
+                        "Verb": "provides",
+                        "Service": "WEB Server(80)",
+                        "Packets": "42240"
+                  },
+                    {
+                        "IP": "89.221.214.130",
+                        "Verb": "provides",
+                        "Service": "Time Server(123)",
+                        "Packets": "86"
+                    }
+                        ],
+                    "GlobalStatistic": [
+                        {
+                            "Service": "HTTP",
+                            "Percents": "97.69519930380484"
+                        },
+                        {
+                            "Service": "NTP",
+                            "Percents": "1.8831361079461346”
+                        },
+                        {
+                            "Service": "HTTPS",
+                            "Percents": "0.42166458824901537"
+                        }
+                    ]
+                }
+            ],
+            "Files": []
+        }
+
+    2. -N NETWORK
+         {
+            "Name": "AnalyzeNetwork",
+            "Network": "192.168.3.0/24",
+            "DateAnalyze": "2020-07-07 12:46:06.810347",
+            "NumberDevice": 15,
+            "Routers": [],
+            "Services": [
+                "End Device",
+                "Time Server",
+                "Windows",
+                "DHCP Client",
+                "Mobile device",
+                "Unknown",
+                "DNS Server",
+                "DHCP Server"
+                ],
+            "IPStatistic": [],
+            "Devices": [
+                {
+                    "DeviceID": 1,
+                    "LastCom": 1582643620.236,
+                    "IP": [ "192.168.3.5" ],
+                    "MAC": "",
+                    "RouterMAC": "",
+                    "Vendor": "",
+                    "Country": "",
+                    "Labels": [
+                        {
+                            "Label": "End Device",
+                            "Description": "PC, Mobile Phone,... (everything that can access web services)"
+                        }
+                    ],
+                    "DHCP": [],
+                    "LocalDependencies": [
+                        {
+                            "IP": "192.168.3.150",
+                            "Verb": "provides",
+                            "Service": "crestron-cip",
+                            "Packets": "28957"
+                        }
+                    ],
+                    "LocalStatistic": [],
+                    "GlobalDependencies": [
+                        {
+                            "IP": "147.32.127.196",
+                            "Verb": "provides",
+                            "Service": "WEB Server(80)",
+                            "Packets": "42240"
+                        },
+                        {
+                            "IP": "147.32.160.17",
+                            "Verb": "provides",
+                            "Service": "WEB Server(80)",
+                            "Packets": "33991"
+                        },
+                        {
+                            "IP": "89.221.214.130",
+                            "Verb": "provides",
+                            "Service": "Time Server(123)",
+                            "Packets": "86”
+                        }              
+                    ],
+                    "GlobalStatistic": [
+                        {
+                            "Service": "HTTP",
+                            "Percents": "97.69519930380484”
+                        },
+                        {
+                            "Service": "NTP",
+                            "Percents": "1.8831361079461346"
+                        },
+                        {
+                            "Service": "HTTPS",
+                            "Percents": "0.42166458824901537”
+                        }
+                    ]
+                },
+                {
+                    "DeviceID": 2,
+                    "LastCom": 1582649178.459,
+                    "IP": [ "192.168.3.205" ],
+                    "MAC": "",
+                    "RouterMAC": "",
+                    "Vendor": "",
+                    "Country": "",
+                    "Labels": [
+                        {
+                            "Label": "Time Server",
+                            "Description": "NTP (Network Time Protocol) protocol use for time set over network"
+                        },
+                        {
+                            "Label": "Windows",
+                            "Description": "SMB protocol (Server Message Block)  is a network communication protocol[3] for providing shared access to files, printers, and serial ports between nodes on a network, NetBIOS is input output system of MS Windows"
+                        },
+                        {
+                            "Label": "DHCP Client",
+                            "Description": "DHCP protocol (Dynamic Host Configuration Protocol-68) using DHCP client (END DEVICE) for requset IP address from DHCP Server"
+                        },
+                        {
+                            "Label": "End Device",
+                            "Description": "PC, Mobile Phone,... (everything that can access web services)"
+                        },
+                        {
+                            "Label": "End Device",
+                            "Description": "PC, Mobile Phone,... (everything that can send emails)"
+                        }
+                    ],
+                    "DHCP": [
+                        {
+                            "DHCPServ": "192.168.3.1",
+                            "DHCPTime": "Tue Feb 25 13:30:31 2020"
+                        }
+                    ],
+                    "LocalDependencies": [
+                        {
+                            "IP": "192.168.3.255",
+                            "Verb": "provides",
+                            "Service": "57621",
+                            "Packets": "741"
+                        },
+                        {
+                            "IP": "255.255.255.255",
+                            "Verb": "provides",
+                            "Service": "db-lsp",
+                            "Packets": "740"
+                        },
+                        {
+                            "IP": "192.168.3.1",
+                            "Verb": "provides",
+                            "Service": "osu-nms",
+                            "Packets": "48"
+                        },
+                        {
+                            "IP": "192.168.3.255",
+                            "Verb": "requires",
+                            "Service": "Windows(137)",
+                            "Packets": "37"
+                        },
+                        {
+                            "IP": "192.168.3.1",
+                            "Verb": "provides",
+                            "Service": "DHCP Server(67)",
+                            "Packets": "1"
+                        }
+                    ],
+                    "LocalStatistic": [
+                        {
+                            "Service": "SMB-NetBIOS",
+                            "Percents": "97.36842105263158"
+                        },
+                        {
+                            "Service": "DHCP",
+                            "Percents": "2.631578947368421"
+                        }
+                    ],
+                    "GlobalDependencies": [
+                        {
+                            "IP": "104.18.123.25",
+                            "Verb": "provides",
+                            "Service": "WEB Server(443)",
+                            "Packets": "853117"
+                        },
+                        {
+                            "IP": "104.18.125.25",
+                            "Verb": "provides",
+                            "Service": "WEB Server(443)",
+                            "Packets": "721708"
+                        },
+                        {
+                            "IP": "78.128.211.76",
+                            "Verb": "provides",
+                            "Service": "WEB Server(443)",
+                            "Packets": "549181"
+                        }
+                    ],
+                    "GlobalStatistic": [
+                        {
+                            "Service": "HTTPS",
+                            "Percents": "95.2113475442708"
+                        },
+                        {
+                            "Service": "IMAPS",
+                            "Percents": "4.2534268255223076"
+                        },
+                        {
+                            "Service": "DNS",
+                            "Percents": "0.32329336994435065"
+                        },
+                        {
+                            "Service": "HTTP",
+                            "Percents": "0.1631591503374981"
+                        },
+                        {
+                            "Service": "Amazon_Echo",
+                            "Percents": "0.043097466698475216"
+                        },
+                        {
+                            "Service": "NTP",
+                            "Percents": "0.00567564322657199"
+                        }
+                    ]
+                    }
+            ],
+            "Files": [
+                "Graph_Local_IPv4.png",
+                "Graph_Global_192.168.3.5.png",
+                "Graph_Global_192.168.3.205.png",
+                "Graph_GlobalsToLocals_0.png",
+                "Graph_GlobalsToLocals_1.png",
+                "Graph_GlobalsToLocals_2.png"
+                ]
+        }
+                    
+    3. Default
+           {
+                "Name": "PassiveAutodiscovery",
+                "DateAnalyze": "2020-07-07 12:48:57.644511",
+                "NumberDevice": 40,
+                "Routers": [],
+                "Services": [
+                    "End Device",
+                    "Time Server",
+                    "Windows",
+                    "DHCP Client",
+                    "Mobile device",
+                    "Unknown",
+                    "DNS Server",
+                    "DHCP Server",
+                    "WEB Server”
+                ],
+                "IPStatistic": [ ... ],
+                "Devices": [  … ],
+                "Files": [
+                    "Graph_Local_IPv4.png",
+                    "Graph_Local_IPv6.png",
+                    "Graph_Global_192.168.3.5.png",
+                    "Graph_GlobalsToLocals_0.png",
+                    "Graph_GlobalsToLocals_1.png",
+                    "Graph_GlobalsToLocals_2.png"
+                ]
+            }

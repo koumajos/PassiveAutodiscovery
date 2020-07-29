@@ -6,3 +6,4 @@ VendorsMAC_url.csv
 *.json
 *.txt
 !requirements.txt
+!doc/*
