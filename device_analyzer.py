@@ -38,8 +38,8 @@
             For local dependencies. [-t]
             For local to gloval dependencies. [-T]
 
-    Copyright (C) 2020 CESNET
 
+    Copyright (C) 2020 CESNET
 
     LICENSE TERMS
 
@@ -427,10 +427,10 @@ def graph_of_dependencies_between_local_and_global_devices(
     cursor.execute(
         "SELECT * FROM (SELECT IP_origin AS IP FROM Global GROUP BY IP_origin HAVING COUNT(*) > 1 UNION ALL SELECT IP_target AS IP FROM Global GROUP BY IP_target HAVING COUNT(*) > 1) GROUP BY IP"
     )
-    IP = cursor.fetchall()
+    ip_address = cursor.fetchall()
     bipartite_graph = networkx.Graph()
     graph_number = 0
-    for i in IP:
+    for i in ip_address:
         ip = ipaddress.ip_address(i[0])
         if ip.is_global == True:
             cursor.execute(
@@ -548,7 +548,7 @@ def find_labels(
         True if global dependencies exists.
     """
     cursor.execute(
-        "SELECT S.PortNumber, S.DeviceType, S.Shortcut, S.Description FROM LocalServices LS JOIN Services S ON LS.PortNumber=S.PortNumber WHERE LS.IP='{ip}'".format(
+        "SELECT S.PortNumber, S.DeviceType, S.Shortcut, S.Description FROM LocalServices LS JOIN services S ON LS.PortNumber=S.PortNumber WHERE LS.IP='{ip}'".format(
             ip=ip_address
         )
     )
@@ -628,9 +628,9 @@ def find_labels(
             }
         )
     cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=ip_address))
-    Router = cursor.fetchone()
-    if Router:
-        cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1]))
+    router = cursor.fetchone()
+    if router:
+        cursor.execute("SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=router[1]))
         Routers = cursor.fetchall()
         devices4 = 0
         devices6 = 0
@@ -730,7 +730,152 @@ def stats_of_services(services_statistic, dependency, cursor, sqlite_connection)
             services_statistic[st] = dependency[5]
 
 
-def LOCALDEPENDENCIES(
+def add_or_update_statistic_of_device(dependency, ip_address, ip_address_statistics):
+    """Function check if devices from dependency are in statistic, that contains devices ip addresses and number of packets that was carryed by device. 
+    If device exists in statistic then update number of packets, else add new device in statistic. 
+
+    Args:
+        dependency (list): List conains information about dependency from sqlite3 database.
+        ip_address (str): String of IP address.
+        ip_address_statistics (dictionary): Statistic dicitonary. 
+    """
+    if dependency[1] == ip_address:
+        if dependency[1] in ip_address_statistics:
+            ip_address_statistics[dependency[1]] = (
+                ip_address_statistics[dependency[1]] + dependency[5]
+            )
+        else:
+            ip_address_statistics[dependency[1]] = dependency[5]
+    if dependency[2] == ip_address:
+        if dependency[2] in ip_address_statistics:
+            ip_address_statistics[dependency[2]] = (
+                ip_address_statistics[dependency[2]] + dependency[5]
+            )
+        else:
+            ip_address_statistics[dependency[2]] = dependency[5]
+
+
+def safe_local_dependency_to_json(device_json, dependency, device_ipaddress, cursor):
+    """Safe local dependency to json.
+
+    Args:
+        device_json (json): JSON document for single device.
+        dependency (list): List created from row in database, taht contains ifnormationa bout one dependency.
+        device_ipaddress (str): String of device IP address.
+        cursor (sqlite3): Cursor to sqlite3 database.
+    """
+    src_ip = ipaddress.ip_address(dependency[1])
+    depencency_ip = ""
+    verb = "provides"
+    services = ""
+    port = 0
+    packets = dependency[5]
+
+    cursor.execute(
+        "SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=dependency[3])
+    )
+    src_services = cursor.fetchone()
+    if src_services:
+        if src_ip == device_ipaddress:
+            depencency_ip = dependency[2]
+            if src_services[1] == "DHCP Client":
+                services = "DHCP Server"
+                port = 67
+            else:
+                verb = "requires"
+                services = src_services[1]
+                port = dependency[3]
+        else:
+            depencency_ip = dependency[1]
+            services = src_services[1]
+            port = dependency[3]
+        add_dependency_to_json(
+            device_json,
+            "LocalDependencies",
+            depencency_ip,
+            verb,
+            services,
+            port,
+            packets,
+        )
+        return
+
+    cursor.execute(
+        "SELECT * FROM Services WHERE PortNumber='{portD}'".format(portD=dependency[4])
+    )
+    dst_services = cursor.fetchone()
+    if dst_services:
+        if src_ip == device_ipaddress:
+            depencency_ip = dependency[2]
+        else:
+            depencency_ip = dependency[1]
+            verb = "requires"
+        services = dst_services[1]
+        port = dependency[4]
+        add_dependency_to_json(
+            device_json,
+            "LocalDependencies",
+            depencency_ip,
+            verb,
+            services,
+            port,
+            packets,
+        )
+        return
+
+    if src_ip == device_ipaddress:
+        depencency_ip = dependency[2]
+        cursor.execute(
+            "SELECT * FROM Ports WHERE PortNumber='{port}'".format(port=dependency[4])
+        )
+        dst_port = cursor.fetchone()
+        if dst_port:
+            services = dst_port[1]
+            port = dependency[4]
+        else:
+            port = dependency[4]
+    else:
+        depencency_ip = dependency[1]
+        verb = "requires"
+        cursor.execute(
+            "SELECT * FROM Ports WHERE PortNumber='{port}'".format(port=dependency[3])
+        )
+        src_port = cursor.fetchone()
+        if src_port:
+            services = src_port[1]
+            port = dependency[3]
+        else:
+            port = dependency[3]
+    add_dependency_to_json(
+        device_json, "LocalDependencies", depencency_ip, verb, services, port, packets
+    )
+
+
+def add_dependency_to_json(
+    device_json, type_dependencies, depencency_ip, verb, services, port, packets
+):
+    """Add local dependency to json in specific format.
+
+    Args:
+        device_json (json): JSON document.
+        depencency_ip (str): String of device IP address.
+        verb (str): Provides or requires the services/protocol.
+        services (str): Service of protocol used by device.
+        port (int): Integer of used port.
+        packets (int): Integer of packets number.
+    """
+    device_json[type_dependencies].append(
+        {
+            "IP": f"{depencency_ip}",
+            "Verb": f"{verb}",
+            "Service": f"{services}",
+            "Port": f"{port}",
+            "Packets": f"{packets}",
+        }
+    )
+
+
+def local_dependencies(
     device_id,
     ip_address,
     device_ipaddress,
@@ -739,7 +884,7 @@ def LOCALDEPENDENCIES(
     cursor,
     sqlite_connection,
     device_json,
-    arguments,
+    args,
     json_output,
 ):
     """Function for device find in database all local dependencies and set in to output JSON. Also create statistic of local dependencies and statistic of using network by deveices. 
@@ -770,124 +915,160 @@ def LOCALDEPENDENCIES(
     )
     dependencies = cursor.fetchall()
     tmp = 0
-    if dependencies:
-        for dependency in dependencies:
-            if arguments.timeL > tmp:
-                graph_activity_of_dependency(
-                    dependency, "Dependencies", cursor, json_output
-                )
-                tmp = tmp + 1
-            stats_of_services(
-                local_services_statistic, dependency, cursor, sqlite_connection
+    for dependency in dependencies:
+        if args.timeL > tmp:
+            graph_activity_of_dependency(
+                dependency, "Dependencies", cursor, json_output
             )
-            # ==========================================
-            if dependency[1] == ip_address:
-                if dependency[1] in ip_address_statistics:
-                    ip_address_statistics[dependency[1]] = (
-                        ip_address_statistics[dependency[1]] + dependency[5]
-                    )
-                else:
-                    ip_address_statistics[dependency[1]] = dependency[5]
-            if dependency[2] == ip_address:
-                if dependency[2] in ip_address_statistics:
-                    ip_address_statistics[dependency[2]] = (
-                        ip_address_statistics[dependency[2]] + dependency[5]
-                    )
-                else:
-                    ip_address_statistics[dependency[2]] = dependency[5]
-            # ==========================================
-            src_ip = ipaddress.ip_address(dependency[1])
-            cursor.execute(
-                "SELECT * FROM Services WHERE PortNumber='{portS}'".format(
-                    portS=dependency[3]
-                )
-            )
-            src_services = cursor.fetchone()
-            cursor.execute(
-                "SELECT * FROM Services WHERE PortNumber='{portD}'".format(
-                    portD=dependency[4]
-                )
-            )
-            dst_services = cursor.fetchone()
-            # ==========================================
-            depencency_ip = ""
-            verb = "provides"
-            services = ""
-            port = 0
-            packets = dependency[5]
-            # ==========================================
-            if src_services:
-                if src_ip == device_ipaddress:
-                    depencency_ip = dependency[2]
-                    if src_services[1] == "DHCP Client":
-                        services = "DHCP Server"
-                        port = 67
-                    else:
-                        verb = "requires"
-                        services = src_services[1]
-                        port = dependency[3]
-                else:
-                    depencency_ip = dependency[1]
-                    services = src_services[1]
-                    port = dependency[3]
-            elif dst_services:
-                if src_ip == device_ipaddress:
-                    depencency_ip = dependency[2]
-                else:
-                    depencency_ip = dependency[1]
-                    verb = "requires"
-                services = dst_services[1]
-                port = dependency[4]
+            tmp = tmp + 1
+
+        stats_of_services(
+            local_services_statistic, dependency, cursor, sqlite_connection
+        )
+        add_or_update_statistic_of_device(dependency, ip_address, ip_address_statistics)
+
+        safe_local_dependency_to_json(device_json, dependency, device_ipaddress, cursor)
+
+
+def safe_global_dependency_to_json(
+    device_json, global_dependency, cursor, device_ip, promtp
+):
+    """[summary]
+
+    Args:
+        device_json ([type]): [description]
+        global_dependency ([type]): [description]
+        cursor ([type]): [description]
+        device_ip ([type]): [description]
+        promtp ([type]): [description]
+    """
+    src_ip = ipaddress.ip_address(global_dependency[1])
+    # ==========================================
+    cursor.execute(
+        "SELECT * FROM Services WHERE PortNumber='{portS}'".format(
+            portS=global_dependency[3]
+        )
+    )
+    src_service = cursor.fetchone()
+    cursor.execute(
+        "SELECT * FROM Services WHERE PortNumber='{portD}'".format(
+            portD=global_dependency[4]
+        )
+    )
+    dst_service = cursor.fetchone()
+    # ========================================================
+    depencency_ip = ""
+    verb = "provides"
+    services = ""
+    port = 0
+    num_packets = global_dependency[5]
+    domain = ""
+    # ========================================================
+    if src_service:
+        if src_ip == device_ip:
+            depencency_ip = global_dependency[2]
+            if src_service[1] == "DHCP Client":
+                services = "DHCP Server"
             else:
-                if src_ip == device_ipaddress:
-                    depencency_ip = dependency[2]
-                    cursor.execute(
-                        "SELECT * FROM Ports WHERE PortNumber='{port}'".format(
-                            port=dependency[4]
-                        )
-                    )
-                    dst_port = cursor.fetchone()
-                    if dst_port:
-                        services = dst_port[1]
-                        port = dependency[4]
-                    else:
-                        port = dependency[4]
-                else:
-                    depencency_ip = dependency[1]
-                    verb = "requires"
-                    cursor.execute(
-                        "SELECT * FROM Ports WHERE PortNumber='{port}'".format(
-                            port=dependency[3]
-                        )
-                    )
-                    src_port = cursor.fetchone()
-                    if src_port:
-                        services = src_port[1]
-                        port = dependency[3]
-                    else:
-                        port = dependency[3]
-            # ========================================================
-            device_json["LocalDependencies"].append(
-                {
-                    "IP": "%s" % depencency_ip,
-                    "Verb": "%s" % verb,
-                    "Service": "%s" % services,
-                    "Port": "%s" % port,
-                    "Packets": "%s" % packets,
-                }
+                verb = "requires"
+        else:
+            depencency_ip = global_dependency[1]
+        if promtp < 15:
+            services = src_service[1]
+            port = global_dependency[3]
+            if src_service[1] == "WEB Server" and src_ip == device_ip:
+                try:
+                    sck = socket.gethostbyaddr(global_dependency[2])
+                    domain = "(Domain:" + sck[0] + ")"
+                except:
+                    None
+            elif src_service[1] == "WEB Server":
+                try:
+                    sck = socket.gethostbyaddr(global_dependency[1])
+                    domain = "(Domain:" + sck[0] + ")"
+                except:
+                    None
+            else:
+                None
+        else:
+            services = src_service[1]
+            port = global_dependency[3]
+    elif dst_service:
+        if src_ip == device_ip:
+            depencency_ip = global_dependency[2]
+        else:
+            depencency_ip = global_dependency[1]
+            verb = "requires"
+        if promtp < 15:
+            services = dst_service[1]
+            port = global_dependency[4]
+            if dst_service[1] == "WEB Server" and src_ip == device_ip:
+                try:
+                    sck = socket.gethostbyaddr(global_dependency[2])
+                    domain = "(Domain:" + sck[0] + ")"
+                except:
+                    None
+            elif dst_service[1] == "WEB Server":
+                try:
+                    sck = socket.gethostbyaddr(global_dependency[1])
+                    domain = "(Domain:" + sck[0] + ")"
+                except:
+                    None
+            else:
+                None
+        else:
+            services = dst_service[1]
+            port = global_dependency[4]
+    else:
+        if src_ip == device_ip:
+            depencency_ip = global_dependency[2]
+            cursor.execute(
+                "SELECT * FROM Ports WHERE PortNumber='{portD}'".format(
+                    portD=global_dependency[4]
+                )
             )
+            dst_port = cursor.fetchone()
+            if dst_port:
+                services = dst_port[1]
+                port = global_dependency[4]
+            else:
+                port = global_dependency[4]
+        else:
+            depencency_ip = global_dependency[1]
+            verb = "requires"
+            cursor.execute(
+                "SELECT * FROM Ports WHERE PortNumber='{portS}'".format(
+                    portS=global_dependency[3]
+                )
+            )
+            src_port = cursor.fetchone()
+            if src_port:
+                services = src_port[1]
+                port = global_dependency[3]
+            else:
+                port = global_dependency[3]
+            # ========================================================
+    add_dependency_to_json(
+        device_json,
+        "GlobalDependencies",
+        depencency_ip,
+        verb,
+        services,
+        port,
+        num_packets,
+    )
 
 
-def GLOBALDEPENDENCIES(
+def global_dependencies(
     device_id,
-    IP,
-    DeviceIP,
-    GlobalStatistic,
+    ip_address,
+    device_ip,
+    global_statistic,
     ip_address_statistics,
     cursor,
     sqlite_connection,
     device_json,
-    arguments,
+    args,
     json_output,
 ):
     """Function for device find in database all global dependencies and set in to output JSON. Also create statistic of global dependencies and statistic of using network by deveices. 
@@ -896,11 +1077,11 @@ def GLOBALDEPENDENCIES(
     -----------
     device_id : int
         Number of device in analyze.
-    IP : str
+    ip_address : str
         Device IP address in format str.
-    DeviceIP : ipaddress
+    device_ip : ipaddress
         Device IP address in format ipaddress.
-    GlobalStatistic : dictionary
+    global_statistic : dictionary
         Statistic of local dependencies.
     ip_address_statistics : dictionary
         Statistic of using network by device.
@@ -913,244 +1094,126 @@ def GLOBALDEPENDENCIES(
     """
     cursor.execute(
         "SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumPackets DESC".format(
-            ipo=IP, ipt=IP
+            ipo=ip_address, ipt=ip_address
         )
     )
-    GlobalDependencies = cursor.fetchall()
+    global_dependencies = cursor.fetchall()
     tmp = 0
-    if GlobalDependencies:
+    if global_dependencies:
         promtp = 0
-        for GlobalDependency in GlobalDependencies:
-            if arguments.timeG > tmp:
+        for global_dependency in global_dependencies:
+            if args.timeG > tmp:
                 graph_activity_of_dependency(
-                    GlobalDependency, "Global", cursor, json_output
+                    global_dependency, "Global", cursor, json_output
                 )
                 tmp = tmp + 1
             stats_of_services(
-                GlobalStatistic, GlobalDependency, cursor, sqlite_connection
+                global_statistic, global_dependency, cursor, sqlite_connection
             )
-            # ==========================================
-            SrcIP = ipaddress.ip_address(GlobalDependency[1])
-            # ==========================================
-            if GlobalDependency[1] == IP:
-                if GlobalDependency[1] in ip_address_statistics:
-                    ip_address_statistics[GlobalDependency[1]] = (
-                        ip_address_statistics[GlobalDependency[1]] + GlobalDependency[5]
-                    )
-                else:
-                    ip_address_statistics[GlobalDependency[1]] = GlobalDependency[5]
-            else:
-                if GlobalDependency[2] in ip_address_statistics:
-                    ip_address_statistics[GlobalDependency[2]] = (
-                        ip_address_statistics[GlobalDependency[2]] + GlobalDependency[5]
-                    )
-                else:
-                    ip_address_statistics[GlobalDependency[2]] = GlobalDependency[5]
-            # ==========================================
-            cursor.execute(
-                "SELECT * FROM Services WHERE PortNumber='{portS}'".format(
-                    portS=GlobalDependency[3]
-                )
+            add_or_update_statistic_of_device(
+                global_dependency, ip_address, ip_address_statistics
             )
-            ServiceS = cursor.fetchone()
-            cursor.execute(
-                "SELECT * FROM Services WHERE PortNumber='{portD}'".format(
-                    portD=GlobalDependency[4]
-                )
-            )
-            ServiceD = cursor.fetchone()
-            # ========================================================
-            depencency_ip = ""
-            verb = "provides"
-            Services = ""
-            Port = 0
-            Packets = GlobalDependency[5]
-            Domain = ""
-            # ========================================================
-            if ServiceS:
-                if SrcIP == DeviceIP:
-                    depencency_ip = GlobalDependency[2]
-                    if ServiceS[1] == "DHCP Client":
-                        Services = "DHCP Server"
-                    else:
-                        verb = "requires"
-                else:
-                    depencency_ip = GlobalDependency[1]
-                if promtp < 15:
-                    Services = ServiceS[1]
-                    Port = GlobalDependency[3]
-                    if ServiceS[1] == "WEB Server" and SrcIP == DeviceIP:
-                        try:
-                            sck = socket.gethostbyaddr(GlobalDependency[2])
-                            Domain = "(Domain:" + sck[0] + ")"
-                        except:
-                            None
-                    elif ServiceS[1] == "WEB Server":
-                        try:
-                            sck = socket.gethostbyaddr(GlobalDependency[1])
-                            Domain = "(Domain:" + sck[0] + ")"
-                        except:
-                            None
-                    else:
-                        None
-                else:
-                    Services = ServiceS[1]
-                    Port = GlobalDependency[3]
-            elif ServiceD:
-                if SrcIP == DeviceIP:
-                    depencency_ip = GlobalDependency[2]
-                else:
-                    depencency_ip = GlobalDependency[1]
-                    verb = "requires"
-                if promtp < 15:
-                    Services = ServiceD[1]
-                    Port = GlobalDependency[4]
-                    if ServiceD[1] == "WEB Server" and SrcIP == DeviceIP:
-                        try:
-                            sck = socket.gethostbyaddr(GlobalDependency[2])
-                            Domain = "(Domain:" + sck[0] + ")"
-                        except:
-                            None
-                    elif ServiceD[1] == "WEB Server":
-                        try:
-                            sck = socket.gethostbyaddr(GlobalDependency[1])
-                            Domain = "(Domain:" + sck[0] + ")"
-                        except:
-                            None
-                    else:
-                        None
-                else:
-                    Services = ServiceD[1]
-                    Port = GlobalDependency[4]
-            else:
-                if SrcIP == DeviceIP:
-                    depencency_ip = GlobalDependency[2]
-                    cursor.execute(
-                        "SELECT * FROM Ports WHERE PortNumber='{portD}'".format(
-                            portD=GlobalDependency[4]
-                        )
-                    )
-                    PortD = cursor.fetchone()
-                    if PortD:
-                        Services = PortD[1]
-                        Port = GlobalDependency[4]
-                    else:
-                        Port = GlobalDependency[4]
-                else:
-                    depencency_ip = GlobalDependency[1]
-                    verb = "requires"
-                    cursor.execute(
-                        "SELECT * FROM Ports WHERE PortNumber='{portS}'".format(
-                            portS=GlobalDependency[3]
-                        )
-                    )
-                    PortS = cursor.fetchone()
-                    if PortS:
-                        Services = PortS[1]
-                        Port = GlobalDependency[3]
-                    else:
-                        Port = GlobalDependency[3]
-            # ========================================================
-            device_json["GlobalDependencies"].append(
-                {
-                    "IP": "%s" % depencency_ip,
-                    "Verb": "%s" % verb,
-                    "Service": "%s" % Services,
-                    "Port": "%s" % Port,
-                    "Packets": "%s" % Packets,
-                }
+
+            safe_global_dependency_to_json(
+                device_json, global_dependency, cursor, device_ip, promtp
             )
 
 
-def StatPercent(Statistic, device_json, TMP):
+def transfer_statistic_to_percents(statistic, device_json, type_statistic):
     """Function receive dictionary. The dictionarz number of packets calculate and create from it Percents.
 
     Parameters
     -----------
-    Statistic : dictionary
+    statistic : dictionary
         The dictionary of statistic with protocols/devices and number of packets that was carryed in network by it.
     device_json : JSON
         JSON file for device with device_id ID loaded in python.        
-    TMP : int
+    type_statistic : int
         Magic value represent the type of statistic (Local statistic == 0, Global statistic == 1, Network use statistic == 2).
     """
-    if Statistic == {}:
+    if statistic == {}:
         return
-    tmp = 0
-    for i, j in Statistic.items():
-        tmp = tmp + j
+    total_num_packets = 0
+    for i, j in statistic.items():
+        total_num_packets += j
     # ==========================
-    Statistic = {
-        r: Statistic[r] for r in sorted(Statistic, key=Statistic.get, reverse=True)
+    statistic = {
+        r: statistic[r] for r in sorted(statistic, key=statistic.get, reverse=True)
     }
-    for i, j in Statistic.items():
-        Statistic[i] = float(j / tmp * 100)
-        if TMP == 0:
+    for i, j in statistic.items():
+        statistic[i] = float(j / total_num_packets * 100)
+        if type_statistic == 0:
             device_json["LocalStatistic"].append(
-                {"Service": "%s" % i, "Percents": "%s" % Statistic[i]}
+                {"Service": "%s" % i, "Percents": "%s" % statistic[i]}
             )
-        elif TMP == 1:
+        elif type_statistic == 1:
             device_json["GlobalStatistic"].append(
-                {"Service": "%s" % i, "Percents": "%s" % Statistic[i]}
+                {"Service": "%s" % i, "Percents": "%s" % statistic[i]}
             )
         else:
             device_json["ip_address_statistics"].append(
-                {"IP": "%s" % i, "Percents": "%s" % Statistic[i]}
+                {"IP": "%s" % i, "Percents": "%s" % statistic[i]}
             )
-    if TMP == 2:
-        plot_statistics(Statistic.items())
+    if type_statistic == 2:
+        plot_statistics(statistic.items())
 
 
-def IPAddress(IP, cursor, device_json):
+def find_ip_addresses_of_device(ip_address, cursor, device_json):
     """Function finds in database all IP address of the device (more then one only when device used both version of IP address or change IP address while monitoring network (DHCP)).
 
     Parameters
     -----------
-    IP : str
+    ip_address : str
         IP address of analyzed device.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
     device_json : JSON
         JSON file for device with device_id ID loaded in python.            
     """
-    device_json["IP"].append(IP)
-    cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=IP))
-    Router = cursor.fetchone()
-    if not Router:
+    device_json["IP"].append(ip_address)
+    cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=ip_address))
+    router = cursor.fetchone()
+    if not router:
         cursor.execute(
-            "SELECT * FROM MAC WHERE IP='{ip}' AND LastUse='{lu}'".format(ip=IP, lu="")
+            "SELECT * FROM MAC WHERE IP='{ip}' AND LastUse='{lu}'".format(
+                ip=ip_address, lu=""
+            )
         )
-        IPs = cursor.fetchall()
-        for ip in IPs:
-            if not ip[1] == IP:
+        ip_addreses = cursor.fetchall()
+        for ip in ip_addreses:
+            if not ip[1] == ip_address:
                 device_json["IP"].append(ip[1])
     else:
         cursor.execute(
             "SELECT DeviceType FROM LocalServices LS JOIN Services S ON LS.PortNumber=S.PortNumber WHERE LS.IP='{ip}' AND S.DeviceType='{device}'".format(
-                ip=IP, device="Router"
+                ip=ip_address, device="Router"
             )
         )
-        Router = cursor.fetchall()
-        if Router:
+        router = cursor.fetchall()
+        if router:
             cursor.execute(
-                "SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=Router[1])
+                "SELECT * FROM Routers WHERE MAC='{mac}'".format(mac=router[1])
             )
-            Routers = cursor.fetchall()
-            IPD = ipaddress.ip_address(IP)
-            for ip in Routers:
+            routers = cursor.fetchall()
+            dst_ip = ipaddress.ip_address(ip_address)
+            for ip in routers:
                 ipd = ipaddress.ip_address(ip[2])
-                if ipd.is_private and ip[2] != IP and IPD.version == ipd.version:
+                if (
+                    ipd.is_private
+                    and ip[2] != ip_address
+                    and dst_ip.version == ipd.version
+                ):
                     device_json["DeviceBehindRouter"].append(ip[2])
 
 
-def PrintDeviceFromJSON(json_output, arguments):
+def print_device_from_json(json_output, args):
     """Print device from output JSON document to command line.
 
     Parameters
     -----------
     json_output : JSON
         Ouput JSON document.
-    arguments : argparse
+    args : argparse
         Setted arguments of the DeviceAnalyzer script.    
     """
     if (
@@ -1194,7 +1257,7 @@ def PrintDeviceFromJSON(json_output, arguments):
     if not json_output["Labels"]:
         print("    ---")
     for i in json_output["Labels"]:
-        if arguments.DNS == True and i["Label"] == "WEB Server":
+        if args.DNS == True and i["Label"] == "WEB Server":
             try:
                 domain = socket.gethostbyaddr(i)
                 print("    [", i["Label"], "] - DomainName:", domain)
@@ -1212,10 +1275,10 @@ def PrintDeviceFromJSON(json_output, arguments):
     print("  Local Dependencies:")
     if not json_output["LocalDependencies"]:
         print("    ---")
-    if arguments.LocalNumber != -1:
+    if args.LocalNumber != -1:
         tmp = 0
         for i in json_output["LocalDependencies"]:
-            if tmp < arguments.LocalNumber:
+            if tmp < args.LocalNumber:
                 if i["Verb"] == "provides":
                     print(
                         "    -> ",
@@ -1285,9 +1348,9 @@ def PrintDeviceFromJSON(json_output, arguments):
     print("  Global Dependencies:")
     if not json_output["GlobalDependencies"]:
         print("    ---")
-    if arguments.GlobalNumber == -1:
+    if args.GlobalNumber == -1:
         for i in json_output["GlobalDependencies"]:
-            if arguments.DNS == True:
+            if args.DNS == True:
                 try:
                     domain = socket.gethostbyaddr(i["IP"])
                     if i["Verb"] == "provides":
@@ -1363,8 +1426,8 @@ def PrintDeviceFromJSON(json_output, arguments):
     else:
         tmp = 0
         for i in json_output["GlobalDependencies"]:
-            if tmp < arguments.GlobalNumber:
-                if arguments.DNS == True:
+            if tmp < args.GlobalNumber:
+                if args.DNS == True:
                     try:
                         domain = socket.gethostbyaddr(i["IP"])
                         if i["Verb"] == "provides":
@@ -1464,14 +1527,14 @@ def PrintDeviceFromJSON(json_output, arguments):
         plot_statistics(ip_address_statistics.items())
 
 
-def PrintDeviceToFileFromJSON(json_output, arguments, sample):
+def print_device_to_file_from_json(json_output, args, sample):
     """Print device from output JSON document to file.
 
     Parameters
     -----------
     json_output : JSON
         Ouput JSON document.
-    arguments : argparse
+    args : argparse
         Setted arguments of the DeviceAnalyzer script.    
     sample : opened file
         Opened output file.
@@ -1523,7 +1586,7 @@ def PrintDeviceToFileFromJSON(json_output, arguments, sample):
     if not json_output["Labels"]:
         print("    ---", file=sample)
     for i in json_output["Labels"]:
-        if arguments.DNS == True:
+        if args.DNS == True:
             try:
                 domain = socket.gethostbyaddr(i)
                 print("    [", i["Label"], "] - DomainName:", domain, file=sample)
@@ -1541,10 +1604,10 @@ def PrintDeviceToFileFromJSON(json_output, arguments, sample):
     print("  Local Dependencies:", file=sample)
     if not json_output["LocalDependencies"]:
         print("    ---", file=sample)
-    if arguments.LocalNumber != -1:
+    if args.LocalNumber != -1:
         tmp = 0
         for i in json_output["LocalDependencies"]:
-            if tmp < arguments.LocalNumber:
+            if tmp < args.LocalNumber:
                 if i["Verb"] == "provides":
                     print(
                         "    -> ",
@@ -1620,9 +1683,9 @@ def PrintDeviceToFileFromJSON(json_output, arguments, sample):
     print("  Global Dependencies:", file=sample)
     if not json_output["GlobalDependencies"]:
         print("    ---", file=sample)
-    if arguments.GlobalNumber == -1:
+    if args.GlobalNumber == -1:
         for i in json_output["GlobalDependencies"]:
-            if arguments.DNS == True:
+            if args.DNS == True:
                 try:
                     domain = socket.gethostbyaddr(i["IP"])
                     print(
@@ -1671,8 +1734,8 @@ def PrintDeviceToFileFromJSON(json_output, arguments, sample):
     else:
         tmp = 0
         for i in json_output["GlobalDependencies"]:
-            if tmp < arguments.GlobalNumber:
-                if arguments.DNS == True:
+            if tmp < args.GlobalNumber:
+                if args.DNS == True:
                     try:
                         domain = socket.gethostbyaddr(i["IP"])
                         if i["Verb"] == "provides":
@@ -1780,39 +1843,39 @@ def PrintDeviceToFileFromJSON(json_output, arguments, sample):
             print("    ", i, "\t\t\t", j, "%", file=sample)
 
 
-def PrintJSON(json_output, arguments):
+def print_json(json_output, args):
     """Print safed analyze from JSON file. Into file or command line.
 
     Parameters
     -----------
     json_output : JSON
         JSON file loaded in python.        
-    arguments : argparse
+    args : argparse
         Setted arguments of the script.
     """
-    if arguments.print == True:
+    if args.print == True:
         for Dev in json_output["Devices"]:
-            PrintDeviceFromJSON(Dev, arguments)
-    if arguments.file != "":
-        if check_str(arguments.file, ".txt") == True:
-            FILE = arguments.file
+            print_device_from_json(Dev, args)
+    if args.file != "":
+        if check_str(args.file, ".txt") == True:
+            file = args.file
         else:
-            FILE = arguments.file + ".txt"
-        sample = open(FILE, "w")
+            file = args.file + ".txt"
+        sample = open(file, "w")
         for Dev in json_output["Devices"]:
-            PrintDeviceToFileFromJSON(Dev, arguments, sample)
+            print_device_to_file_from_json(Dev, args, sample)
 
 
-def AnalyzeLocalDevice(
+def analyze_device(
     device_id,
-    IP,
+    ip_address,
     TIME,
     cursor,
     sqlite_connection,
     json_output,
     ip_address_statistics,
     gl,
-    arguments,
+    args,
     sample,
 ):
     """Analyze a device and output of it add to JSON document.
@@ -1821,7 +1884,7 @@ def AnalyzeLocalDevice(
     -----------
     device_id : int
         Number of device in analyze.
-    IP : str
+    ip_address : str
         Device IP address.
     TIME : int
         Time of last comunication.
@@ -1835,7 +1898,7 @@ def AnalyzeLocalDevice(
         Dictionary contains statistic of using network by devices.
     gl : bool
         True if global dependencies exists.
-    arguments : argparse
+    args : argparse
         Setted arguments of the script.
     sample : opened file
         Output file.    
@@ -1859,67 +1922,71 @@ def AnalyzeLocalDevice(
     # ==================================================================
     device_json["DeviceID"] = device_id
     # ==================================================================
-    IPAddress(IP, cursor, device_json)
+    find_ip_addresses_of_device(ip_address, cursor, device_json)
     # ==================================================================
     device_json["LastCom"] = float(TIME)
-    DeviceIP = ipaddress.ip_address(IP)
+    device_ip = ipaddress.ip_address(ip_address)
     # ==================================================================
-    add_mac_address(device_id, IP, cursor, sqlite_connection, device_json)
+    add_mac_address(device_id, ip_address, cursor, sqlite_connection, device_json)
     # ==================================================================
-    find_labels(device_id, IP, cursor, sqlite_connection, device_json, json_output, gl)
+    find_labels(
+        device_id, ip_address, cursor, sqlite_connection, device_json, json_output, gl
+    )
     # ==================================================================
-    add_dhcp_records_for_device(device_id, IP, cursor, sqlite_connection, device_json)
+    add_dhcp_records_for_device(
+        device_id, ip_address, cursor, sqlite_connection, device_json
+    )
     # ==================================================================
     local_services_statistic = {}
-    LOCALDEPENDENCIES(
+    local_dependencies(
         device_id,
-        IP,
-        DeviceIP,
+        ip_address,
+        device_ip,
         local_services_statistic,
         ip_address_statistics,
         cursor,
         sqlite_connection,
         device_json,
-        arguments,
+        args,
         json_output,
     )
-    StatPercent(local_services_statistic, device_json, 0)
+    transfer_statistic_to_percents(local_services_statistic, device_json, 0)
     # ==================================================================
-    if arguments.onlylocal == False:
-        GlobalStatistic = {}
-        GLOBALDEPENDENCIES(
+    if args.onlylocal == False:
+        global_statistic = {}
+        global_dependencies(
             device_id,
-            IP,
-            DeviceIP,
-            GlobalStatistic,
+            ip_address,
+            device_ip,
+            global_statistic,
             ip_address_statistics,
             cursor,
             sqlite_connection,
             device_json,
-            arguments,
+            args,
             json_output,
         )
-        StatPercent(GlobalStatistic, device_json, 1)
+        transfer_statistic_to_percents(global_statistic, device_json, 1)
     # ==================================================================
-    if arguments.print == True:
-        PrintDeviceFromJSON(device_json, arguments)
-    if arguments.file != "":
-        print("Output for device ", IP, " printed to file: ", arguments.file)
-        PrintDeviceToFileFromJSON(device_json, arguments, sample)
-    if arguments.activity == True:
-        graph_activity_of_device(IP, cursor, json_output)
+    if args.print == True:
+        print_device_from_json(device_json, args)
+    if args.file != "":
+        print("Output for device ", ip_address, " printed to file: ", args.file)
+        print_device_to_file_from_json(device_json, args, sample)
+    if args.activity == True:
+        graph_activity_of_device(ip_address, cursor, json_output)
     # ==================================================================
     json_output["Devices"].append(device_json)
 
 
-def AnalyzeNetwork(sqlite_connection, arguments):
+def analyze_network(sqlite_connection, args):
     """Analyze network subnet from arguments.
 
     Parameters
     -----------
     sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    arguments : argparse
+    args : argparse
         Setted arguments of the script.
     """
     # ==================================================================
@@ -1934,8 +2001,8 @@ def AnalyzeNetwork(sqlite_connection, arguments):
         "Devices": [],
         "Files": [],
     }
-    write_json(json_output, arguments.json)
-    json_output = read_json(arguments.json)
+    write_json(json_output, args.json)
+    json_output = read_json(args.json)
     # ==================================================================
     ip_address_statistics = {}
     cursor = sqlite_connection.cursor()
@@ -1947,23 +2014,23 @@ def AnalyzeNetwork(sqlite_connection, arguments):
     if GlobalC[0] == 0:
         gl = False
     # ==================================================================
-    if arguments.file != "":
-        if check_str(arguments.file, ".txt") == True:
-            FILE = arguments.file
+    if args.file != "":
+        if check_str(args.file, ".txt") == True:
+            file = args.file
         else:
-            FILE = arguments.file + ".txt"
-        sample = open(FILE, "w")
+            file = args.file + ".txt"
+        sample = open(file, "w")
     else:
         sample = ""
-    NET = ipaddress.ip_network(arguments.network)
+    NET = ipaddress.ip_network(args.network)
     cursor.execute("SELECT * FROM LocalDevice")
     LocalDevices = cursor.fetchall()
     for LocalDevice in LocalDevices:
         if LocalDevice[0] == "255.255.255.255" or LocalDevice[0] == "0.0.0.0":
             continue
-        IP = ipaddress.ip_address(LocalDevice[0])
-        if IP in NET:
-            AnalyzeLocalDevice(
+        ip_address = ipaddress.ip_address(LocalDevice[0])
+        if ip_address in NET:
+            analyze_device(
                 device_id,
                 LocalDevice[0],
                 LocalDevice[1],
@@ -1972,22 +2039,22 @@ def AnalyzeNetwork(sqlite_connection, arguments):
                 json_output,
                 ip_address_statistics,
                 gl,
-                arguments,
+                args,
                 sample,
             )
             device_id = device_id + 1
     # ==================================================================
-    if arguments.localgraph == True:
+    if args.localgraph == True:
         graph_of_local_dependencies(cursor, sqlite_connection, json_output)
-    if arguments.globalgraph == True:
+    if args.globalgraph == True:
         graph_of_global_dependencies(cursor, sqlite_connection, json_output)
-    if arguments.bipartite == True:
+    if args.bipartite == True:
         graph_of_dependencies_between_local_and_global_devices(
             cursor, sqlite_connection, json_output
         )
     # ==================================================================
-    StatPercent(ip_address_statistics, json_output, 3)
-    if arguments.file != "":
+    transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
+    if args.file != "":
         print(
             "######################################################################",
             file=sample,
@@ -1995,40 +2062,38 @@ def AnalyzeNetwork(sqlite_connection, arguments):
         print("  Print Statistic of using network by devices in %:", file=sample)
         for i, j in ip_address_statistics.items():
             print("    ", i, "\t\t\t", j, "%", file=sample)
-    if arguments.print == True:
+    if args.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        StatPercent(ip_address_statistics, json_output, 2)
+        transfer_statistic_to_percents(ip_address_statistics, json_output, 2)
     # ==================================================================
-    if arguments.file != "":
+    if args.file != "":
         sample.close()
     x = datetime.datetime.now()
-    json_output["Network"] = arguments.network
+    json_output["Network"] = args.network
     json_output["DateAnalyze"] = str(x)
     json_output["NumberDevice"] = device_id - 1
-    write_json(json_output, arguments.json)
-    print("Output json_output: ", arguments.json)
+    write_json(json_output, args.json)
+    print("Output json_output: ", args.json)
 
 
-def AnalyzeSingleDevice(sqlite_connection, arguments):
+def analyze_single_device(sqlite_connection, args):
     """Analyze single device from arguments. If isn't in database print error and end. Else analyze it.
 
     Parameters
     -----------
     sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    arguments : argparse
+    args : argparse
         Setted arguments of the script.
     """
     try:
-        IP = ipaddress.ip_address(arguments.device)
+        ip_address = ipaddress.ip_address(args.device)
     except:
         print("ERROR: Entered value isn't IP address")
         sys.exit()
     cursor = sqlite_connection.cursor()
-    cursor.execute(
-        "SELECT * FROM LocalDevice WHERE IP='{ip}'".format(ip=arguments.device)
-    )
+    cursor.execute("SELECT * FROM LocalDevice WHERE IP='{ip}'".format(ip=args.device))
     device = cursor.fetchone()
     if not device:
         print("ERROR: Entered IP address isn't in database")
@@ -2042,18 +2107,18 @@ def AnalyzeSingleDevice(sqlite_connection, arguments):
         "Devices": [],
         "Files": [],
     }
-    write_json(json_output, arguments.json)
-    json_output = read_json(arguments.json)
+    write_json(json_output, args.json)
+    json_output = read_json(args.json)
     ip_address_statistics = {}
-    if arguments.file != "":
-        if check_str(arguments.file, ".txt") == True:
-            FILE = arguments.file
+    if args.file != "":
+        if check_str(args.file, ".txt") == True:
+            file = args.file
         else:
-            FILE = arguments.file + ".txt"
-        sample = open(FILE, "w")
+            file = args.file + ".txt"
+        sample = open(file, "w")
     else:
         sample = ""
-    AnalyzeLocalDevice(
+    analyze_device(
         "XXX",
         device[0],
         device[1],
@@ -2062,11 +2127,11 @@ def AnalyzeSingleDevice(sqlite_connection, arguments):
         json_output,
         ip_address_statistics,
         True,
-        arguments,
+        args,
         sample,
     )
-    StatPercent(ip_address_statistics, json_output, 3)
-    if arguments.file != "":
+    transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
+    if args.file != "":
         print(
             "######################################################################",
             file=sample,
@@ -2074,26 +2139,26 @@ def AnalyzeSingleDevice(sqlite_connection, arguments):
         print("  Print Statistic of using network by devices in %:", file=sample)
         for i, j in ip_address_statistics.items():
             print("    ", i, "\t\t\t", j, "%", file=sample)
-    if arguments.print == True:
+    if args.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        StatPercent(ip_address_statistics, json_output, 2)
-    if arguments.file != "":
+        transfer_statistic_to_percents(ip_address_statistics, json_output, 2)
+    if args.file != "":
         sample.close()
     x = datetime.datetime.now()
     json_output["DateAnalyze"] = str(x)
-    write_json(json_output, arguments.json)
-    print("Output json_output: ", arguments.json)
+    write_json(json_output, args.json)
+    print("Output json_output: ", args.json)
 
 
-def DoAnalyze(sqlite_connection, arguments):
+def do_analyze_by_arguments(sqlite_connection, args):
     """Analyze all "local" devices from database table LocalDevice.
 
     Parameters
     -----------
     sqlite_connection : sqlite3
         Connection to sqlite3 database.
-    arguments : argparse
+    args : argparse
         Setted arguments of the script.
     """
     # ==================================================================
@@ -2107,8 +2172,8 @@ def DoAnalyze(sqlite_connection, arguments):
         "Devices": [],
         "Files": [],
     }
-    write_json(json_output, arguments.json)
-    json_output = read_json(arguments.json)
+    write_json(json_output, args.json)
+    json_output = read_json(args.json)
     # ==================================================================
     ip_address_statistics = {}
     cursor = sqlite_connection.cursor()
@@ -2120,12 +2185,12 @@ def DoAnalyze(sqlite_connection, arguments):
     if GlobalC[0] == 0:
         gl = False
     # ==================================================================
-    if arguments.file != "":
-        if check_str(arguments.file, ".txt") == True:
-            FILE = arguments.file
+    if args.file != "":
+        if check_str(args.file, ".txt") == True:
+            file = args.file
         else:
-            FILE = arguments.file + ".txt"
-        sample = open(FILE, "w")
+            file = args.file + ".txt"
+        sample = open(file, "w")
     else:
         sample = ""
     cursor.execute("SELECT * FROM LocalDevice")
@@ -2133,7 +2198,7 @@ def DoAnalyze(sqlite_connection, arguments):
     for LocalDevice in LocalDevices:
         if LocalDevice[0] == "255.255.255.255" or LocalDevice[0] == "0.0.0.0":
             continue
-        AnalyzeLocalDevice(
+        analyze_device(
             device_id,
             LocalDevice[0],
             LocalDevice[1],
@@ -2142,22 +2207,22 @@ def DoAnalyze(sqlite_connection, arguments):
             json_output,
             ip_address_statistics,
             gl,
-            arguments,
+            args,
             sample,
         )
         device_id = device_id + 1
     # ==================================================================
-    if arguments.localgraph == True:
+    if args.localgraph == True:
         graph_of_local_dependencies(cursor, sqlite_connection, json_output)
-    if arguments.globalgraph == True:
+    if args.globalgraph == True:
         graph_of_global_dependencies(cursor, sqlite_connection, json_output)
-    if arguments.bipartite == True:
+    if args.bipartite == True:
         graph_of_dependencies_between_local_and_global_devices(
             cursor, sqlite_connection, json_output
         )
     # ==================================================================
-    StatPercent(ip_address_statistics, json_output, 3)
-    if arguments.file != "":
+    transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
+    if args.file != "":
         print(
             "######################################################################",
             file=sample,
@@ -2165,26 +2230,26 @@ def DoAnalyze(sqlite_connection, arguments):
         print("  Print Statistic of using network by devices in %:", file=sample)
         for i, j in ip_address_statistics.items():
             print("    ", i, "\t\t\t", j, "%", file=sample)
-    if arguments.print == True:
+    if args.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        StatPercent(ip_address_statistics, json_output, 3)
+        transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
     # ==================================================================
-    if arguments.file != "":
+    if args.file != "":
         sample.close()
     x = datetime.datetime.now()
     json_output["DateAnalyze"] = str(x)
     json_output["NumberDevice"] = device_id - 1
-    write_json(json_output, arguments.json)
-    print("Output json_output: ", arguments.json)
+    write_json(json_output, args.json)
+    print("Output json_output: ", args.json)
 
 
-def Arguments():
+def parse_arguments():
     """Arguments of the DeviceAnalyzer script.
 
     Returns
     --------
-    arguments : argparse
+    args : argparse
         Setted arguments of the script.
     """
     parser = argparse.ArgumentParser(
@@ -2328,25 +2393,25 @@ def Arguments():
         "-o", "--onlylocal", help="Analyze only local dependencies", action="store_true"
     )
     # =====================================================
-    arguments = parser.parse_args()
-    if arguments.device != "" and arguments.network != "":
+    args = parser.parse_args()
+    if args.device != "" and args.network != "":
         print("Parameters -D and -N can't be combinated. Choose only one")
         sys.exit()
-    if arguments.network != "":
+    if args.network != "":
         try:
-            NET = ipaddress.ip_network(arguments.network)
+            NET = ipaddress.ip_network(args.network)
         except:
-            print("Badly inserted ip address of network ", arguments.network)
+            print("Badly inserted ip address of network ", args.network)
             sys.exit()
-    return arguments
+    return args
 
 
-def ConnectToDatabase(arguments):
+def connect_to_slite3_database(args):
     """Connect to sqlite3 database which analyze.
 
     Parameters
     -----------
-    arguments : argparse
+    args : argparse
         Setted arguments of the script.
     Returns
     --------
@@ -2355,42 +2420,42 @@ def ConnectToDatabase(arguments):
     """
     try:  # connect to a database
         print("Connecting to a database....", end="")
-        if check_str(arguments.database, ".db") == True:
-            FILE = arguments.database
+        if check_str(args.database, ".db") == True:
+            file = args.database
         else:
-            FILE = arguments.database + ".db"
-        if not os.path.exists(FILE):
+            file = args.database + ".db"
+        if not os.path.exists(file):
             print("")
-            print("can't connect to ", FILE)
+            print("can't connect to ", file)
             sys.exit()
-        sqlite_connection = sqlite3.connect(FILE)
+        sqlite_connection = sqlite3.connect(file)
         print("done")
     except sqlite3.Error as error:
         print("Can't connect to a database:  ", error)
     return sqlite_connection
 
 
-def Main():
+def main():
     """Main function call one of three function by arguments where it is set.
 
     """
-    arguments = Arguments()
-    if arguments.printJSON != "":
-        if arguments.print == False and arguments.file == "":
+    args = parse_arguments()
+    if args.printJSON != "":
+        if args.print == False and args.file == "":
             print(
                 "Need define output method (print to command line or file [-p], [-f])"
             )
             sys.exit()
-        json_output = read_json(arguments.json)
-        PrintJSON(json_output, arguments)
+        json_output = read_json(args.json)
+        print_json(json_output, args)
         sys.exit()
-    sqlite_connection = ConnectToDatabase(arguments)
-    if arguments.device != "":
-        AnalyzeSingleDevice(sqlite_connection, arguments)
-    elif arguments.network != "":
-        AnalyzeNetwork(sqlite_connection, arguments)
+    sqlite_connection = connect_to_slite3_database(args)
+    if args.device != "":
+        analyze_single_device(sqlite_connection, args)
+    elif args.network != "":
+        analyze_network(sqlite_connection, args)
     else:
-        DoAnalyze(sqlite_connection, arguments)
+        do_analyze_by_arguments(sqlite_connection, args)
     # =====================================================
     # Close database connection
     if sqlite_connection:
@@ -2398,5 +2463,5 @@ def Main():
 
 
 if __name__ == "__main__":
-    Main()
+    main()
 
