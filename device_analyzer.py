@@ -71,6 +71,7 @@ import create_graphs
 import print_analyze
 from create_script import check_str
 import format_json
+import statistics
 
 
 def add_mac_address(device_id, ip_address, cursor, sqlite_connection, device_json):
@@ -295,68 +296,6 @@ def add_dhcp_records_for_device(
         )
 
 
-def stats_of_services(services_statistic, dependency, cursor, sqlite_connection):
-    """Function find if source or destination port of dependency isn't some services in network. If yes, then the packet number carry the dependendy add in services_statistic to the services. (this create with cyclus counter of packet by protocol in network) 
-    
-    Parameters
-    -----------
-    services_statistic : dictionary
-        Disctionary of protocols and number packet taht was carry over network by protocols.
-    dependency : array
-        The one dependency for count packets and protocols.    
-    cursor : sqlite3
-        Cursor to sqlite3 database for execute SQL queries.
-    sqlite_connection : sqlite3
-        Connection to sqlite3 database.
-    """
-    cursor.execute(
-        "SELECT * FROM Services WHERE PortNumber={po}".format(po=dependency[3])
-    )
-    servicestat = cursor.fetchone()
-    if servicestat:
-        st = servicestat[2].replace(" ", "_")
-        if st in services_statistic:
-            services_statistic[st] = services_statistic[st] + dependency[5]
-        else:
-            services_statistic[st] = dependency[5]
-
-    cursor.execute(
-        "SELECT * FROM Services WHERE PortNumber={pt}".format(pt=dependency[4])
-    )
-    servicestat = cursor.fetchone()
-    if servicestat:
-        st = servicestat[2].replace(" ", "_")
-        if st in services_statistic:
-            services_statistic[st] = services_statistic[st] + dependency[5]
-        else:
-            services_statistic[st] = dependency[5]
-
-
-def add_or_update_statistic_of_device(dependency, ip_address, ip_address_statistics):
-    """Function check if devices from dependency are in statistic, that contains devices ip addresses and number of packets that was carryed by device. 
-    If device exists in statistic then update number of packets, else add new device in statistic. 
-
-    Args:
-        dependency (list): List conains information about dependency from sqlite3 database.
-        ip_address (str): String of IP address.
-        ip_address_statistics (dictionary): Statistic dicitonary. 
-    """
-    if dependency[1] == ip_address:
-        if dependency[1] in ip_address_statistics:
-            ip_address_statistics[dependency[1]] = (
-                ip_address_statistics[dependency[1]] + dependency[5]
-            )
-        else:
-            ip_address_statistics[dependency[1]] = dependency[5]
-    if dependency[2] == ip_address:
-        if dependency[2] in ip_address_statistics:
-            ip_address_statistics[dependency[2]] = (
-                ip_address_statistics[dependency[2]] + dependency[5]
-            )
-        else:
-            ip_address_statistics[dependency[2]] = dependency[5]
-
-
 def local_dependencies(
     device_id,
     ip_address,
@@ -404,10 +343,12 @@ def local_dependencies(
             )
             tmp = tmp + 1
 
-        stats_of_services(
+        statistics.stats_of_services(
             local_services_statistic, dependency, cursor, sqlite_connection
         )
-        add_or_update_statistic_of_device(dependency, ip_address, ip_address_statistics)
+        statistics.add_or_update_statistic_of_device(
+            dependency, ip_address, ip_address_statistics
+        )
 
         format_json.safe_local_dependency_to_json(
             device_json, dependency, device_ipaddress, cursor
@@ -462,55 +403,16 @@ def global_dependencies(
                     global_dependency, "Global", cursor, json_output
                 )
                 tmp = tmp + 1
-            stats_of_services(
+            statistics.stats_of_services(
                 global_statistic, global_dependency, cursor, sqlite_connection
             )
-            add_or_update_statistic_of_device(
+            statistics.add_or_update_statistic_of_device(
                 global_dependency, ip_address, ip_address_statistics
             )
 
             format_json.safe_global_dependency_to_json(
                 device_json, global_dependency, cursor, device_ip, promtp
             )
-
-
-def transfer_statistic_to_percents(statistic, device_json, type_statistic):
-    """Function receive dictionary. The dictionarz number of packets calculate and create from it Percents.
-
-    Parameters
-    -----------
-    statistic : dictionary
-        The dictionary of statistic with protocols/devices and number of packets that was carryed in network by it.
-    device_json : JSON
-        JSON file for device with device_id ID loaded in python.        
-    type_statistic : int
-        Magic value represent the type of statistic (Local statistic == 0, Global statistic == 1, Network use statistic == 2).
-    """
-    if statistic == {}:
-        return
-    total_num_packets = 0
-    for i, j in statistic.items():
-        total_num_packets += j
-    # ==========================
-    statistic = {
-        r: statistic[r] for r in sorted(statistic, key=statistic.get, reverse=True)
-    }
-    for i, j in statistic.items():
-        statistic[i] = float(j / total_num_packets * 100)
-        if type_statistic == 0:
-            device_json["LocalStatistic"].append(
-                {"Service": "%s" % i, "Percents": "%s" % statistic[i]}
-            )
-        elif type_statistic == 1:
-            device_json["GlobalStatistic"].append(
-                {"Service": "%s" % i, "Percents": "%s" % statistic[i]}
-            )
-        else:
-            device_json["ip_address_statistics"].append(
-                {"IP": "%s" % i, "Percents": "%s" % statistic[i]}
-            )
-    if type_statistic == 2:
-        create_graphs.plot_statistics(statistic.items())
 
 
 def find_ip_addresses_of_device(ip_address, cursor, device_json):
@@ -631,7 +533,7 @@ def analyze_device(
         args,
         json_output,
     )
-    transfer_statistic_to_percents(local_services_statistic, device_json, 0)
+    statistics.transfer_statistic_to_percents(local_services_statistic, device_json, 0)
     # ==================================================================
     if args.onlylocal == False:
         global_statistic = {}
@@ -647,7 +549,7 @@ def analyze_device(
             args,
             json_output,
         )
-        transfer_statistic_to_percents(global_statistic, device_json, 1)
+        statistics.transfer_statistic_to_percents(global_statistic, device_json, 1)
     # ==================================================================
     if args.print == True:
         print_analyze.print_device_from_json(device_json, args)
@@ -728,7 +630,7 @@ def analyze_network(sqlite_connection, args):
             cursor, sqlite_connection, json_output
         )
     # ==================================================================
-    transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
+    statistics.transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
     if args.file != "":
         print(
             "######################################################################",
@@ -740,7 +642,7 @@ def analyze_network(sqlite_connection, args):
     if args.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        transfer_statistic_to_percents(ip_address_statistics, json_output, 2)
+        statistics.transfer_statistic_to_percents(ip_address_statistics, json_output, 2)
     # ==================================================================
     if args.file != "":
         sample.close()
@@ -797,7 +699,7 @@ def analyze_single_device(sqlite_connection, args):
         args,
         sample,
     )
-    transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
+    statistics.transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
     if args.file != "":
         print(
             "######################################################################",
@@ -809,7 +711,7 @@ def analyze_single_device(sqlite_connection, args):
     if args.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        transfer_statistic_to_percents(ip_address_statistics, json_output, 2)
+        statistics.transfer_statistic_to_percents(ip_address_statistics, json_output, 2)
     if args.file != "":
         sample.close()
     x = datetime.datetime.now()
@@ -883,7 +785,7 @@ def do_analyze_by_arguments(sqlite_connection, args):
             cursor, sqlite_connection, json_output
         )
     # ==================================================================
-    transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
+    statistics.transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
     if args.file != "":
         print(
             "######################################################################",
@@ -895,7 +797,7 @@ def do_analyze_by_arguments(sqlite_connection, args):
     if args.print == True:
         print("######################################################################")
         print("  Print Statistic of using network by devices in %:")
-        transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
+        statistics.transfer_statistic_to_percents(ip_address_statistics, json_output, 3)
     # ==================================================================
     if args.file != "":
         sample.close()

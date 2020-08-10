@@ -17,15 +17,10 @@
         This software is provided as is'', and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the company or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
 """
 # Standard Library Imports
-import sys
-import os
-import sqlite3
-import json
 import tempfile
 import ipaddress
 
 # Third Part Imports
-from termgraph import termgraph
 import pandas
 import numpy
 import networkx
@@ -187,32 +182,6 @@ def graph_activity_of_dependency(dependency, table, cursor, device_json):
         f"Graph of using dependency in time safe in file: TimeGraph_{dependency[1]}({str(dependency[3])})_{dependency[2]}({str(dependency[4])}).png"
     )
     plt.clf()
-
-
-def plot_statistics(data):
-    """Plot the statistical graph of using network (by protocols or devices) in %. Only for output in command line.
-
-    Parameters
-    -----------
-    data : list
-        List of deveces/protocols with Percent of use the network.  
-    """
-    with tempfile.NamedTemporaryFile(mode="a+") as f:
-        # Save data in temporary file
-        for row in data:
-            f.write("\t".join(map(str, row)) + "\n")
-        # Move cursor in order to make sure that script will
-        # start reading file from the beggining.
-        f.seek(0)
-        # Overwrite args in case if there were some other
-        # arguments passed to the main script
-        #
-        # Additional arguments can be passed in the same way.
-        original_argv = sys.argv
-        sys.argv = [sys.argv[0], f.name]
-        termgraph.main()
-        # Revert back changes to the original arguemnts
-        sys.argv = original_argv
 
 
 def graph_of_local_dependencies(cursor, sqlite_connection, json_output):

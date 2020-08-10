@@ -22,7 +22,7 @@ import time
 import socket
 
 # Local Application Imports
-from create_graphs import plot_statistics
+from statistics import plot_statistics
 from create_script import check_str
 
 
