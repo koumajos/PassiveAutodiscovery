@@ -1,6 +1,5 @@
 #!/usr/bin/python3.6
-"""
-
+"""create_graph module contains fuction that create graphs output of device_analyzer module.
 
     Copyright (C) 2020 CESNET
 
@@ -32,8 +31,6 @@ import numpy
 import networkx
 import matplotlib.pyplot as plt
 import matplotlib.ticker as plticker
-
-# Local Application Imports
 
 
 def bubble_sort(times, num_packets):

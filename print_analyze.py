@@ -1,5 +1,5 @@
 #!/usr/bin/python3.6
-"""
+"""print_analyze module contains function that print output of device_analyzer module.
 
 
     Copyright (C) 2020 CESNET

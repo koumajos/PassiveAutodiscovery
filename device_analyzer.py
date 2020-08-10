@@ -70,41 +70,7 @@ from argparse import RawTextHelpFormatter
 import create_graphs
 import print_analyze
 from create_script import check_str
-
-
-def read_json(filename):
-    """Read JSON document from file to prom data.
-
-    Parameters
-    -----------
-    filename : str
-        Name of the output JSON document file.
-    Returns
-    --------
-    data : JSON
-        JSON format in python.
-    """
-    if check_str(filename, ".json") is False:
-        filename = filename + ".json"
-    with open(filename, "r") as file:
-        data = json.load(file)
-    return data
-
-
-def write_json(data, filename):
-    """Write JSON in python to JSON document file. 
-
-    Parameters
-    -----------
-    data : JSON
-        JSON file loaded in python filled with information.
-    filename : str
-        Name of the output JSON document file.
-    """
-    if check_str(filename, ".json") is False:
-        filename = filename + ".json"
-    with open(filename, "w") as file:
-        json.dump(data, file, indent=4)
+import format_json
 
 
 def add_mac_address(device_id, ip_address, cursor, sqlite_connection, device_json):
@@ -391,126 +357,6 @@ def add_or_update_statistic_of_device(dependency, ip_address, ip_address_statist
             ip_address_statistics[dependency[2]] = dependency[5]
 
 
-def safe_local_dependency_to_json(device_json, dependency, device_ipaddress, cursor):
-    """Safe local dependency to json.
-
-    Args:
-        device_json (json): JSON document for single device.
-        dependency (list): List created from row in database, taht contains ifnormationa bout one dependency.
-        device_ipaddress (str): String of device IP address.
-        cursor (sqlite3): Cursor to sqlite3 database.
-    """
-    src_ip = ipaddress.ip_address(dependency[1])
-    depencency_ip = ""
-    verb = "provides"
-    services = ""
-    port = 0
-    packets = dependency[5]
-
-    cursor.execute(
-        "SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=dependency[3])
-    )
-    src_services = cursor.fetchone()
-    if src_services:
-        if src_ip == device_ipaddress:
-            depencency_ip = dependency[2]
-            if src_services[1] == "DHCP Client":
-                services = "DHCP Server"
-                port = 67
-            else:
-                verb = "requires"
-                services = src_services[1]
-                port = dependency[3]
-        else:
-            depencency_ip = dependency[1]
-            services = src_services[1]
-            port = dependency[3]
-        add_dependency_to_json(
-            device_json,
-            "LocalDependencies",
-            depencency_ip,
-            verb,
-            services,
-            port,
-            packets,
-        )
-        return
-
-    cursor.execute(
-        "SELECT * FROM Services WHERE PortNumber='{portD}'".format(portD=dependency[4])
-    )
-    dst_services = cursor.fetchone()
-    if dst_services:
-        if src_ip == device_ipaddress:
-            depencency_ip = dependency[2]
-        else:
-            depencency_ip = dependency[1]
-            verb = "requires"
-        services = dst_services[1]
-        port = dependency[4]
-        add_dependency_to_json(
-            device_json,
-            "LocalDependencies",
-            depencency_ip,
-            verb,
-            services,
-            port,
-            packets,
-        )
-        return
-
-    if src_ip == device_ipaddress:
-        depencency_ip = dependency[2]
-        cursor.execute(
-            "SELECT * FROM Ports WHERE PortNumber='{port}'".format(port=dependency[4])
-        )
-        dst_port = cursor.fetchone()
-        if dst_port:
-            services = dst_port[1]
-            port = dependency[4]
-        else:
-            port = dependency[4]
-    else:
-        depencency_ip = dependency[1]
-        verb = "requires"
-        cursor.execute(
-            "SELECT * FROM Ports WHERE PortNumber='{port}'".format(port=dependency[3])
-        )
-        src_port = cursor.fetchone()
-        if src_port:
-            services = src_port[1]
-            port = dependency[3]
-        else:
-            port = dependency[3]
-    add_dependency_to_json(
-        device_json, "LocalDependencies", depencency_ip, verb, services, port, packets
-    )
-
-
-def add_dependency_to_json(
-    device_json, type_dependencies, depencency_ip, verb, services, port, packets
-):
-    """Add local dependency to json in specific format.
-
-    Args:
-        device_json (json): JSON document.
-        depencency_ip (str): String of device IP address.
-        verb (str): Provides or requires the services/protocol.
-        services (str): Service of protocol used by device.
-        port (int): Integer of used port.
-        packets (int): Integer of packets number.
-    """
-    device_json[type_dependencies].append(
-        {
-            "IP": f"{depencency_ip}",
-            "Verb": f"{verb}",
-            "Service": f"{services}",
-            "Port": f"{port}",
-            "Packets": f"{packets}",
-        }
-    )
-
-
 def local_dependencies(
     device_id,
     ip_address,
@@ -563,136 +409,9 @@ def local_dependencies(
         )
         add_or_update_statistic_of_device(dependency, ip_address, ip_address_statistics)
 
-        safe_local_dependency_to_json(device_json, dependency, device_ipaddress, cursor)
-
-
-def safe_global_dependency_to_json(
-    device_json, global_dependency, cursor, device_ip, promtp
-):
-    """[summary]
-
-    Args:
-        device_json ([type]): [description]
-        global_dependency ([type]): [description]
-        cursor ([type]): [description]
-        device_ip ([type]): [description]
-        promtp ([type]): [description]
-    """
-    src_ip = ipaddress.ip_address(global_dependency[1])
-    # ==========================================
-    cursor.execute(
-        "SELECT * FROM Services WHERE PortNumber='{portS}'".format(
-            portS=global_dependency[3]
+        format_json.safe_local_dependency_to_json(
+            device_json, dependency, device_ipaddress, cursor
         )
-    )
-    src_service = cursor.fetchone()
-    cursor.execute(
-        "SELECT * FROM Services WHERE PortNumber='{portD}'".format(
-            portD=global_dependency[4]
-        )
-    )
-    dst_service = cursor.fetchone()
-    # ========================================================
-    depencency_ip = ""
-    verb = "provides"
-    services = ""
-    port = 0
-    num_packets = global_dependency[5]
-    domain = ""
-    # ========================================================
-    if src_service:
-        if src_ip == device_ip:
-            depencency_ip = global_dependency[2]
-            if src_service[1] == "DHCP Client":
-                services = "DHCP Server"
-            else:
-                verb = "requires"
-        else:
-            depencency_ip = global_dependency[1]
-        if promtp < 15:
-            services = src_service[1]
-            port = global_dependency[3]
-            if src_service[1] == "WEB Server" and src_ip == device_ip:
-                try:
-                    sck = socket.gethostbyaddr(global_dependency[2])
-                    domain = "(Domain:" + sck[0] + ")"
-                except:
-                    None
-            elif src_service[1] == "WEB Server":
-                try:
-                    sck = socket.gethostbyaddr(global_dependency[1])
-                    domain = "(Domain:" + sck[0] + ")"
-                except:
-                    None
-            else:
-                None
-        else:
-            services = src_service[1]
-            port = global_dependency[3]
-    elif dst_service:
-        if src_ip == device_ip:
-            depencency_ip = global_dependency[2]
-        else:
-            depencency_ip = global_dependency[1]
-            verb = "requires"
-        if promtp < 15:
-            services = dst_service[1]
-            port = global_dependency[4]
-            if dst_service[1] == "WEB Server" and src_ip == device_ip:
-                try:
-                    sck = socket.gethostbyaddr(global_dependency[2])
-                    domain = "(Domain:" + sck[0] + ")"
-                except:
-                    None
-            elif dst_service[1] == "WEB Server":
-                try:
-                    sck = socket.gethostbyaddr(global_dependency[1])
-                    domain = "(Domain:" + sck[0] + ")"
-                except:
-                    None
-            else:
-                None
-        else:
-            services = dst_service[1]
-            port = global_dependency[4]
-    else:
-        if src_ip == device_ip:
-            depencency_ip = global_dependency[2]
-            cursor.execute(
-                "SELECT * FROM Ports WHERE PortNumber='{portD}'".format(
-                    portD=global_dependency[4]
-                )
-            )
-            dst_port = cursor.fetchone()
-            if dst_port:
-                services = dst_port[1]
-                port = global_dependency[4]
-            else:
-                port = global_dependency[4]
-        else:
-            depencency_ip = global_dependency[1]
-            verb = "requires"
-            cursor.execute(
-                "SELECT * FROM Ports WHERE PortNumber='{portS}'".format(
-                    portS=global_dependency[3]
-                )
-            )
-            src_port = cursor.fetchone()
-            if src_port:
-                services = src_port[1]
-                port = global_dependency[3]
-            else:
-                port = global_dependency[3]
-            # ========================================================
-    add_dependency_to_json(
-        device_json,
-        "GlobalDependencies",
-        depencency_ip,
-        verb,
-        services,
-        port,
-        num_packets,
-    )
 
 
 def global_dependencies(
@@ -750,7 +469,7 @@ def global_dependencies(
                 global_dependency, ip_address, ip_address_statistics
             )
 
-            safe_global_dependency_to_json(
+            format_json.safe_global_dependency_to_json(
                 device_json, global_dependency, cursor, device_ip, promtp
             )
 
@@ -880,21 +599,7 @@ def analyze_device(
         Output file.    
     """
     # ==================================================================
-    device_json = {
-        "DeviceID": 0,
-        "LastCom": 0,
-        "IP": [],
-        "MAC": "",
-        "RouterMAC": "",
-        "Vendor": "",
-        "Country": "",
-        "Labels": [],
-        "DHCP": [],
-        "LocalDependencies": [],
-        "LocalStatistic": [],
-        "GlobalDependencies": [],
-        "GlobalStatistic": [],
-    }
+    device_json = format_json.create_json_for_device()
     # ==================================================================
     device_json["DeviceID"] = device_id
     # ==================================================================
@@ -966,19 +671,9 @@ def analyze_network(sqlite_connection, args):
         Setted arguments of the script.
     """
     # ==================================================================
-    json_output = {
-        "Name": "AnalyzeNetwork",
-        "Network": "",
-        "DateAnalyze": "",
-        "NumberDevice": 0,
-        "Routers": [],
-        "Services": [],
-        "ip_address_statistics": [],
-        "Devices": [],
-        "Files": [],
-    }
-    write_json(json_output, args.json)
-    json_output = read_json(args.json)
+    json_output = format_json.create_json_format_for_network()
+    format_json.write_json(json_output, args.json)
+    json_output = format_json.read_json(args.json)
     # ==================================================================
     ip_address_statistics = {}
     cursor = sqlite_connection.cursor()
@@ -1053,7 +748,7 @@ def analyze_network(sqlite_connection, args):
     json_output["Network"] = args.network
     json_output["DateAnalyze"] = str(x)
     json_output["NumberDevice"] = device_id - 1
-    write_json(json_output, args.json)
+    format_json.write_json(json_output, args.json)
     print("Output json_output: ", args.json)
 
 
@@ -1078,17 +773,9 @@ def analyze_single_device(sqlite_connection, args):
     if not device:
         print("ERROR: Entered IP address isn't in database")
         sys.exit()
-    json_output = {
-        "Name": "AnalyzeSingleDevice",
-        "DateAnalyze": "",
-        "Routers": [],
-        "Services": [],
-        "ip_address_statistics": [],
-        "Devices": [],
-        "Files": [],
-    }
-    write_json(json_output, args.json)
-    json_output = read_json(args.json)
+    json_output = format_json.crete_json_format_for_single_device()
+    format_json.write_json(json_output, args.json)
+    json_output = format_json.read_json(args.json)
     ip_address_statistics = {}
     if args.file != "":
         if check_str(args.file, ".txt") == True:
@@ -1127,7 +814,7 @@ def analyze_single_device(sqlite_connection, args):
         sample.close()
     x = datetime.datetime.now()
     json_output["DateAnalyze"] = str(x)
-    write_json(json_output, args.json)
+    format_json.write_json(json_output, args.json)
     print("Output json_output: ", args.json)
 
 
@@ -1142,18 +829,9 @@ def do_analyze_by_arguments(sqlite_connection, args):
         Setted arguments of the script.
     """
     # ==================================================================
-    json_output = {
-        "Name": "PassiveAutodiscovery",
-        "DateAnalyze": "",
-        "NumberDevice": 0,
-        "Routers": [],
-        "Services": [],
-        "ip_address_statistics": [],
-        "Devices": [],
-        "Files": [],
-    }
-    write_json(json_output, args.json)
-    json_output = read_json(args.json)
+    json_output = format_json.crete_json_format_for_full_analyze()
+    format_json.write_json(json_output, args.json)
+    json_output = format_json.read_json(args.json)
     # ==================================================================
     ip_address_statistics = {}
     cursor = sqlite_connection.cursor()
@@ -1224,7 +902,7 @@ def do_analyze_by_arguments(sqlite_connection, args):
     x = datetime.datetime.now()
     json_output["DateAnalyze"] = str(x)
     json_output["NumberDevice"] = device_id - 1
-    write_json(json_output, args.json)
+    format_json.write_json(json_output, args.json)
     print("Output json_output: ", args.json)
 
 
@@ -1430,7 +1108,7 @@ def main():
                 "Need define output method (print to command line or file [-p], [-f])"
             )
             sys.exit()
-        json_output = read_json(args.json)
+        json_output = format_json.read_json(args.json)
         print_analyze.print_json(json_output, args)
         sys.exit()
     sqlite_connection = connect_to_slite3_database(args)
