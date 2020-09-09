@@ -466,7 +466,6 @@ def find_ip_addresses_of_device(ip_address, cursor, device_json):
 def analyze_device(
     device_id,
     ip_address,
-    TIME,
     cursor,
     sqlite_connection,
     json_output,
@@ -483,8 +482,6 @@ def analyze_device(
         Number of device in analyze.
     ip_address : str
         Device IP address.
-    TIME : int
-        Time of last comunication.
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
     sqlite_connection : sqlite3
@@ -507,7 +504,6 @@ def analyze_device(
     # ==================================================================
     find_ip_addresses_of_device(ip_address, cursor, device_json)
     # ==================================================================
-    device_json["LastCom"] = float(TIME)
     device_ip = ipaddress.ip_address(ip_address)
     # ==================================================================
     add_mac_address(device_id, ip_address, cursor, sqlite_connection, device_json)
@@ -595,18 +591,17 @@ def analyze_network(sqlite_connection, args):
         sample = open(file, "w")
     else:
         sample = ""
-    NET = ipaddress.ip_network(args.network)
+    networks = ipaddress.ip_network(args.network)
     cursor.execute("SELECT * FROM LocalDevice")
-    LocalDevices = cursor.fetchall()
-    for LocalDevice in LocalDevices:
-        if LocalDevice[0] == "255.255.255.255" or LocalDevice[0] == "0.0.0.0":
+    local_devices = cursor.fetchall()
+    for local_device in local_devices:
+        if local_device[0] == "255.255.255.255" or local_device[0] == "0.0.0.0":
             continue
-        ip_address = ipaddress.ip_address(LocalDevice[0])
-        if ip_address in NET:
+        ip_address = ipaddress.ip_address(local_device[0])
+        if ip_address in networks:
             analyze_device(
                 device_id,
-                LocalDevice[0],
-                LocalDevice[1],
+                local_device[0],
                 cursor,
                 sqlite_connection,
                 json_output,
@@ -690,7 +685,6 @@ def analyze_single_device(sqlite_connection, args):
     analyze_device(
         "XXX",
         device[0],
-        device[1],
         cursor,
         sqlite_connection,
         json_output,
@@ -754,14 +748,13 @@ def do_analyze_by_arguments(sqlite_connection, args):
     else:
         sample = ""
     cursor.execute("SELECT * FROM LocalDevice")
-    LocalDevices = cursor.fetchall()
-    for LocalDevice in LocalDevices:
-        if LocalDevice[0] == "255.255.255.255" or LocalDevice[0] == "0.0.0.0":
+    local_devices = cursor.fetchall()
+    for local_device in local_devices:
+        if local_device[0] == "255.255.255.255" or local_device[0] == "0.0.0.0":
             continue
         analyze_device(
             device_id,
-            LocalDevice[0],
-            LocalDevice[1],
+            local_device[0],
             cursor,
             sqlite_connection,
             json_output,

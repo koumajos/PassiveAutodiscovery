@@ -443,25 +443,13 @@ def new_device(ip, time, cursor, sglite_connection, arguments):
     """
     cursor.execute(f"SELECT * FROM LocalDevice WHERE LocalDevice.IP='{ip}'")
     row = cursor.fetchone()
-    if row:
-        # if device exists
-        try:
-            # update time
-            cursor.execute(f"UPDATE LocalDevice SET LastCom={time} WHERE IP='{ip}'")
-            sglite_connection.commit()
-        except sqlite3.IntegrityError:
-            print(
-                f"Error with updating value in table LocalDevice with error: {sqlite3.IntegrityError}"
-            )
+    if row:  # if device exists
         return
-    else:
-        # add new record
+    else:  # add new record
         if arguments.localdev:
             print(f"New local device: {ip}")
         try:
-            cursor.execute(
-                f"INSERT INTO LocalDevice (IP, LastCom) VALUES ('{ip}', '{time}')"
-            )
+            cursor.execute(f"INSERT INTO LocalDevice (IP) VALUES ('{ip}')")
             sglite_connection.commit()
         except sqlite3.IntegrityError:
             print(

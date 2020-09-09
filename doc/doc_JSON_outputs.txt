@@ -81,7 +81,6 @@ Details of individual collective parts:
 
     "Devices": [  {  
                         "DeviceID": 0,
-                        "LastCom": 0,
                         "IP": [],
                         "MAC": "",
                         "RouterMAC": "",
@@ -96,9 +95,6 @@ Details of individual collective parts:
 
         - "DeviceID": NUMBER   
             -- ID of device in database
-
-        - "LastCom": "YYYY-MM-DD HH:MM:SS.ssssss" 
-            -- Time of last communication by device in measurements
 
         - "IP": [ IP, ]
             -- Array of IP address that this device using in measurements 
@@ -204,7 +200,6 @@ Examples:
             "Devices": [
                 {
                     "DeviceID": "XXX",
-                    "LastCom": 1582643620.236,
                     "IP": [ "192.168.3.5" ],
                     "MAC": "",
                     "RouterMAC": "",
@@ -280,7 +275,6 @@ Examples:
             "Devices": [
                 {
                     "DeviceID": 1,
-                    "LastCom": 1582643620.236,
                     "IP": [ "192.168.3.5" ],
                     "MAC": "",
                     "RouterMAC": "",
@@ -339,7 +333,6 @@ Examples:
                 },
                 {
                     "DeviceID": 2,
-                    "LastCom": 1582649178.459,
                     "IP": [ "192.168.3.205" ],
                     "MAC": "",
                     "RouterMAC": "",

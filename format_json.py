@@ -69,7 +69,6 @@ def create_json_for_device():
     """
     return {
         "DeviceID": 0,
-        "LastCom": 0,
         "IP": [],
         "MAC": "",
         "RouterMAC": "",

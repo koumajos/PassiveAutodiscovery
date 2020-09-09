@@ -19,8 +19,7 @@
 
 */
 CREATE TABLE LocalDevice (
-	IP text,
-	LastCom text
+	IP text
 );
 
 CREATE TABLE Dependencies (

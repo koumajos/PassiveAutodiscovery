@@ -54,9 +54,6 @@ def print_device_from_json(json_output, args):
         else:
             print(" <", i, ">", end="")
     print("")
-    # =================================================================================
-    print("  Last communication: ", time.ctime(float(json_output["LastCom"])))
-    # =================================================================================
     print("  MAC: ", end="")
     if json_output["MAC"] == "" and json_output["RouterMAC"] == "":
         print("---")
@@ -376,11 +373,6 @@ def print_device_to_file_from_json(json_output, args, sample):
         else:
             print(" <", i, ">", end="", file=sample)
     print("", file=sample)
-    # =================================================================================
-    print(
-        "  Last communication: ", time.ctime(float(json_output["LastCom"])), file=sample
-    )
-    # =================================================================================
     print("  MAC: ", end="", file=sample)
     if json_output["MAC"] == "" and json_output["RouterMAC"] == "":
         print("---", file=sample)
