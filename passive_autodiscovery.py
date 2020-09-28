@@ -43,6 +43,8 @@ from datetime import datetime
 import ipaddress
 import argparse
 from argparse import RawTextHelpFormatter
+import urllib
+import urllib.request
 
 # Third Part Imports
 import pytrap
@@ -222,9 +224,9 @@ def arguments():
     )
 
     parser.add_argument(
-        "-RAM",
-        "--RAM",
-        help="Safe database in RAM memory and safe to file after modul end",
+        "-o",
+        "--old_db",
+        help="Connect to old database created in another measurements and continue in pushing data to this database. Work with exists database will slow modul becouse database isn't saved in RAM memory.",
         action="store_true",
     )
 
@@ -317,6 +319,98 @@ def load_pytrap():
     return rec, trap
 
 
+def download_data(name):
+    """Download initial data for sqlite3 database and open it
+    
+    Parameters
+    -----------
+    name : str 
+        The name of table for that are downloaded data.
+
+    Returns
+    --------
+    reader : csv
+        The opened data taht have been downloaded.
+    """
+    URL_PORTS = "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv"
+    URL_MAC = "https://macaddress.io/database/macaddress.io-db.csv"
+    try:  # try download the file from url
+        if name == "Ports":
+            print("Downloading Transport Layer Ports data....", end="")
+            urllib.request.urlretrieve(URL_PORTS, name + "_url.csv")
+        else:
+            print("Downloading Vendors of MAC address data....", end="")
+            urllib.request.urlretrieve(URL_MAC, name + "_url.csv")
+        print("done")
+        reader = csv.reader(open(name + "_url.csv", "r"), delimiter=",")
+    except:  # except use the archive local file (can be deprecated)
+        print("Download failed, open local archive file...")
+        if os.path.exists(name + ".csv"):
+            reader = csv.reader(open(name + ".csv", "r"), delimiter=",")
+        else:
+            print("Archive file ", name, " doesn't found.")
+            sys.exit()
+    return reader
+
+
+def inser_data(
+    sqlite_connection, cursor, read_ports, read_mac, read_services, read_filter
+):
+    """Insert initial data to tables
+    
+    Parameters
+    -----------
+    sqlite_connection : sqlite3 
+        The connection to the sqlite3 database.
+    cursor : sqlite3
+        The cursor at the sqlite3 database for execute SQL queries.
+    read_ports : csv
+        The opened file that is fill with initial Ports table data
+    read_mac : csv
+        The opened file that is fill with initial VendorsMAC table data
+    read_services : csv
+        The opened file that is fill with initial Services table data
+    read_filter : csv
+        The opened file that is fill with initial Filter table data
+    """
+    try:
+        print("Inserting data to table Ports....", end="")
+        for row in read_ports:
+            to_db = [row[0], row[1], row[2], row[3]]
+            cursor.execute(
+                "INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);",
+                to_db,
+            )
+        print("done")
+        print("Inserting data to table VendorsMAC....", end="")
+        for row in read_mac:
+            to_db = [row[0], row[1], row[2], row[4], row[5]]
+            cursor.execute(
+                "INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);",
+                to_db,
+            )
+        print("done")
+        print("Inserting Services data to table....", end="")
+        for row in read_services:
+            to_db = [row[0], row[1], row[2], row[3]]
+            cursor.execute(
+                "INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);",
+                to_db,
+            )
+        print("done")
+        print("Inserting Filter data to table....", end="")
+        for row in read_filter:
+            to_db = [row[0], row[1], row[2], row[3]]
+            cursor.execute(
+                "INSERT INTO Filter (ID_Filter, PortNumber, Protocol, MinPackets) VALUES (?, ?, ?, ?);",
+                to_db,
+            )
+        print("done")
+        sqlite_connection.commit()
+    except sqlite3.Error as error:
+        print("Error while inserting data to sqlite3 database", error)
+
+
 def ram_database():
     """Create sqlite3 database in RAM memory, create schema of it and fill the database with initial data for tables Ports, VendorsMAC and Services.
         
@@ -332,6 +426,7 @@ def ram_database():
         cursor = sqlite_connection.cursor()
     except sqlite3.Error as error:
         print(f"Can't create database in RAM memory: {error}")
+        sys.exit()
     try:
         qry = open("Database_sqlite_create.sql", "r").read()
         sqlite3.complete_statement(qry)
@@ -339,48 +434,13 @@ def ram_database():
     except sqlite3.Error as error:
         print(f"Can't create schema database in RAM memory: {error}")
 
-    try:  # fill database with intial data
-        try:
-            reader = csv.reader(open("Ports_url.csv", "r"), delimiter=",")
-        except:
-            reader = csv.reader(open("Ports.csv", "r"), delimiter=",")
-        for row in reader:
-            to_db = [row[0], row[1], row[2], row[3]]
-            cursor.execute(
-                "INSERT INTO Ports (ServiceName, PortNumber, TransportProtocol, Description) VALUES (?, ?, ?, ?);",
-                to_db,
-            )
-
-        try:
-            reader = csv.reader(open("VendorsMAC_url.csv", "r"), delimiter=",")
-        except:
-            reader = csv.reader(open("VendorsMAC.csv", "r"), delimiter=",")
-        for row in reader:
-            to_db = [row[0], row[1], row[2], row[4], row[5]]
-            cursor.execute(
-                "INSERT INTO VendorsMAC (VendorMAC, IsPrivate, CompanyName, CountryCode, AssignmentBlockSize) VALUES (?, ?, ?, ?, ?);",
-                to_db,
-            )
-
-        reader = csv.reader(open("Services.csv", "r"), delimiter=",")
-        for row in reader:
-            to_db = [row[0], row[1], row[2], row[3]]
-            cursor.execute(
-                "INSERT INTO Services (PortNumber, DeviceType, Shortcut, Description) VALUES (?, ?, ?, ?);",
-                to_db,
-            )
-        sqlite_connection.commit()
-
-        reader = csv.reader(open("Filter.csv", "r"), delimiter=",")
-        for row in reader:
-            to_db = [row[0], row[1], row[2], row[3]]
-            cursor.execute(
-                "INSERT INTO Filter (ID_Filter, PortNumber, Protocol, MinPackets) VALUES (?, ?, ?, ?);",
-                to_db,
-            )
-        sqlite_connection.commit()
-    except sqlite3.Error as error:
-        print(f"Can't fill the database in RAM memory with initial data: {error}")
+    read_ports = download_data("Ports")
+    read_mac = download_data("VendorsMAC")
+    read_services = csv.reader(open("Services.csv", "r"), delimiter=",")
+    read_filter = csv.reader(open("Filter.csv", "r"), delimiter=",")
+    inser_data(
+        sqlite_connection, cursor, read_ports, read_mac, read_services, read_filter,
+    )
     return sqlite_connection, cursor
 
 
@@ -486,10 +546,10 @@ def main():
     """
     arg = arguments()
     rec, trap = load_pytrap()
-    if arg.RAM:
-        sqlite_connection, cursor = ram_database()
-    else:
+    if arg.old_db:
         sqlite_connection, cursor = connect_to_database(arg)
+    else:
+        sqlite_connection, cursor = ram_database()
     if arg.P:
         start_time = time.time()
         old_time = print_act_inf(start_time, start_time, arg, 0, cursor)
@@ -553,7 +613,7 @@ def main():
 
     # Free allocated TRAP IFCs
     trap.finalize()
-    if arg.RAM:  # if database was safed in RAM memory, safed it to file
+    if arg.old_DB is False:  # if database was safed in RAM memory, safed it to file
         safe_ram_database_to_file(sqlite_connection, arg)
     # Close database connection
     if sqlite_connection:
