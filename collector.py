@@ -76,7 +76,7 @@ def insert_time(table, cursor, sglite_connection, rows, time, num_packets):
     Parameters
     -----------
     table : str
-        Table where record about dependency may be safed. ("LocalDependencies" - for dependencies between "local" devices, "Global" - for dependencies between "local" device and global device)    
+        Table where record about dependency may be safed. ("LocalDependencies" - for dependencies between "local" devices, "GlobalDependencies" - for dependencies between "local" device and global device)    
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
     sglite_connection : sqlite3
@@ -512,7 +512,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
             )
             if arguments.GlobalDependencies == True:
                 add_or_update_dependency(
-                    "Global",
+                    "GlobalDependencies",
                     rec.SRC_IP,
                     rec.DST_IP,
                     rec.SRC_PORT,
@@ -540,7 +540,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
             )
             if arguments.GlobalDependencies == True:
                 add_or_update_dependency(
-                    "Global",
+                    "GlobalDependencies",
                     rec.SRC_IP,
                     rec.DST_IP,
                     rec.SRC_PORT,

@@ -50,7 +50,7 @@ CREATE TABLE Ports (
 	Description text
 );
 
-CREATE TABLE Global (
+CREATE TABLE GlobalDependencies (
 	ID_Global integer PRIMARY KEY AUTOINCREMENT,
 	IP_origin text,
 	IP_target text,

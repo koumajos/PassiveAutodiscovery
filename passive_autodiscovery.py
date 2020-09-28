@@ -559,7 +559,7 @@ def main():
 
     # Free allocated TRAP IFCs
     trap.finalize()
-    if arg.old_DB is False:  # if database was safed in RAM memory, safed it to file
+    if arg.old_db is False:  # if database was safed in RAM memory, safed it to file
         safe_ram_database_to_file(sqlite_connection, arg)
     # Close database connection
     if sqlite_connection:
