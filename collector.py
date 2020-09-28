@@ -33,7 +33,7 @@ import ipaddress
 import sqlite3
 
 
-def service_label(ip, port, table, cursor, sglite_connection, arguments):
+def service_label(ip, port, table, cursor, sglite_connection):
     """Check if port in IP flow is used by some role of device (services), if yes and if it is NOT in database, put record to sqlite3 database.
     
     Parameters
@@ -59,10 +59,6 @@ def service_label(ip, port, table, cursor, sglite_connection, arguments):
         if rows:  # if port and IP is in database, do nothing (record exists)
             return
         else:  # else push new record to db
-            if arguments.localserv and table == "LocalServices":
-                print(f"New local services: {ip} -> {row[1]}")
-            if arguments.globalserv and table == "GlobalServices":
-                print(f"New global services: {ip} -> {row[1]}")
             try:
                 cursor.execute(
                     f"INSERT INTO {table} (PortNumber, IP) VALUES ('{port}', '{ip}')"
@@ -116,7 +112,6 @@ def add_or_update_dependency(
     num_packets,
     cursor,
     sglite_connection,
-    arguments,
 ):
     """If dependency (local or global) doesn't exist, function will add record about it to database. Else function will find the record and update packet number on this dependency.
     
@@ -162,10 +157,6 @@ def add_or_update_dependency(
         insert_time(table, cursor, sglite_connection, rows, time, num_packets)
         return
     # =================================================================================================================================================================
-    if arguments.localdependencies and table == "LocalDependencies":
-        print(f"new local dependencies: {src_ip} -> {dst_ip}")
-    if arguments.globaldependencies and table == "Global":
-        print(f"new global dependencies: {src_ip} -> {dst_ip}")
     try:
         cursor.execute(
             f"INSERT INTO {table} (IP_origin, IP_target, Port_origin, Port_target) "
@@ -253,7 +244,7 @@ def add_router(ip, mac, cursor, sglite_connection):
             print(f"Error with inserting into table Routers: {sqlite3.IntegrityError}")
 
 
-def add_mac(ip, mac, time, cursor, sglite_connection, arguments):
+def add_mac(ip, mac, time, cursor, sglite_connection):
     """
     
     Parameters
@@ -271,8 +262,6 @@ def add_mac(ip, mac, time, cursor, sglite_connection, arguments):
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
     """
-    if arguments.macdev:
-        print(f"New MAC address: {ip} -> {mac}")
     try:
         empty_string = ""
         cursor.execute(
@@ -284,7 +273,7 @@ def add_mac(ip, mac, time, cursor, sglite_connection, arguments):
         print(f"Error with inserting into table MAC: {sqlite3.IntegrityError}")
 
 
-def mac(ip, mac, time, cursor, sglite_connection, arguments):
+def mac(ip, mac, time, cursor, sglite_connection):
     """If device is is in local segemnt, the module can rosolve his MAC address and add record of it to table MAC. If it's router and behind it is local subnet (2 or more local device or one global device on this mac address (the same IP version)) add all record of this mac address from table MAC to table Router and add new record from this IP flow.
     
     Parameters
@@ -368,13 +357,13 @@ def mac(ip, mac, time, cursor, sglite_connection, arguments):
                 else:
                     tmp = 1
         if tmp == 1:
-            add_mac(ip, mac, time, cursor, sglite_connection, arguments)
+            add_mac(ip, mac, time, cursor, sglite_connection)
             return
     else:
-        add_mac(ip, mac, time, cursor, sglite_connection, arguments)
+        add_mac(ip, mac, time, cursor, sglite_connection)
 
 
-def new_device(ip, time, cursor, sglite_connection, arguments):
+def new_device(ip, time, cursor, sglite_connection):
     """This funcion check if "local" device is in sqlite3 database table LocalDevice. If isn't, add it to table. If is, update last comunication in record of it.
     
     Parameters
@@ -395,8 +384,6 @@ def new_device(ip, time, cursor, sglite_connection, arguments):
     if row:  # if device exists
         return
     else:  # add new record
-        if arguments.localdev:
-            print(f"New local device: {ip}")
         try:
             cursor.execute(f"INSERT INTO LocalDevice (IP) VALUES ('{ip}')")
             sglite_connection.commit()
@@ -404,30 +391,6 @@ def new_device(ip, time, cursor, sglite_connection, arguments):
             print(
                 f"Error with inserting into table LocalDevice with error: {sqlite3.IntegrityError}"
             )
-
-
-def delete_unnecessary_global_dependencies(sglite_connection, num_packets):
-    """Delete global dependencies from table Global that have number of packer smaller then number num_packets
-    
-    Parameters
-    -----------
-    sglite_connection : sqlite3
-        Connection to sqlite3 database.
-    num_packets : int
-        Number of packet that is line for delete.
-    """
-    cursor = sglite_connection.cursor()
-    try:
-        cursor.execute(
-            f"DELETE FROM Global "
-            f"WHERE NumPackets < {num_packets} "
-            f"AND (Port_origin != 53 OR Port_target != 53 OR Port_origin != 68 OR Port_target != 68 OR Port_origin != 67 OR Port_target != 67)"
-        )
-        sglite_connection.commit()
-    except sqlite3.IntegrityError:
-        print(
-            f"Error in deleting rows from Global with error: {sqlite3.IntegrityError}"
-        )
 
 
 def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
@@ -503,28 +466,18 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
     if (
         src_ipaddress.is_private and arguments.OnlySetNetworks == False
     ) or src:  # Source Device is in local network
-        new_device(rec.SRC_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
+        new_device(rec.SRC_IP, rec.TIME_LAST, cursor, sglite_connection)
         if mac_template == True:
             mac(
-                rec.SRC_IP,
-                rec.SRC_MAC,
-                rec.TIME_LAST,
-                cursor,
-                sglite_connection,
-                arguments,
+                rec.SRC_IP, rec.SRC_MAC, rec.TIME_LAST, cursor, sglite_connection,
             )
         if (
             dst_ipaddress.is_private and arguments.OnlySetNetworks == False
         ) or dst:  # Destination Device is in local network
-            new_device(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
+            new_device(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection)
             if mac_template == True:
                 mac(
-                    rec.DST_IP,
-                    rec.DST_MAC,
-                    rec.TIME_LAST,
-                    cursor,
-                    sglite_connection,
-                    arguments,
+                    rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, sglite_connection,
                 )
             # =====================================================================================
             add_or_update_dependency(
@@ -537,23 +490,12 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
                 num_packets,
                 cursor,
                 sglite_connection,
-                arguments,
             )
             service_label(
-                rec.SRC_IP,
-                rec.SRC_PORT,
-                "LocalServices",
-                cursor,
-                sglite_connection,
-                arguments,
+                rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, sglite_connection,
             )
             service_label(
-                rec.DST_IP,
-                rec.DST_PORT,
-                "LocalServices",
-                cursor,
-                sglite_connection,
-                arguments,
+                rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, sglite_connection,
             )
             dhcp(
                 rec.SRC_IP,
@@ -566,12 +508,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
             )
         else:  # Destination Device is in global network
             service_label(
-                rec.SRC_IP,
-                rec.SRC_PORT,
-                "LocalServices",
-                cursor,
-                sglite_connection,
-                arguments,
+                rec.SRC_IP, rec.SRC_PORT, "LocalServices", cursor, sglite_connection,
             )
             if arguments.GlobalDependencies == True:
                 add_or_update_dependency(
@@ -584,7 +521,6 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
                     num_packets,
                     cursor,
                     sglite_connection,
-                    arguments,
                 )
                 service_label(
                     rec.DST_IP,
@@ -592,21 +528,15 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
                     "GlobalServices",
                     cursor,
                     sglite_connection,
-                    arguments,
                 )
             if mac_template == True:
                 add_router(rec.DST_IP, rec.DST_MAC, cursor, sglite_connection)
     else:  # Source Device is in global network
         if (dst_ipaddress.is_private and arguments.OnlySetNetworks == False) or dst:
-            new_device(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection, arguments)
+            new_device(rec.DST_IP, rec.TIME_LAST, cursor, sglite_connection)
             # =====================================================================================
             service_label(
-                rec.DST_IP,
-                rec.DST_PORT,
-                "LocalServices",
-                cursor,
-                sglite_connection,
-                arguments,
+                rec.DST_IP, rec.DST_PORT, "LocalServices", cursor, sglite_connection,
             )
             if arguments.GlobalDependencies == True:
                 add_or_update_dependency(
@@ -619,7 +549,6 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
                     num_packets,
                     cursor,
                     sglite_connection,
-                    arguments,
                 )
                 service_label(
                     rec.SRC_IP,
@@ -627,16 +556,10 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
                     "GlobalServices",
                     cursor,
                     sglite_connection,
-                    arguments,
                 )
             if mac_template == True:
                 mac(
-                    rec.DST_IP,
-                    rec.DST_MAC,
-                    rec.TIME_LAST,
-                    cursor,
-                    sglite_connection,
-                    arguments,
+                    rec.DST_IP, rec.DST_MAC, rec.TIME_LAST, cursor, sglite_connection,
                 )
                 add_router(rec.SRC_IP, rec.SRC_MAC, cursor, sglite_connection)
         else:

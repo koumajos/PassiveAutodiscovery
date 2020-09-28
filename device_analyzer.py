@@ -69,7 +69,7 @@ from argparse import RawTextHelpFormatter
 # Local Application Imports
 import create_graphs
 import print_analyze
-from create_script import check_str
+from passive_autodiscovery import check_str
 import format_json
 import statistics
 

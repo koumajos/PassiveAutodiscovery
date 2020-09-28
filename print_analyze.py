@@ -23,7 +23,7 @@ import socket
 
 # Local Application Imports
 from statistics import plot_statistics
-from create_script import check_str
+from passive_autodiscovery import check_str
 
 
 def print_device_from_json(json_output, args):

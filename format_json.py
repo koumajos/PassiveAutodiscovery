@@ -23,7 +23,7 @@ import socket
 import ipaddress
 
 # Local Application Imports
-from create_script import check_str
+from passive_autodiscovery import check_str
 
 
 def read_json(filename):

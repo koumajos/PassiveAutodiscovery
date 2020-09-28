@@ -52,7 +52,23 @@ import colorama
 
 # Local Application Imports
 import collector
-from create_script import check_str
+
+
+def check_str(string, suffix):
+    """Function check if string have suffix in end of string. Like suffix .txt in text.txt.
+    Parameters
+    --------
+    string : str 
+        String of file name.
+    suffix : str
+        String of file suffix.
+    Returns
+    --------
+    Boolean : boolean
+        True if string have suffix DOT.
+        False if string havn't suffix DOT.
+    """
+    return string.endswith(suffix)
 
 
 def move_cursor(x, y):
@@ -215,15 +231,6 @@ def arguments():
     )
 
     parser.add_argument(
-        "-D",
-        "--DeleteGlobal",
-        help="Delete periodicly dependencies that have setted amount of packets from global dependencies",
-        type=int,
-        metavar="NUMBER",
-        default=0,
-    )
-
-    parser.add_argument(
         "-o",
         "--old_db",
         help="Connect to old database created in another measurements and continue in pushing data to this database. Work with exists database will slow modul becouse database isn't saved in RAM memory.",
@@ -232,60 +239,8 @@ def arguments():
 
     parser.add_argument("-P", help="Printing information in menu", action="store_true")
 
-    parser.add_argument(
-        "-l",
-        "--localdev",
-        help="Print if modul find new local device(print will slow program)",
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "-s",
-        "--localserv",
-        help="Print if modul find new local services(print will slow program)",
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "-L",
-        "--localdependencies",
-        help='Print if modul find new dependencies between two "local" device(print will slow program)',
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "-m",
-        "--macdev",
-        help='Print if found MAC adress for "local" device(print will slow program)',
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "-S",
-        "--globalserv",
-        help="Print if modul find new global service(print will slow program)",
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "-g",
-        "--globaldependencies",
-        help='Print if modul find new dependency between "local" device and global device(print will slow program)',
-        action="store_true",
-    )
-
     arg = parser.parse_args()
 
-    if arg.P and (
-        arg.localdev
-        or arg.localserv
-        or arg.globalserv
-        or arg.localdependencies
-        or arg.globaldependencies
-        or arg.macdev
-    ):
-        print("Parameters -P and (-l or -s or -L -g -S -m) can't be combinated")
-        sys.exit()
     if arg.networks != "":
         for net in arg.networks:
             try:
@@ -596,15 +551,6 @@ def main():
         collector.collect_flow_data(rec, sqlite_connection, cursor, arg, biflow)
 
         db_flows = db_flows + 1
-        if arg.DeleteGlobal != 0 and db_flows % 10000 == 0:
-            collector.delete_unnecessary_global_dependencies(
-                sqlite_connection, arg.DeleteGlobal
-            )
-
-    if arg.DeleteGlobal != 0:
-        collector.delete_unnecessary_global_dependencies(
-            sqlite_connection, arg.DeleteGlobal
-        )
 
     if arg.P:
         old_time = print_act_inf(
