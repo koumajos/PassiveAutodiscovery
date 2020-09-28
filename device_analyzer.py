@@ -167,7 +167,7 @@ def find_labels(
                 )
                 Global = cursor.fetchone()
                 cursor.execute(
-                    "SELECT * FROM Dependencies WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}') ".format(
+                    "SELECT * FROM LocalDependencies WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}') ".format(
                         port=service[0], ip=ip_address
                     )
                 )
@@ -330,7 +330,7 @@ def local_dependencies(
         JSON file for device with device_id ID loaded in python.        
     """
     cursor.execute(
-        "SELECT * FROM Dependencies WHERE IP_origin='{ip}' OR IP_target='{ip}' ORDER BY NumPackets DESC".format(
+        "SELECT * FROM LocalDependencies WHERE IP_origin='{ip}' OR IP_target='{ip}' ORDER BY NumPackets DESC".format(
             ip=ip_address
         )
     )
@@ -339,7 +339,7 @@ def local_dependencies(
     for dependency in dependencies:
         if args.timeL > tmp:
             create_graphs.graph_activity_of_dependency(
-                dependency, "Dependencies", cursor, json_output
+                dependency, "LocalDependencies", cursor, json_output
             )
             tmp = tmp + 1
 

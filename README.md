@@ -94,7 +94,7 @@ Ideal Operating system is CentOS 7 or 8
    * LocalServices
         - Table of finded services on finded "local" devices.
 
-   * Dependencies
+   * LocalDependencies
         - Table of dependencies between finded "local" devices.
     
    * Global

@@ -131,7 +131,7 @@ def print_act_inf(old_time, start_time, arg, num_flows, cursor):
         f"Find Devices: {str(devices[0])}      Find Services: {str(services[0])}"
     )  # print number of findend "local" devices and their services
 
-    cursor.execute("SELECT COUNT(*) FROM Dependencies")
+    cursor.execute("SELECT COUNT(*) FROM LocalDependencies")
     dependencies = cursor.fetchone()
     cursor.execute("SELECT COUNT(*) FROM Global")
     count_global = cursor.fetchone()

@@ -22,7 +22,7 @@ CREATE TABLE LocalDevice (
 	IP text
 );
 
-CREATE TABLE Dependencies (
+CREATE TABLE LocalDependencies (
 	ID_Dependencies integer PRIMARY KEY AUTOINCREMENT,
 	IP_origin text,
 	IP_target text,

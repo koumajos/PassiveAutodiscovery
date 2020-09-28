@@ -80,7 +80,7 @@ def insert_time(table, cursor, sglite_connection, rows, time, num_packets):
     Parameters
     -----------
     table : str
-        Table where record about dependency may be safed. ("Dependencies" - for dependencies between "local" devices, "Global" - for dependencies between "local" device and global device)    
+        Table where record about dependency may be safed. ("LocalDependencies" - for dependencies between "local" devices, "Global" - for dependencies between "local" device and global device)    
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
     sglite_connection : sqlite3
@@ -91,7 +91,7 @@ def insert_time(table, cursor, sglite_connection, rows, time, num_packets):
         Number of packet carryed in dependency(single IP flow).
     """
     try:
-        if table == "Dependencies":
+        if table == "LocalDependencies":
             cursor.execute(
                 f"INSERT INTO DependenciesTime (DependenciesID, Time, NumPackets) "
                 f"VALUES ('{rows[0]}', '{time}', '{num_packets}')"
@@ -123,7 +123,7 @@ def new_dependency(
     Parameters
     -----------
     table : str
-        Table where record about dependency may be safed. ("Dependencies" - for dependencies between "local" devices, "Global" - for dependencies between "local" device and global device)    
+        Table where record about dependency may be safed. ("LocalDependencies" - for dependencies between "local" devices, "GlobalDependencies" - for dependencies between "local" device and global device)    
     src_ip : str
         Source IP address of dependency.
     dst_ip : str
@@ -211,7 +211,7 @@ def new_dependency(
         return
     # =================================================================================================================================================================
     else:  # else found a new local or global dependencies
-        if arguments.localdependencies and table == "Dependencies":
+        if arguments.localdependencies and table == "LocalDependencies":
             print(f"new local dependencies: {src_ip} -> {dst_ip}")
         if arguments.globaldependencies and table == "Global":
             print(f"new global dependencies: {src_ip} -> {dst_ip}")
@@ -573,7 +573,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                 )
             # =====================================================================================
             new_dependency(
-                "Dependencies",
+                "LocalDependencies",
                 rec.SRC_IP,
                 rec.DST_IP,
                 rec.SRC_PORT,

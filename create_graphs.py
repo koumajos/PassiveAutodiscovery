@@ -61,7 +61,7 @@ def graph_activity_of_device(device, cursor, device_json):
     times = []
     num_packets = []
     cursor.execute(
-        f"SELECT * FROM Dependencies WHERE (IP_origin='{device}' OR IP_target='{device}')"
+        f"SELECT * FROM LocalDependencies WHERE (IP_origin='{device}' OR IP_target='{device}')"
     )
     devrows = cursor.fetchall()
     for devrow in devrows:
@@ -124,13 +124,13 @@ def graph_activity_of_dependency(dependency, table, cursor, device_json):
     dependency : sqlite3.fetchone()
         Record of dependency that may be ploted.
     table : str
-        Name of table where is record of dependency safed (Dependencies or Global).
+        Name of table where is record of dependency safed (LocalDependencies or Global).
     cursor : sqlite3
         Cursor to sqlite3 database for execute SQL queries.
     device_json : JSON  
         JSON file loaded in python.    
     """
-    if table == "Dependencies":
+    if table == "LocalDependencies":
         cursor.execute(
             f"SELECT * FROM DependenciesTime WHERE DependenciesID='{dependency[0]}'"
         )
@@ -196,7 +196,7 @@ def graph_of_local_dependencies(cursor, sqlite_connection, json_output):
     json_output : JSON
         JSON file loaded in python.    
     """
-    cursor.execute("SELECT * FROM Dependencies")
+    cursor.execute("SELECT * FROM LocalDependencies")
     rows = cursor.fetchall()
     if not rows:
         return
