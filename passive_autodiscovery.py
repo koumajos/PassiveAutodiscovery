@@ -510,6 +510,8 @@ def main():
     else:
         print("Script is running...")
 
+    biflow = None
+
     db_flows = 0  # counter of IP flows that is subdued to database
     filtered_flows = 0  # counter of IP flows that isn't subdueded to database
     # db_flows + filtered_flows == all IP flows captured
@@ -521,9 +523,19 @@ def main():
             fmttype, inputspec = trap.getDataFmt(0)
             rec = pytrap.UnirecTemplate(inputspec)
             data = e.data
+            biflow = None
         if len(data) <= 1:
             break
         rec.setData(data)  # set the IP flow to created tempalte
+
+        if biflow is None:
+            try:
+                packets = rec.PACKETS_REV
+                biflow = True
+                print("Use biflow")
+            except AttributeError as e:
+                biflow = False
+                print("Use flow")
 
         if filter_incomplete_traffic(cursor, arg, rec):
             filtered_flows = filtered_flows + 1
@@ -535,7 +547,7 @@ def main():
                     old_time, start_time, arg, db_flows + filtered_flows, cursor
                 )
 
-        collector.collect_flow_data(rec, sqlite_connection, cursor, arg)
+        collector.collect_flow_data(rec, sqlite_connection, cursor, arg, biflow)
 
         db_flows = db_flows + 1
         if arg.DeleteGlobal != 0 and db_flows % 10000 == 0:

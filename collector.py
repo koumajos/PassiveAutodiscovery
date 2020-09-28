@@ -481,7 +481,7 @@ def delete_unnecessary_global_dependencies(sglite_connection, num_packets):
         )
 
 
-def collect_flow_data(rec, sglite_connection, cursor, arguments):
+def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
     """Main function of this script. This function receive IP flow, database proms and arguments. Then work with received IP flow to get information from it and record of it safe (update) in sqlite3 database that received.
     
     Parameters
@@ -544,6 +544,12 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
         else:
             continue
     # ===============================================================================
+    # prepare packet numbers
+    if biflow is True:
+        num_packets = rec.PACKETS + rec.PACKETS_REV
+    else:
+        num_packets = rec.PACKETS
+    # ===============================================================================
     # Main funciton which call function for safing data to sqlite3 database
     if (
         src_ipaddress.is_private and arguments.OnlySetNetworks == False
@@ -579,7 +585,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                 rec.SRC_PORT,
                 rec.DST_PORT,
                 rec.TIME_LAST,
-                rec.PACKETS,
+                num_packets,
                 cursor,
                 sglite_connection,
                 arguments,
@@ -626,7 +632,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                     rec.SRC_PORT,
                     rec.DST_PORT,
                     rec.TIME_LAST,
-                    rec.PACKETS,
+                    num_packets,
                     cursor,
                     sglite_connection,
                     arguments,
@@ -661,7 +667,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                     rec.SRC_PORT,
                     rec.DST_PORT,
                     rec.TIME_LAST,
-                    rec.PACKETS,
+                    num_packets,
                     cursor,
                     sglite_connection,
                     arguments,
@@ -686,9 +692,3 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments):
                 add_router(rec.SRC_IP, rec.SRC_MAC, cursor, sglite_connection)
         else:
             return
-
-
-# =================================================================================================================================
-# =================================================================================================================================
-# =================================================================================================================================
-
