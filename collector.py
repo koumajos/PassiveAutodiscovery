@@ -106,7 +106,7 @@ def insert_time(table, cursor, sglite_connection, rows, time, num_packets):
         print(f"Error with inserting with error {sqlite3.IntegrityError}")
 
 
-def new_dependency(
+def add_or_update_dependency(
     table,
     src_ip,
     dst_ip,
@@ -143,97 +143,46 @@ def new_dependency(
     arguments : argparse   
         Setted argument of the PassiveAutodiscovery module.
     """
-    if arguments.UsualyPorts:
-        # if analyze only "usualy" protocols (protocols in table Services), than check if PORT is one of these protocols
-        try:
-            cursor.execute(
-                f"SELECT * FROM Services WHERE PortNumber={src_port} OR PortNumber={dst_port}"
-            )
-            row = cursor.fetchone()
-            if row is None:
-                return
-        except sqlite3.IntegrityError:
-            print(f"Error while SELECT {sqlite3.IntegrityError}")
-            return
-    # =================================================================================================================================================================
-    try:
+    try:  # select actual dependency from database
         cursor.execute(
             f"SELECT * FROM {table} "
-            f"WHERE IP_origin='{src_ip}' "
+            f"WHERE ( IP_origin='{src_ip}' "
             f"AND IP_target='{dst_ip}' "
-            f"AND (Port_target={dst_port} OR Port_origin={dst_port} OR Port_target={src_port} OR Port_origin={src_port})"
+            f"AND (Port_target={dst_port} OR Port_origin={dst_port} OR Port_target={src_port} OR Port_origin={src_port}) )"
+            f"OR ( IP_origin='{dst_ip}' "
+            f"AND IP_target='{src_ip}' "
+            f"AND (Port_target={dst_port} OR Port_origin={dst_port} OR Port_target={src_port} OR Port_origin={src_port}) )"
         )
         rows = cursor.fetchone()
     except sqlite3.IntegrityError:
         print(f"Error in SELECT {sqlite3.IntegrityError}")
         return
     # =================================================================================================================================================================
-    if rows:  # if record rows1 is in database, then update PACKETS
-        try:
-            cursor.execute(
-                f"UPDATE {table} SET NumPackets={(rows[5] + num_packets)} "
-                f"WHERE IP_origin='{src_ip}' "
-                f"AND IP_target='{dst_ip}' "
-                f"AND (Port_target='{dst_port}' OR Port_origin='{dst_port}' OR Port_target='{src_port}' OR Port_origin='{src_port}')"
-            )
-            sglite_connection.commit()
-        except sqlite3.IntegrityError:
-            print(
-                f"Error with updating record in table {table} with error {sqlite3.IntegrityError}"
-            )
-        if arguments.time:
-            insert_time(table, cursor, sglite_connection, rows, time, num_packets)
+    if rows:  # if record of actual dependency is in database
+        insert_time(table, cursor, sglite_connection, rows, time, num_packets)
         return
     # =================================================================================================================================================================
+    if arguments.localdependencies and table == "LocalDependencies":
+        print(f"new local dependencies: {src_ip} -> {dst_ip}")
+    if arguments.globaldependencies and table == "Global":
+        print(f"new global dependencies: {src_ip} -> {dst_ip}")
+    try:
+        cursor.execute(
+            f"INSERT INTO {table} (IP_origin, IP_target, Port_origin, Port_target) "
+            f"VALUES ('{src_ip}', '{dst_ip}', '{src_port}', '{dst_port}')"
+        )
+        sglite_connection.commit()
+    except sqlite3.IntegrityError:
+        print(f"Error with inserting with error {sqlite3.IntegrityError}")
     cursor.execute(
         f"SELECT * FROM {table} "
-        f"WHERE IP_origin='{dst_ip}' "
-        f"AND IP_target='{src_ip}' "
-        f"AND (Port_target={dst_port} OR Port_origin={dst_port} OR Port_target={src_port} OR Port_origin={src_port})"
+        f"WHERE IP_origin='{src_ip}' "
+        f"AND IP_target='{dst_ip}' "
+        f"AND Port_origin='{src_port}' "
+        f"AND Port_target='{dst_port}'"
     )
     rows = cursor.fetchone()
-    # =================================================================================================================================================================
-    if rows:  # if record rows2 is in database, then update PACKETS
-        try:
-            cursor.execute(
-                f"UPDATE {table} SET NumPackets={(rows[5] + num_packets)} "
-                f"WHERE IP_origin='{dst_ip}' "
-                f"AND IP_target='{src_ip}' "
-                f"AND (Port_target='{dst_port}' OR Port_origin='{dst_port}' OR Port_target='{src_port}' OR Port_origin='{src_port}')"
-            )
-            sglite_connection.commit()
-        except sqlite3.IntegrityError:
-            print(
-                f"Error with updating record in table {table} with error {sqlite3.IntegrityError}"
-            )
-        if arguments.time:
-            insert_time(table, cursor, sglite_connection, rows, time, num_packets)
-        return
-    # =================================================================================================================================================================
-    else:  # else found a new local or global dependencies
-        if arguments.localdependencies and table == "LocalDependencies":
-            print(f"new local dependencies: {src_ip} -> {dst_ip}")
-        if arguments.globaldependencies and table == "Global":
-            print(f"new global dependencies: {src_ip} -> {dst_ip}")
-        try:
-            empty_str = ""
-            cursor.execute(
-                f"INSERT INTO {table} (IP_origin, IP_target, Port_origin, Port_target, NumPackets, NumBytes) "
-                f"VALUES ('{src_ip}', '{dst_ip}', '{src_port}', '{dst_port}', '{num_packets}', '{empty_str}')"
-            )
-            sglite_connection.commit()
-        except sqlite3.IntegrityError:
-            print(f"Error with inserting with error {sqlite3.IntegrityError}")
-        if arguments.time:
-            cursor.execute(
-                f"SELECT * FROM {table} "
-                f"WHERE IP_origin='{src_ip}' "
-                f"AND IP_target='{dst_ip}' "
-                f"AND Port_origin='{src_port}' "
-                f"AND Port_target='{dst_port}'"
-            )
-            rows = cursor.fetchone()
-            insert_time(table, cursor, sglite_connection, rows, time, num_packets)
+    insert_time(table, cursor, sglite_connection, rows, time, num_packets)
 
 
 def dhcp(src_ip, dst_ip, src_port, dst_port, time, cursor, sglite_connection):
@@ -578,7 +527,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
                     arguments,
                 )
             # =====================================================================================
-            new_dependency(
+            add_or_update_dependency(
                 "LocalDependencies",
                 rec.SRC_IP,
                 rec.DST_IP,
@@ -625,7 +574,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
                 arguments,
             )
             if arguments.GlobalDependencies == True:
-                new_dependency(
+                add_or_update_dependency(
                     "Global",
                     rec.SRC_IP,
                     rec.DST_IP,
@@ -660,7 +609,7 @@ def collect_flow_data(rec, sglite_connection, cursor, arguments, biflow):
                 arguments,
             )
             if arguments.GlobalDependencies == True:
-                new_dependency(
+                add_or_update_dependency(
                     "Global",
                     rec.SRC_IP,
                     rec.DST_IP,

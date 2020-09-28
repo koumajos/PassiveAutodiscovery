@@ -199,13 +199,6 @@ def arguments():
     )
 
     parser.add_argument(
-        "-U",
-        "--UsualyPorts",
-        help='Map only "usualy" transport layer ports',
-        action="store_true",
-    )
-
-    parser.add_argument(
         "-F",
         "--FilterIPFlows",
         help="Filter incompletely conection",
@@ -232,13 +225,6 @@ def arguments():
         "-RAM",
         "--RAM",
         help="Safe database in RAM memory and safe to file after modul end",
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "-T",
-        "--time",
-        help="Safe to database also time records of lcoal and global dependencies",
         action="store_true",
     )
 

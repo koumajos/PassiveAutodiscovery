@@ -27,9 +27,7 @@ CREATE TABLE LocalDependencies (
 	IP_origin text,
 	IP_target text,
 	Port_origin integer,
-	Port_target integer,
-	NumPackets integer,
-	NumBytes integer
+	Port_target integer
 );
 
 CREATE TABLE LocalServices (
@@ -57,9 +55,7 @@ CREATE TABLE Global (
 	IP_origin text,
 	IP_target text,
 	Port_origin integer,
-	Port_target integer,
-	NumPackets integer,
-	NumBytes integer
+	Port_target integer
 );
 
 CREATE TABLE VendorsMAC (
