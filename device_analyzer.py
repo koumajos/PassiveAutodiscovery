@@ -74,6 +74,34 @@ import format_json
 import statistics
 
 
+def found_vendor(mac_address, cursor, sqlite_connection):
+    """Found vendor in database for added mac address.
+
+    Parameters
+    -----------
+    mac_address : str
+        MAC address of device.
+    cursor : sqlite3
+        Cursor to sqlite3 database for execute SQL queries.
+    sqlite_connection : sqlite3
+        Connection to sqlite3 database.
+    
+    Returns
+    -------
+        string: Vendor name.
+        string: Country.
+    """
+    for i in [13, 11, 10, 8]:  # split MAC address to separated part including :
+        vendor_mac = mac_address[:i]
+        cursor.execute(
+            f"SELECT * FROM VendorsMAC WHERE VendorMAC='{vendor_mac.upper()}'"
+        )
+        row = cursor.fetchone()
+        if row:
+            return row[3], row[4]
+    return "Can't resolved", "Can't resolved"
+
+
 def add_mac_address(device_id, ip_address, cursor, sqlite_connection, device_json):
     """Find if for device IP is in database MAC address record in table MAC or table Routers. If in table MAC, the device with IP has this MAC address. If in Router, the device with IP has this MAC address or is behind router with this MAC address (Ussualy cant resolve this by program).
 
@@ -96,13 +124,15 @@ def add_mac_address(device_id, ip_address, cursor, sqlite_connection, device_jso
         )
     )
     row = cursor.fetchone()
-    cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=ip_address))
-    router = cursor.fetchone()
-    mac = ""
     if row:
         device_json["MAC"] = row[2]
-        mac = [row[2][i : i + 8] for i in range(0, len(row[2]), 8)][0]
-    elif router:
+        device_json["Vendor"], device_json["Country"] = found_vendor(
+            row[2], cursor, sqlite_connection
+        )
+        return
+    cursor.execute("SELECT * FROM Routers WHERE IP='{ip}'".format(ip=ip_address))
+    router = cursor.fetchone()
+    if router:
         cursor.execute(f"SELECT * FROM Routers WHERE MAC='{router[1]}'")
         rows = cursor.fetchall()
         cnt_private = 0
@@ -114,18 +144,13 @@ def add_mac_address(device_id, ip_address, cursor, sqlite_connection, device_jso
             device_json["RouterMAC"] = router[1]
         else:
             device_json["MAC"] = router[1]
-        mac = [router[1][i : i + 8] for i in range(0, len(router[1]), 8)][0]
+        device_json["Vendor"], device_json["Country"] = found_vendor(
+            router[1], cursor, sqlite_connection
+        )
     else:
-        None
-    if mac != "":
-        cursor.execute(f"SELECT * FROM VendorsMAC WHERE VendorMAC='{mac.upper()}'")
-        row = cursor.fetchone()
-        if row:
-            device_json["Vendor"] = row[3]
-            device_json["Country"] = row[4]
-        else:
-            device_json["Vendor"] = f"Not Find: {mac.upper()}"
-            device_json["Country"] = f"Not Find: {mac.upper()}"
+        device_json["MAC"] = ""
+        device_json["Vendor"] = ""
+        device_json["Country"] = ""
 
 
 def find_labels(
@@ -161,18 +186,18 @@ def find_labels(
         for service in labels:
             if gl == True:
                 cursor.execute(
-                    "SELECT * FROM Global WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}')".format(
+                    "SELECT * FROM GlobalDependencies WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}')".format(
                         port=service[0], ip=ip_address
                     )
                 )
-                Global = cursor.fetchone()
+                global_dependencies = cursor.fetchone()
                 cursor.execute(
                     "SELECT * FROM LocalDependencies WHERE (IP_origin='{ip}' AND Port_origin='{port}') OR (IP_target='{ip}' AND Port_target='{port}') ".format(
                         port=service[0], ip=ip_address
                     )
                 )
-                Local = cursor.fetchone()
-                if not Global and not Local:
+                local_dependencies = cursor.fetchone()
+                if not global_dependencies and not local_dependencies:
                     continue
             tmp = 1
 
@@ -199,7 +224,7 @@ def find_labels(
     # ============================================================================================================================================================
     # Create new labels from dependencies from access to Web Sevices, Mail Services, or record in table Routers
     cursor.execute(
-        "SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(
+        "SELECT * FROM GlobalDependencies G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(
             ipo=ip_address, t="WEB Server"
         )
     )
@@ -215,7 +240,7 @@ def find_labels(
             }
         )
     cursor.execute(
-        "SELECT * FROM Global G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(
+        "SELECT * FROM GlobalDependencies G JOIN GlobalServices GS ON G.IP_target=GS.IP JOIN Services S ON S.PortNumber=GS.PortNumber WHERE G.IP_origin='{ipo}' AND S.DeviceType='{t}'".format(
             ipo=ip_address, t="Mail Server"
         )
     )
@@ -389,7 +414,7 @@ def global_dependencies(
         JSON file for device with device_id ID loaded in python.        
     """
     cursor.execute(
-        "SELECT * FROM Global WHERE IP_origin='{ipo}' OR IP_target='{ipt}' ORDER BY NumPackets DESC".format(
+        "SELECT * FROM GlobalDependencies WHERE IP_origin='{ipo}' OR IP_target='{ipt}'".format(
             ipo=ip_address, ipt=ip_address
         )
     )
@@ -400,7 +425,7 @@ def global_dependencies(
         for global_dependency in global_dependencies:
             if args.timeG > tmp:
                 create_graphs.graph_activity_of_dependency(
-                    global_dependency, "Global", cursor, json_output
+                    global_dependency, "GlobalDependencies", cursor, json_output
                 )
                 tmp = tmp + 1
             statistics.stats_of_services(
@@ -578,7 +603,7 @@ def analyze_network(sqlite_connection, args):
     device_id = 1
     # ==================================================================
     gl = True
-    cursor.execute("SELECT COUNT(*) FROM Global")
+    cursor.execute("SELECT COUNT(*) FROM GlobalDependencies")
     GlobalC = cursor.fetchone()
     if GlobalC[0] == 0:
         gl = False
@@ -734,7 +759,7 @@ def do_analyze_by_arguments(sqlite_connection, args):
     device_id = 1
     # ==================================================================
     gl = True
-    cursor.execute("SELECT COUNT(*) FROM Global")
+    cursor.execute("SELECT COUNT(*) FROM GlobalDependencies")
     GlobalC = cursor.fetchone()
     if GlobalC[0] == 0:
         gl = False
