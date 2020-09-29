@@ -137,7 +137,9 @@ def crete_json_format_for_full_analyze():
     }
 
 
-def safe_local_dependency_to_json(device_json, dependency, device_ipaddress, cursor):
+def safe_local_dependency_to_json(
+    device_json, dependency, num_packets, device_ipaddress, cursor
+):
     """Safe local dependency to json.
 
     Args:
@@ -151,7 +153,7 @@ def safe_local_dependency_to_json(device_json, dependency, device_ipaddress, cur
     verb = "provides"
     services = ""
     port = 0
-    packets = dependency[5]
+    packets = num_packets
 
     cursor.execute(
         "SELECT * FROM Services WHERE PortNumber='{portS}'".format(portS=dependency[3])
@@ -234,7 +236,7 @@ def safe_local_dependency_to_json(device_json, dependency, device_ipaddress, cur
 
 
 def safe_global_dependency_to_json(
-    device_json, global_dependency, cursor, device_ip, promtp
+    device_json, global_dependency, num_packets, cursor, device_ip, promtp
 ):
     """[summary]
 
@@ -264,7 +266,7 @@ def safe_global_dependency_to_json(
     verb = "provides"
     services = ""
     port = 0
-    num_packets = global_dependency[5]
+    num_packets = num_packets
     domain = ""
     # ========================================================
     if src_service:

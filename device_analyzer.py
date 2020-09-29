@@ -321,6 +321,34 @@ def add_dhcp_records_for_device(
         )
 
 
+def calculate_num_packet(dependency, table, cursor, sqlite_connection):
+    """Return number of packets carried by dependency.
+
+    Args:
+        dependency (list): Row in table conaints information of dependnecy.
+        table (bool): Boolean for local or global dependency.
+        cursor (sqlite3): Cursor to sqlite3 database for execute SQL queries.
+        sqlite_connection (sqlite3): Connection to sqlite3 database.
+
+    Returns:
+        int: Number of packets.
+    """
+    if table is True:
+        cursor.execute(
+            "SELECT SUM (NumPackets) FROM DependenciesTime WHERE DependenciesID='{id}'".format(
+                tb=table, id=dependency[0]
+            )
+        )
+    else:
+        cursor.execute(
+            "SELECT SUM (NumPackets) FROM GlobalTime WHERE GlobalID='{id}'".format(
+                tb=table, id=dependency[0]
+            )
+        )
+    flow = cursor.fetchone()
+    return flow[0]
+
+
 def local_dependencies(
     device_id,
     ip_address,
@@ -355,28 +383,28 @@ def local_dependencies(
         JSON file for device with device_id ID loaded in python.        
     """
     cursor.execute(
-        "SELECT * FROM LocalDependencies WHERE IP_origin='{ip}' OR IP_target='{ip}' ORDER BY NumPackets DESC".format(
+        "SELECT * FROM LocalDependencies WHERE IP_origin='{ip}' OR IP_target='{ip}'".format(
             ip=ip_address
         )
     )
     dependencies = cursor.fetchall()
     tmp = 0
     for dependency in dependencies:
+        num_packets = calculate_num_packet(dependency, True, cursor, sqlite_connection)
+
         if args.timeL > tmp:
             create_graphs.graph_activity_of_dependency(
-                dependency, "LocalDependencies", cursor, json_output
+                dependency, True, cursor, json_output
             )
             tmp = tmp + 1
-
         statistics.stats_of_services(
-            local_services_statistic, dependency, cursor, sqlite_connection
+            local_services_statistic, dependency, num_packets, cursor, sqlite_connection
         )
         statistics.add_or_update_statistic_of_device(
-            dependency, ip_address, ip_address_statistics
+            dependency, num_packets, ip_address, ip_address_statistics
         )
-
         format_json.safe_local_dependency_to_json(
-            device_json, dependency, device_ipaddress, cursor
+            device_json, dependency, num_packets, device_ipaddress, cursor
         )
 
 
@@ -423,20 +451,27 @@ def global_dependencies(
     if global_dependencies:
         promtp = 0
         for global_dependency in global_dependencies:
+            num_packets = calculate_num_packet(
+                global_dependency, False, cursor, sqlite_connection
+            )
             if args.timeG > tmp:
                 create_graphs.graph_activity_of_dependency(
-                    global_dependency, "GlobalDependencies", cursor, json_output
+                    global_dependency, False, cursor, json_output
                 )
                 tmp = tmp + 1
             statistics.stats_of_services(
-                global_statistic, global_dependency, cursor, sqlite_connection
+                global_statistic,
+                global_dependency,
+                num_packets,
+                cursor,
+                sqlite_connection,
             )
             statistics.add_or_update_statistic_of_device(
-                global_dependency, ip_address, ip_address_statistics
+                global_dependency, num_packets, ip_address, ip_address_statistics
             )
 
             format_json.safe_global_dependency_to_json(
-                device_json, global_dependency, cursor, device_ip, promtp
+                device_json, global_dependency, num_packets, cursor, device_ip, promtp
             )
 
 

@@ -130,14 +130,13 @@ def graph_activity_of_dependency(dependency, table, cursor, device_json):
     device_json : JSON  
         JSON file loaded in python.    
     """
-    if table == "LocalDependencies":
+    if table is True:
         cursor.execute(
             f"SELECT * FROM DependenciesTime WHERE DependenciesID='{dependency[0]}'"
         )
-        rows = cursor.fetchall()
     else:
         cursor.execute(f"SELECT * FROM GlobalTime WHERE GlobalID='{dependency[0]}'")
-        rows = cursor.fetchall()
+    rows = cursor.fetchall()
     if not rows:
         return
 

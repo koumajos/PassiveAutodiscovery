@@ -23,7 +23,9 @@ import sys
 from termgraph import termgraph
 
 
-def stats_of_services(services_statistic, dependency, cursor, sqlite_connection):
+def stats_of_services(
+    services_statistic, dependency, num_packets, cursor, sqlite_connection
+):
     """Function find if source or destination port of dependency isn't some services in network. If yes, then the packet number carry the dependendy add in services_statistic to the services. (this create with cyclus counter of packet by protocol in network) 
     
     Parameters
@@ -44,9 +46,9 @@ def stats_of_services(services_statistic, dependency, cursor, sqlite_connection)
     if servicestat:
         st = servicestat[2].replace(" ", "_")
         if st in services_statistic:
-            services_statistic[st] = services_statistic[st] + dependency[5]
+            services_statistic[st] = services_statistic[st] + num_packets
         else:
-            services_statistic[st] = dependency[5]
+            services_statistic[st] = num_packets
 
     cursor.execute(
         "SELECT * FROM Services WHERE PortNumber={pt}".format(pt=dependency[4])
@@ -55,12 +57,14 @@ def stats_of_services(services_statistic, dependency, cursor, sqlite_connection)
     if servicestat:
         st = servicestat[2].replace(" ", "_")
         if st in services_statistic:
-            services_statistic[st] = services_statistic[st] + dependency[5]
+            services_statistic[st] = services_statistic[st] + num_packets
         else:
-            services_statistic[st] = dependency[5]
+            services_statistic[st] = num_packets
 
 
-def add_or_update_statistic_of_device(dependency, ip_address, ip_address_statistics):
+def add_or_update_statistic_of_device(
+    dependency, num_packets, ip_address, ip_address_statistics
+):
     """Function check if devices from dependency are in statistic, that contains devices ip addresses and number of packets that was carryed by device. 
     If device exists in statistic then update number of packets, else add new device in statistic. 
 
@@ -72,17 +76,17 @@ def add_or_update_statistic_of_device(dependency, ip_address, ip_address_statist
     if dependency[1] == ip_address:
         if dependency[1] in ip_address_statistics:
             ip_address_statistics[dependency[1]] = (
-                ip_address_statistics[dependency[1]] + dependency[5]
+                ip_address_statistics[dependency[1]] + num_packets
             )
         else:
-            ip_address_statistics[dependency[1]] = dependency[5]
+            ip_address_statistics[dependency[1]] = num_packets
     if dependency[2] == ip_address:
         if dependency[2] in ip_address_statistics:
             ip_address_statistics[dependency[2]] = (
-                ip_address_statistics[dependency[2]] + dependency[5]
+                ip_address_statistics[dependency[2]] + num_packets
             )
         else:
-            ip_address_statistics[dependency[2]] = dependency[5]
+            ip_address_statistics[dependency[2]] = num_packets
 
 
 def plot_statistics(data):
